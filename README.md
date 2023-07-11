@@ -1,6 +1,6 @@
 # Material control App (quasar-project)
 
-A Quasar Project 
+A Quasar Project
 
 ## Install the dependencies
 ```bash
