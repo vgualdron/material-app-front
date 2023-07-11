@@ -22,9 +22,9 @@ jobs:
       - name: Sync files 📂 Server flamecol.com
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: ftp.flamecol.com
-          username: u489681413.ftpuserflame
-          password: Prog13171638*
+          server: ${{ secrets.FTP_SERVER_NAME }}
+          username: ${{ secrets.FTP_USER_NAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
           dangerous-clean-slate: true
           log-level: verbose
           protocol: ftps
