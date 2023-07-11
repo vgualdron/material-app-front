@@ -1,175 +1,268 @@
 <template>
-  <div class="q-pa-md">
-    <q-table title="Usuarios" :data="data" :columns="columns" row-key="name"
-      :selected.sync="selected" :loading="isLoadingTable" :filter="filter"
-      :pagination.sync="pagination">
-      <template v-slot:top>
-        <q-btn color="primary" label="Agregar nuevo" @click="addRow" :disable="isDiabledAdd"/>
-        <q-space />
-        <q-input dense debounce="300" color="primary" v-model="filter">
+  <div>
+    <div class="row q-mt-md">
+      <div class="col-9 text-center">
+        <q-input
+          dense
+          debounce="400"
+          color="primary"
+          v-model="filter"
+          class="q-ml-xs"
+          placeholder="Buscar usuario"
+          clearable
+        >
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
+      </div>
+      <div
+        class="col-3
+        text-center"
+      >
+        <q-btn
+          color="primary"
+          label="Agregar"
+          @click="showForm(null, 'C')"
+          :disabled="!validatedPermissions.create.status"
+          :title="validatedPermissions.create.title"
+        />
+      </div>
+    </div>
+    <q-table
+      :grid="$q.screen.xs"
+      title="Usuarios"
+      :data="data"
+      :columns="columns"
+      :filter="filter"
+    >
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props">
+          <div>
+            <q-btn
+              color="primary"
+              field="edit"
+              icon="edit"
+              :disabled="!validatedPermissions.edit.status"
+              :title="validatedPermissions.edit.title"
+              @click="showForm(props.row.id, 'E')"
+            />
+            <q-btn
+              class="q-ml-xs"
+              color="red"
+              field="delete"
+              icon="delete"
+              :disabled="!validatedPermissions.delete.status"
+              :title="validatedPermissions.delete.title"
+              @click="showForm(props.row.id, 'D')"
+            />
+          </div>
+        </q-td>
       </template>
-      <template v-slot:body="props">
-        <q-tr :props="props" @click="clickRow(props.row)">
-          <q-td key="actions" :props="props">
-            <q-btn icon="delete" color="primary" flat size="sm" class="col q-ml-sm"
-              @click="openModal('delete', props.row)"
-              :disable="(props.row.listings && props.row.listings.length > 0)
-              || (props.row.configurations && props.row.configurations.length > 0)"/>
-          </q-td>
-          <q-td key="name" :props="props">
-            <q-icon size="xs" name="edit" />
-            {{ props.row.name }}
-            <q-popup-edit :value="props.row.name" v-slot="scope" buttons
-              @input="val => save('name', val)">
-              <q-input v-model="scope.value" dense autofocus />
-            </q-popup-edit>
-          </q-td>
-          <q-td key="email" :props="props">
-            <q-icon size="xs" name="edit" />
-            {{ props.row.email }}
-            <q-popup-edit :value="props.row.email" v-slot="scope" buttons
-              @input="val => save('email', val)">
-              <q-input v-model="scope.value" dense autofocus />
-            </q-popup-edit>
-          </q-td>
-          <q-td key="role" :props="props">
-            {{ props.row.role }}
-          </q-td>
-          <q-td key="address" :props="props">
-            <q-icon size="xs" name="edit" />
-            {{ props.row.address }}
-            <q-popup-edit :value="props.row.address" v-slot="scope" buttons
-              @input="val => save('address', val)">
-              <q-input v-model="scope.value" dense autofocus />
-            </q-popup-edit>
-          </q-td>
-          <q-td key="phone" :props="props">
-            <q-icon size="xs" name="edit" />
-            {{ props.row.phone }}
-            <q-popup-edit :value="props.row.phone" v-slot="scope" buttons
-              @input="val => save('phone', val)">
-              <q-input v-model="scope.value" dense autofocus />
-            </q-popup-edit>
-          </q-td>
-        </q-tr>
+      <!--items for small screens-->
+      <template v-slot:item="props">
+        <div
+          class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+        >
+          <q-card>
+            <q-list bordered separator>
+              <q-item v-ripple>
+                <q-item-section>
+                  <template
+                    v-for="column in columns"
+                  >
+                    <q-item-label
+                      v-if="column.visible"
+                      :key="column.name + '-label'"
+                    >
+                        {{column.label}}
+                    </q-item-label>
+                    <q-item-label
+                      v-if="column.visible"
+                      caption
+                      :key="column.name + '-value'"
+                    >
+                      {{ props.row[column.field]}}
+                    </q-item-label>
+                  </template>
+                </q-item-section>
+                <q-item-section side>
+                  <div>
+                    <q-btn
+                      round
+                      icon="edit"
+                      size="xs"
+                      color="primary"
+                      :disabled="!validatedPermissions.edit.status"
+                      :title="validatedPermissions.edit.title"
+                      @click="showForm(props.row.id, 'E')"
+                    ></q-btn>
+                  </div>
+                  <div class="q-mt-xs">
+                    <q-btn
+                      round
+                      icon="delete"
+                      size="xs"
+                      color="red"
+                      :disabled="!validatedPermissions.delete.status"
+                      :title="validatedPermissions.delete.title"
+                      @click="showForm(props.row.id, 'D')"
+                    ></q-btn>
+                  </div>
+                </q-item-section>
+              </q-item>
+            </q-list>
+           </q-card>
+        </div>
       </template>
     </q-table>
-    <form-user v-if="showModal" v-model="showModal"/>
+    <form-users
+      ref="formUserReference"
+      :showNotificationsRef="showNotification"
+      :listUsersMountedRef="listUsersMounted"
+    />
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import FormUser from 'components/user/FormUser.vue';
+import FormUsers from 'components/user/FormUsers.vue';
 import userTypes from '../../store/modules/user/types';
+import { showNotifications } from '../../helpers/showNotifications';
+import { showLoading } from '../../helpers/showLoading';
+import { havePermission } from '../../helpers/havePermission';
 
 export default {
+  components: {
+    FormUsers,
+  },
   data() {
     return {
-      isLoadingTable: false,
-      selected: [],
-      itemSelected: {},
+      route: '/user',
+      name: 'Usuarios',
       columns: [
         {
-          name: 'actions',
-          required: true,
-          label: 'Acciones',
+          name: 'documentNumber',
+          label: 'Documento',
           align: 'left',
+          field: 'documentNumber',
+          sortable: true,
+          visible: true,
         },
         {
           name: 'name',
-          required: true,
-          label: 'Nombre',
           align: 'left',
-          field: (row) => row.name,
-          format: (val) => `${val}`,
+          label: 'Nombre',
+          field: 'name',
+          style: 'max-width: 300px',
+          classes: 'ellipsis',
           sortable: true,
+          visible: true,
         },
         {
-          name: 'email', align: 'center', label: 'Email', field: 'email', sortable: true,
+          name: 'phone',
+          align: 'left',
+          label: 'Teléfono',
+          field: 'phone',
+          sortable: true,
+          visible: true,
         },
         {
-          name: 'role', label: 'Rol', field: 'role', sortable: true, style: 'width: 10px', align: 'center',
+          name: 'yard',
+          align: 'left',
+          label: 'Patio',
+          field: 'yard',
+          sortable: true,
+          visible: true,
         },
         {
-          name: 'address', label: 'Dirección', field: 'address', sortable: true, align: 'center',
-        },
-        {
-          name: 'phone', label: 'Phone', field: 'phone', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10), align: 'center',
+          name: 'actions',
+          label: 'Acciones',
+          align: 'center',
+          visible: false,
         },
       ],
       pagination: {
         rowsPerPage: 30,
       },
       filter: '',
-      isDiabledAdd: false,
-      showModal: false,
+      data: [],
     };
   },
   async mounted() {
-    this.isLoadingTable = true;
-    await this.fetchUsers();
-    this.isLoadingTable = false;
+    this.validateLogin();
   },
   computed: {
     ...mapState(userTypes.PATH, [
       'users',
+      'responseMessages',
+      'status',
+      'user',
     ]),
-    data() {
-      return [...this.users];
+    validatedPermissions() {
+      const statusCreate = havePermission('user.create');
+      const statusEdit = havePermission('user.update');
+      const statusDelete = havePermission('user.delete');
+      return {
+        create: {
+          title: statusCreate ? 'Registrar usuario' : 'No tiene permisos para registrar usuarios',
+          status: statusCreate,
+        },
+        edit: {
+          title: statusEdit ? 'Editar usuario' : 'No tiene permisos para editar usuarios',
+          status: statusEdit,
+        },
+        delete: {
+          title: statusDelete ? 'Eliminar usuario' : 'No tiene permisos para eliminar usuarios',
+          status: statusDelete,
+        },
+      };
     },
   },
   methods: {
     ...mapActions(userTypes.PATH, {
-      fetchUsers: userTypes.actions.FETCH_USERS,
-      updateUser: userTypes.actions.UPDATE_USER,
-      deleteUser: userTypes.actions.DELETE_USER,
+      listUsers: userTypes.actions.LIST_USERS,
+      getUser: userTypes.actions.GET_USER,
     }),
-    async save(field, value) {
-      this.isLoadingTable = true;
-      this.itemSelected[field] = value;
-      await this.updateUser(this.itemSelected);
-      await this.fetchUsers();
-      this.isLoadingTable = false;
-    },
-    clickRow(row) {
-      this.itemSelected = { ...row };
-    },
-    addRow() {
-      this.showModal = true;
-    },
-    openModal(action, row) {
-      if (action === 'delete') {
-        this.$q.dialog({
-          title: 'Eliminar',
-          message: 'Está seguro que desea eliminar el usuario?',
-          ok: {
-            push: true,
-          },
-          cancel: {
-            push: true,
-            color: 'negative',
-            text: 'adsa',
-          },
-          persistent: true,
-        }).onOk(async () => {
-          this.isLoadingTable = true;
-          await this.deleteUser(row.id);
-          await this.fetchUsers();
-          this.isLoadingTable = false;
-        }).onCancel(() => {
-          // console.log('>>>> Cancel')
-        }).onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
-        });
+    async listUsersMounted() {
+      showLoading('Cargando Usuarios ...', 'Por favor, espere', true);
+      await this.listUsers({ displayAll: 1 });
+      if (this.status === true) {
+        this.data = this.users.map((element) => ({
+          ...element,
+          showEdit: true,
+          showDelete: true,
+        }));
+        this.$q.loading.hide();
+      } else {
+        this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+        this.data = [];
+        this.$q.loading.hide();
       }
     },
-  },
-  components: {
-    FormUser,
+    async showForm(id, type) {
+      showLoading('Preparando formulario ...', 'Por favor, espere', true);
+      if (id === null) {
+        this.$refs.formUserReference.showModal(id, null, type);
+      } else {
+        await this.getUser(id);
+        if (this.status === true) {
+          this.$refs.formUserReference.showModal(id, { ...this.user }, type);
+        } else {
+          this.$q.loading.hide();
+          this.showNotification(this.responseMessages, 'red', 'top-right', 5000);
+        }
+      }
+    },
+    showNotification(messages, status, align, timeout) {
+      showNotifications(messages, status, align, timeout);
+    },
+    validateLogin() {
+      if (localStorage.getItem('tokenMC')) {
+        this.listUsersMounted();
+      } else {
+        this.$router.push('/');
+      }
+    },
   },
 };
 </script>

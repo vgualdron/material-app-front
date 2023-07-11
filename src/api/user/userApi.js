@@ -1,27 +1,31 @@
 import { http } from '../../helpers/http';
 
 export default {
-  fetchUsers: () => http({
-    url: `${process.env.URL_API}/user`,
+  list: (data) => http({
+    url: `${process.env.URL_API}/api/user/list/${data.displayAll}`,
     method: 'GET',
   }),
-  addUser: (data) => http({
-    url: `${process.env.URL_API}/user`,
+  get: (id) => http({
+    url: `${process.env.URL_API}/api/user/get/${id}`,
+    method: 'GET',
+  }),
+  save: (data) => http({
+    url: `${process.env.URL_API}/api/user/create`,
     method: 'POST',
     data,
   }),
-  updateUser: (data) => http({
-    url: `${process.env.URL_API}/user/${data.id}`,
+  update: (data) => http({
+    url: `${process.env.URL_API}/api/user/update/${data.id}`,
     method: 'PUT',
     data,
   }),
-  changePassword: (data) => http({
-    url: `${process.env.URL_API}/user/change-password/session`,
-    method: 'PUT',
-    data,
-  }),
-  deleteUser: (idUser) => http({
-    url: `${process.env.URL_API}/user/${idUser}`,
+  delete: (id) => http({
+    url: `${process.env.URL_API}/api/user/delete/${id}`,
     method: 'DELETE',
+  }),
+  updateProfile: (data) => http({
+    url: `${process.env.URL_API}/api/user/updateProfile/${data.id}`,
+    method: 'PUT',
+    data,
   }),
 };

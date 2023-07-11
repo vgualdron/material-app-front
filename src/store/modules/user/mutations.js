@@ -4,10 +4,13 @@ export default {
   [types.mutations.SET_USERS](state, payload) {
     state.users = payload;
   },
-  [types.mutations.SET_STATUS_ADD_USER](state, payload) {
-    state.statusAddUser = payload;
+  [types.mutations.SET_USER](state, payload) {
+    state.user = payload;
   },
-  [types.mutations.SET_STATUS_CHANGE_PASSWORD_USER](state, payload) {
-    state.statusChangePasswordUser = payload;
+  [types.mutations.SET_STATUS](state, payload) {
+    state.status = payload;
+  },
+  [types.mutations.SET_RESPONSE_MESSAGES](state, payload) {
+    state.responseMessages = payload;
   },
 };

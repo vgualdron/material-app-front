@@ -2,27 +2,47 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen" />
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          @click="leftDrawerOpen = !leftDrawerOpen"
+        />
           <q-toolbar-title>
-            {{ title }}
+            {{$router.currentRoute.name}}
           </q-toolbar-title>
-          <q-btn-dropdown color="primary" class="no-shadow" push no-caps @click="onMainClick"
-            label="Opciones">
+          <q-btn-dropdown
+            color="primary"
+            class="no-shadow"
+            push
+            no-caps
+            label="Perfil"
+          >
             <div class="row no-wrap q-pa-md">
               <div class="column items-center">
                 <q-avatar size="72px">
-                  <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                  <img src="~/assets/flame-partial-logo.png">
                 </q-avatar>
-                <div class="text-subtitle1 q-mt-md q-mb-xs">{{ name }}</div>
-                <div class="text-subtitle1 q-mb-xs">{{ roleSesion }}</div>
+                <div
+                  class="text-subtitle1 q-mt-xs text-weight-bolder"
+                >
+                  {{ name }}
+                </div>
+                <div
+                  v-for="role in roles"
+                  :key="role"
+                >
+                  {{ role }}
+                </div>
                 <q-btn
                   color="primary"
-                  label="Cambiar contraseña"
+                  label="Actualizar Perfil"
                   push
                   size="sm"
                   v-close-popup
-                  @click="clickChangePassword"
+                  @click="showChangePasswordForm()"
                 />
                 <q-btn
                   color="primary"
@@ -30,8 +50,8 @@
                   push
                   size="sm"
                   class="q-mt-sm"
+                  @click="logout()"
                   v-close-popup
-                  @click="clickLogOut"
                 />
               </div>
             </div>
@@ -39,19 +59,32 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered content-class="bg-grey-1">
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+      content-class="bg-grey-1"
+    >
       <q-list>
         <q-item-label header class="text-grey-8">
         </q-item-label>
-        <EssentialLink v-for="link in essentialLinks" :key="link.title" v-bind="link"
-          @changeMenu="changeMenu" />
+        <EssentialLink
+          v-for="(link) in linksData"
+          :key="link.title"
+          v-bind="link"
+          :class="link.title === $router.currentRoute.name && 'bg-blue-grey-3'"
+          :clickable="link.link !== $router.currentRoute.path"
+        />
       </q-list>
     </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
-    <form-change-password v-if="showModalChangePassword" v-model="showModalChangePassword"/>
+    <form-change-password
+      ref="formChangePasswordReference"
+      :showNotificationsRef="showNotification"
+    />
   </q-layout>
 </template>
 
@@ -59,80 +92,9 @@
 import { mapState, mapActions } from 'vuex';
 import EssentialLink from 'components/common/EssentialLink.vue';
 import FormChangePassword from 'components/user/FormChangePassword.vue';
-import configurationTypes from '../store/modules/configuration/types';
-
-const linksData = [
-  {
-    title: 'Inicio',
-    caption: 'Visualiza los negocios destacados',
-    icon: 'home',
-    link: '/home',
-  },
-];
-const user = localStorage.getItem('user');
-let roleUserSesion = 'Ayudante';
-if (user) {
-  const roleUser = JSON.parse(user);
-  if (roleUser.role === 'admin') {
-    roleUserSesion = 'Administrador';
-    linksData.push(
-      {
-        title: 'Usuarios',
-        caption: 'Crea y modifica usuarios',
-        icon: 'people',
-        link: '/user',
-      },
-      {
-        title: 'Categorias',
-        caption: 'Gestiona las categorias',
-        icon: 'category',
-        link: '/category',
-      },
-      {
-        title: 'Planes',
-        caption: 'Gestiona los planes',
-        icon: 'plan',
-        link: '/plan',
-      },
-      {
-        title: 'Negocios',
-        caption: 'Gestiona los negocios',
-        icon: 'company',
-        link: '/company',
-      },
-      {
-        title: 'Configuración',
-        caption: 'Parametros para la app',
-        icon: 'settings',
-        link: '/settings',
-      },
-    );
-  } else if (roleUser.role === 'leader') {
-    roleUserSesion = 'Lider';
-    linksData.push(
-      {
-        title: 'Usuarios',
-        caption: 'Crea y modifica usuarios',
-        icon: 'people',
-        link: '/user',
-      },
-      {
-        title: 'Category',
-        caption: 'Gestiona las categorias de los negocios',
-        icon: 'category',
-        link: '/category',
-      },
-      {
-        title: 'Negocios',
-        caption: 'Gestiona los negocios',
-        icon: 'company',
-        link: '/company',
-      },
-    );
-  } else {
-    roleUserSesion = 'Usuario';
-  }
-}
+import commonTypes from '../store/modules/common/types';
+import { showNotifications } from '../helpers/showNotifications';
+import { showLoading } from '../helpers/showLoading';
 
 export default {
   name: 'MainLayout',
@@ -143,50 +105,72 @@ export default {
   data() {
     return {
       leftDrawerOpen: false,
-      essentialLinks: linksData,
-      roleSesion: roleUserSesion,
       title: 'Inicio',
       showModalChangePassword: false,
+      linksData: [],
     };
   },
   async mounted() {
-    await this.fetchConfigurations();
-    localStorage.setItem('configurations', JSON.stringify(this.configurations));
-    const route = linksData.find((link) => link.link === this.$route.path);
-    if (route) {
-      this.title = route.title;
-    }
+    this.fillLinkData();
   },
   computed: {
-    ...mapState(configurationTypes.PATH, [
-      'configurations',
+    ...mapState(commonTypes.PATH, [
+      'statusSign',
+      'responseMessages',
+      'menu',
+      'currentRoute',
+      'name',
+      'roles',
     ]),
-    name() {
-      const token = localStorage.getItem('token');
-      let name = '';
-      if (token) {
-        name = JSON.parse(token).accessToken.name;
-      }
-      return `${name.substring(0, 20)} ...`;
-    },
   },
   methods: {
-    ...mapActions(configurationTypes.PATH, {
-      fetchConfigurations: configurationTypes.actions.FETCH_CONFIGURATIONS,
+    ...mapActions(commonTypes.PATH, {
+      signout: commonTypes.actions.SIGN_OUT,
     }),
-    changeMenu(title) {
-      this.title = title;
-    },
-    onMainClick() {
-      console.log('onMainClick ...');
-    },
     clickChangePassword() {
       this.showModalChangePassword = true;
     },
-    clickLogOut() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/';
+    async logout() {
+      showLoading('Cerrando sesión ...', 'Por favor, espere', true);
+      await this.signout();
+      if (this.statusSign === true) {
+        this.$q.loading.hide();
+        this.$router.push('/');
+      } else {
+        this.$q.loading.hide();
+        this.showNotification(this.responseMessages, this.statusSign, 'top-right', 5000);
+      }
+    },
+    fillLinkData() {
+      if (this.menu) {
+        this.linksData.push(
+          {
+            title: 'Inicio',
+            caption: '',
+            icon: 'keyboard_arrow_right',
+            link: '/home',
+          },
+        );
+        this.menu.forEach((item) => {
+          if (item.menu === 1) {
+            this.linksData.push(
+              {
+                title: item.name,
+                caption: '',
+                icon: 'keyboard_arrow_right',
+                link: item.route,
+              },
+            );
+          }
+        });
+      }
+    },
+    showChangePasswordForm() {
+      showLoading('Preparando formulario ...', 'Por favor, espere', true);
+      this.$refs.formChangePasswordReference.showModal();
+    },
+    showNotification(messages, status, align, timeout) {
+      showNotifications(messages, status, align, timeout);
     },
   },
 };

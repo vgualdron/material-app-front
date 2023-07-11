@@ -1,7 +1,7 @@
 {
   "name": "mi-negocio",
   "version": "0.0.1",
-  "description": "Mi negocio",
+  "description": "Control de Materiales",
   "author": "victor.gualdron.r@gmail.com",
   "private": true,
   "scripts": {

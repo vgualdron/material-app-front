@@ -1,8 +1,8 @@
 {
   "name": "mi-negocio",
   "version": "0.0.1",
-  "description": "Mi Negocio",
-  "productName": "Mi Negocio",
+  "description": "Control de Materiales",
+  "productName": "Control de Materiales",
   "author": "victor.gualdron.r@gmail.com",
   "private": true,
   "scripts": {
@@ -21,9 +21,11 @@
     "core-js": "^3.6.5",
     "cropperjs": "^1.5.6",
     "dotenv": "^16.0.3",
+    "md5": "^2.3.0",
     "quasar": "^1.0.0",
     "v-money": "^0.8.1",
-    "vuedraggable": "^2.24.3"
+    "vuedraggable": "^2.24.3",
+    "websql-promisified": "^1.2.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",

@@ -1,36 +1,42 @@
 <template>
   <div class="q-pa-md" style="max-width: 400px; margin: auto;">
     <q-card class="my-card" flat bordered>
-      <q-item>
-        <q-item-section avatar>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-          </q-avatar>
-        </q-item-section>
-
-        <q-item-section>
-          <q-item-label>Iniciar sesión</q-item-label>
-          <q-item-label caption>
-            Ingresa tus datos
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-
+      <q-card-section horizontal>
+        <img src="~/assets/logo.png" width="150" class="q-mr-auto q-ml-auto">
+      </q-card-section>
       <q-separator />
-
       <q-card-section horizontal>
         <q-card-section class="col-12">
-          <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-            <q-input outlined v-model="email" label="Correo *" hint="Escriba el correo" lazy-rules
-              :rules="[val => val && val.length > 0 || 'Este campo es obligatorio', isValidEmail]"/>
-            <q-input outlined v-model="password" label="Contraseña *" hint="Escriba la contraseña"
-              type="password" lazy-rules
-              :rules="[val => val && val.length > 0 || 'Este campo es obligatorio']" />
+          <q-form
+            @submit="onSubmit"
+            @reset="onReset"
+            class="q-gutter-md"
+          >
+            <q-input
+              outlined
+              v-model.trim="documentNumber"
+              label="Documento *"
+              hint="Escriba su número de documento"
+              lazy-rules
+              :rules="[val => val && val.length > 0 || 'Este campo es obligatorio']"
+            />
+            <q-input
+              outlined
+              v-model.trim="password"
+              label="Contraseña *"
+              hint="Escriba la contraseña"
+              type="password"
+              lazy-rules
+              :rules="[val => val && val.length > 0 || 'Este campo es obligatorio']"
+            />
             <div class="row text-center">
-              <q-btn label="Entrar" type="submit" color="primary" :loading="isLoading"
-                class="col" />
-              <!--<q-btn label="Resetear" type="reset" color="primary" :disable="isLoading"
-                outline class="col q-ml-sm" /> -->
+              <q-btn
+                label="Entrar"
+                type="submit"
+                color="primary"
+                :loading="isLoading"
+                class="col"
+              />
             </div>
           </q-form>
         </q-card-section>
@@ -41,57 +47,54 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import commonTypes from '../../store/modules/common/types';
+import { showNotifications } from '../../helpers/showNotifications';
+import { showLoading } from '../../helpers/showLoading';
 
 export default {
   data() {
     return {
-      email: null,
+      documentNumber: null,
       password: null,
       isLoading: false,
     };
   },
   computed: {
     ...mapState(commonTypes.PATH, [
-      'statusSignIn',
+      'statusSign',
+      'responseMessages',
     ]),
+  },
+  created() {
+    this.validateLogin();
   },
   methods: {
     ...mapActions(commonTypes.PATH, {
       signin: commonTypes.actions.SIGN_IN,
     }),
-    isValidEmail(val) {
-      const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
-      return emailPattern.test(val) || 'Invalid email';
-    },
     async onSubmit() {
-      this.isLoading = true;
+      showLoading('Iniciando sesión ...', 'Por favor, espere', true);
       const data = {
-        name: this.email,
-        email: this.email,
+        documentNumber: this.documentNumber,
         password: this.password,
       };
       await this.signin(data);
-
       this.isLoading = false;
-      if (this.statusSignIn.errors) {
-        this.$q.notify({
-          color: 'red-4',
-          textColor: 'white',
-          message: this.statusSignIn.message,
-        });
+      if (this.statusSign === false) {
+        showNotifications(this.responseMessages, this.statusSign, 'top-right', 5000);
+        this.$q.loading.hide();
       } else {
-        this.$q.notify({
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'cloud_done',
-          message: 'Sesión iniciada con éxito',
-        });
+        this.$q.loading.hide();
         this.$router.push('/home');
       }
     },
     onReset() {
-      this.email = null;
+      this.documentNumber = null;
       this.password = null;
+    },
+    validateLogin() {
+      if (localStorage.getItem('tokenMC')) {
+        this.$router.push('/home');
+      }
     },
   },
 };

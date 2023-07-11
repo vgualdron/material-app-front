@@ -3,52 +3,79 @@ const routes = [
     path: '/',
     component: () => import('layouts/LoginLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Login.vue') },
+      { path: '', name: 'Iniciar Sesión', component: () => import('pages/Login.vue') },
     ],
   },
   {
     path: '/home',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') },
+      { path: '', name: 'Inicio', component: () => import('pages/Home.vue') },
+    ],
+  },
+  {
+    path: '/zone',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Zonas', component: () => import('pages/Zone.vue') },
+    ],
+  },
+  {
+    path: '/role',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Roles', component: () => import('pages/Role.vue') },
+    ],
+  },
+  {
+    path: '/yard',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Patios', component: () => import('pages/Yard.vue') },
     ],
   },
   {
     path: '/user',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/User.vue') },
+      { path: '', name: 'Usuarios', component: () => import('pages/User.vue') },
     ],
   },
   {
-    path: '/category',
+    path: '/material',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Category.vue') },
+      { path: '', name: 'Materiales', component: () => import('pages/Material.vue') },
     ],
   },
   {
-    path: '/plan',
+    path: '/third',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Plan.vue') },
+      { path: '', name: 'Terceros', component: () => import('pages/Third.vue') },
     ],
   },
   {
-    path: '/company',
+    path: '/adjustment',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Company.vue') },
+      { path: '', name: 'Ajustes', component: () => import('pages/Adjustment.vue') },
     ],
   },
   {
-    path: '/settings',
+    path: '/rate',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Configuration.vue') },
+      { path: '', name: 'Tarifas', component: () => import('pages/Rate.vue') },
     ],
   },
-
+  {
+    path: '/localeTicket',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Tiquetes (Offline)', component: () => import('src/pages/LocaleTicket.vue') },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

@@ -1,6 +1,6 @@
 <template>
   <q-item
-    clickable
+    :clickable="clickable"
     tag="a"
     @click="clickOption(link, title)"
   >
@@ -13,9 +13,9 @@
 
     <q-item-section>
       <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption>
+      <!-- <q-item-label caption>
         {{ caption }}
-      </q-item-label>
+      </q-item-label> -->
     </q-item-section>
   </q-item>
 </template>
@@ -41,6 +41,11 @@ export default {
     icon: {
       type: String,
       default: '',
+    },
+
+    clickable: {
+      type: Boolean,
+      default: true,
     },
   },
   methods: {

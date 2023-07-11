@@ -1,7 +1,8 @@
 export default function () {
   return {
     users: [],
-    statusAddUser: {},
-    statusChangePasswordUser: {},
+    user: {},
+    responseMessages: [],
+    status: false,
   };
 }

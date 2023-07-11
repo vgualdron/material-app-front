@@ -5,7 +5,7 @@
         <q-toolbar-title>
           Iniciar Sesión
         </q-toolbar-title>
-        <div>Mi Negocio</div>
+        <div>Control de Materiales</div>
       </q-toolbar>
     </q-header>
     <q-page-container>

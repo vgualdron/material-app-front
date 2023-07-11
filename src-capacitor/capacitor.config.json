@@ -1,6 +1,6 @@
 {
   "appId": "org.capacitor.quasar.app",
-  "appName": "Mi Negocio",
+  "appName": "Control de Materiales",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www"

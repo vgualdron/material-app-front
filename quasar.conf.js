@@ -107,7 +107,9 @@ module.exports = function (/* ctx */) {
         'Notify',
         'LocalStorage',
         'Dialog',
+        'Loading',
       ],
+      cssAddon: true
     },
 
     // animations: 'all', // --- includes all animations
@@ -124,9 +126,9 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Mi Negocio',
-        short_name: 'Mi Negocio',
-        description: 'Mi Negocio',
+        name: 'Control de Materiales',
+        short_name: 'Control de Materiales',
+        description: 'Control de Materiales',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
