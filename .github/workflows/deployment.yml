@@ -17,8 +17,8 @@ jobs:
 
       - name: Install and Build 🔧
         run: |
-          npm install
-          npm run build
+          npm install --openssl-legacy-provider
+          npm run build --openssl-legacy-provider
       - name: Sync files 📂 Server flamecol.com
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
