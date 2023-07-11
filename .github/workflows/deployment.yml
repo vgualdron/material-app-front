@@ -24,7 +24,7 @@ jobs:
         with:
           server: ftp.flamecol.com
           username: u489681413.ftpuserflame
-          password: Flame1234
+          password: Prog13171638*
           dangerous-clean-slate: true
           log-level: verbose
           protocol: ftps
