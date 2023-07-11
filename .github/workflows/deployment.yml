@@ -18,15 +18,15 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm install
-          npm run generate
-      - name: Sync files 📂 server ColombiaNovumApp1
+          npm run build
+      - name: Sync files 📂 Server flamecol.com
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: ${{ secrets.FTP_SERVER_NAME }}
-          username: ${{ secrets.FTP_USER_NAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ftp://flamecol.com
+          username: u489681413.ftpuserflame
+          password: Flame1234
           dangerous-clean-slate: true
           log-level: verbose
           protocol: ftps
           timeout: 120000
-          local-dir: ./docs/
+          local-dir: ./dist/spa/
