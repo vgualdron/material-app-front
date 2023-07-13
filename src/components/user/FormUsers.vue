@@ -79,7 +79,7 @@
             </q-select>
             <q-checkbox
               left-label
-              v-model="user.active"
+              v-model="isEditablePassword"
               text-h6
               color="green"
               :disable="disableInputs || !user.editable"
@@ -222,6 +222,7 @@ export default {
           (val) => (val === this.user.password) || 'La confirmación no coincide con la contraseña',
         ],
       },
+      isEditablePassword: false,
     };
   },
   props: [
