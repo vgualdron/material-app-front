@@ -78,6 +78,7 @@
               </template>
             </q-select>
             <q-checkbox
+              v-if="modal.type==='E'"
               left-label
               v-model="isEditablePassword"
               text-h6
