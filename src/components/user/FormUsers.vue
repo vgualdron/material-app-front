@@ -83,7 +83,7 @@
               text-h6
               color="green"
               :disable="disableInputs || !user.editable"
-              label="El usuario se encuentra activo"
+              label="Desea modificar la contraseña?"
             />
             <div class="row" v-if="modal.type==='E'">
               <div class="col-12 col-md q-pr-md-xs">
