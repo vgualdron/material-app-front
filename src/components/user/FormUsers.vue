@@ -77,6 +77,14 @@
                 </q-item>
               </template>
             </q-select>
+            <q-checkbox
+              left-label
+              v-model="user.active"
+              text-h6
+              color="green"
+              :disable="disableInputs || !user.editable"
+              label="El usuario se encuentra activo"
+            />
             <div class="row" v-if="modal.type==='E'">
               <div class="col-12 col-md q-pr-md-xs">
                 <q-input
