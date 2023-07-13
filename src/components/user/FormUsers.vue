@@ -88,6 +88,7 @@
                   hide-bottom-space
                   :disable="disableInputs || !user.editable"
                   :rules="rules.password"
+                  autocomplete="off"
                 />
               </div>
               <div class="col-12 col-md q-pt-sm-md q-pt-xs-md q-pt-md-none q-pl -md-xs">
@@ -100,6 +101,7 @@
                   hide-bottom-space
                   :disable="disableInputs || !user.editable"
                   :rules="rules.confirmPassword"
+                  autocomplete="off"
                 />
               </div>
             </div>
