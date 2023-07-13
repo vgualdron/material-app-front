@@ -182,7 +182,7 @@ export default {
         },
       ],
       pagination: {
-        rowsPerPage: 30,
+        rowsPerPage: 50,
       },
       filter: '',
       data: [],
