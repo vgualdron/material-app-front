@@ -85,7 +85,7 @@
               :disable="disableInputs || !user.editable"
               label="Desea modificar la contraseña?"
             />
-            <div class="row" v-if="modal.type==='E'">
+            <div class="row" v-if="modal.type==='E' && isEditablePassword">
               <div class="col-12 col-md q-pr-md-xs">
                 <q-input
                   type="password"
