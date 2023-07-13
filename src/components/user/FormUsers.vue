@@ -234,6 +234,10 @@ export default {
     yards(val) {
       this.optionYards = [...val];
     },
+    isEditablePassword() {
+      this.user.password = '';
+      this.user.confirmPassword = '';
+    },
   },
   computed: {
     ...mapState(userTypes.PATH, [
