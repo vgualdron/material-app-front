@@ -67,6 +67,7 @@
     >
       <q-list>
         <q-item-label header class="text-grey-8">
+          <img src="~/assets/logo.png" width="250" class="q-mr-auto q-ml-auto">
         </q-item-label>
         <EssentialLink
           v-for="(link) in linksData"
@@ -147,7 +148,7 @@ export default {
           {
             title: 'Inicio',
             caption: '',
-            icon: 'keyboard_arrow_right',
+            icon: 'house',
             link: '/home',
           },
         );
@@ -157,7 +158,7 @@ export default {
               {
                 title: item.name,
                 caption: '',
-                icon: 'keyboard_arrow_right',
+                icon: 'remove',
                 link: item.route,
               },
             );

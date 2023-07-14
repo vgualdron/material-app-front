@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="q-pa-md">
     <div class="row q-mt-md">
       <div class="col-9 text-center">
         <q-input
@@ -31,11 +31,11 @@
     </div>
     <q-table
       :grid="$q.screen.xs"
-      title="Roles"
       :data="data"
       :columns="columns"
       :filter="filter"
       :pagination="pagination"
+      class="q-mt-md"
     >
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
