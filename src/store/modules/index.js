@@ -9,7 +9,8 @@ import material, { name as materialName } from './material';
 import third, { name as thirdName } from './third';
 import adjustment, { name as adjustmentName } from './adjustment';
 import rate, { name as rateName } from './rate';
-import localeTicket, { name as localeTicketName } from './localeTicket';
+import localDataManagement, { name as localDataManagementName } from './localDataManagement';
+// import localeTicket, { name as localeTicketName } from './localeTicket';
 
 export default {
   [homeName]: home,
@@ -23,5 +24,6 @@ export default {
   [thirdName]: third,
   [adjustmentName]: adjustment,
   [rateName]: rate,
-  [localeTicketName]: localeTicket,
+  [localDataManagementName]: localDataManagement,
+  // [localeTicketName]: localeTicket,
 };

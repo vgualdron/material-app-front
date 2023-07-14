@@ -69,13 +69,13 @@ const routes = [
       { path: '', name: 'Tarifas', component: () => import('pages/Rate.vue') },
     ],
   },
-  {
+  /* {
     path: '/localeTicket',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', name: 'Tiquetes (Offline)', component: () => import('src/pages/LocaleTicket.vue') },
     ],
-  },
+  }, */
   // Always leave this as last one,
   // but you can also remove it
   {

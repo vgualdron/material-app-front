@@ -1,24 +1,51 @@
 <template>
-  <div class="q-pa-md" style="max-width: 400px; margin: auto;">
-    <q-card class="my-card" flat bordered>
-      <h5>Main</h5>
-    </q-card>
+  <div class="q-pa-md" justify-center items-center>
+      <center>
+        <q-btn
+          class="q-mb-sm"
+          color="grey-4"
+          text-color="green"
+          unelevated
+          icon-right="sync"
+          label="Sincronizar"
+          size="xl"
+        />
+      </center>
+      <q-img
+        src="~/assets/flame-logo.png"
+      />
   </div>
 </template>
 <script>
+
+import { mapState, mapActions } from 'vuex';
+import localDataManagementTypes from '../../store/modules/localDataManagement/types';
+/*  import { showNotifications } from '../../helpers/showNotifications';
+import { showLoading } from '../../helpers/showLoading';
+import { havePermission } from '../../helpers/havePermission'; */
 
 export default {
   data() {
     return {};
   },
-  computed: {},
+  computed: {
+    ...mapState(localDataManagementTypes.PATH, [
+      'status',
+      'responseMessages',
+    ]),
+  },
   mounted() {
     this.validateLogin();
   },
   methods: {
+    ...mapActions(localDataManagementTypes.PATH, {
+      getData: localDataManagementTypes.actions.GET_DATA,
+      setData: localDataManagementTypes.actions.SET_DATA,
+    }),
     validateLogin() {
       if (localStorage.getItem('tokenMC')) {
-        console.log('sincronizando');
+        this.getData();
+        // console.log('sincronizando');
       } else {
         this.$router.push('/');
       }

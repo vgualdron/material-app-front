@@ -1,7 +1,6 @@
 export default function () {
   return {
-    localeTickets: [],
-    localeTicket: {},
+    data: [],
     responseMessages: [],
     status: false,
   };
