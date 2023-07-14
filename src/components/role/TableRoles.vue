@@ -35,6 +35,7 @@
       :data="data"
       :columns="columns"
       :filter="filter"
+      :pagination="pagination"
     >
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
@@ -153,7 +154,7 @@ export default {
         },
       ],
       pagination: {
-        rowsPerPage: 30,
+        rowsPerPage: 50,
       },
       filter: '',
       data: [],
