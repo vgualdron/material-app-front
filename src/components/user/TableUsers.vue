@@ -35,6 +35,7 @@
       :data="data"
       :columns="columns"
       :filter="filter"
+      :pagination="pagination"
     >
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
