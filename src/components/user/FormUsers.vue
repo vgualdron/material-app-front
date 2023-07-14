@@ -77,7 +77,16 @@
                 </q-item>
               </template>
             </q-select>
-            <div class="row" v-if="modal.type==='E'">
+            <q-checkbox
+              v-if="modal.type==='E'"
+              left-label
+              v-model="isEditablePassword"
+              text-h6
+              color="green"
+              :disable="disableInputs || !user.editable"
+              label="Desea modificar la contraseña?"
+            />
+            <div class="row" v-if="modal.type==='E' && isEditablePassword">
               <div class="col-12 col-md q-pr-md-xs">
                 <q-input
                   type="password"
@@ -88,6 +97,7 @@
                   hide-bottom-space
                   :disable="disableInputs || !user.editable"
                   :rules="rules.password"
+                  autocomplete="off"
                 />
               </div>
               <div class="col-12 col-md q-pt-sm-md q-pt-xs-md q-pt-md-none q-pl -md-xs">
@@ -100,6 +110,7 @@
                   hide-bottom-space
                   :disable="disableInputs || !user.editable"
                   :rules="rules.confirmPassword"
+                  autocomplete="off"
                 />
               </div>
             </div>
@@ -212,6 +223,7 @@ export default {
           (val) => (val === this.user.password) || 'La confirmación no coincide con la contraseña',
         ],
       },
+      isEditablePassword: false,
     };
   },
   props: [
@@ -221,6 +233,10 @@ export default {
   watch: {
     yards(val) {
       this.optionYards = [...val];
+    },
+    isEditablePassword() {
+      this.user.password = '';
+      this.user.confirmPassword = '';
     },
   },
   computed: {

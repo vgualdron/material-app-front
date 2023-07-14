@@ -12,7 +12,7 @@
 require('dotenv').config();
 const ESLintPlugin = require('eslint-webpack-plugin');
 
-module.exports = function (/* ctx */) {
+module.exports = function (ctx) {
   return {
     // https://v1.quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -51,7 +51,7 @@ module.exports = function (/* ctx */) {
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: {
-        URL_API: process.env.URL_API,
+        URL_API: ctx.dev ? process.env.URL_API : process.env.URL_API_PROD,
       },
       // transpile: false,
 

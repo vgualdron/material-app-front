@@ -27,6 +27,7 @@
           <q-form
             @submit="onSubmit"
             class="q-gutter-md"
+            autocomplete="off"
           >
             <q-input
               type="password"

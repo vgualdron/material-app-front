@@ -1,4 +1,4 @@
-# Quasar App (quasar-project)
+# Material control App (quasar-project)
 
 A Quasar Project
 
@@ -7,7 +7,7 @@ A Quasar Project
 yarn
 # or
 npm install
-```
+``
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
