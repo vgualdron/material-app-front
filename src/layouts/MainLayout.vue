@@ -23,7 +23,7 @@
             <div class="row no-wrap q-pa-md">
               <div class="column items-center">
                 <q-avatar size="72px">
-                  <img src="~/assets/flame-partial-logo.png">
+                  <img src="~/assets/default-profile-picture.png">
                 </q-avatar>
                 <div
                   class="text-subtitle1 q-mt-xs text-weight-bolder"
@@ -67,7 +67,7 @@
     >
       <q-list>
         <q-item-label header class="text-grey-8">
-          <img src="~/assets/logo.png" width="250" class="q-mr-auto q-ml-auto">
+          <img src="~/assets/logo-rectangle.png" width="250" class="q-mr-auto q-ml-auto">
         </q-item-label>
         <EssentialLink
           v-for="(link) in linksData"

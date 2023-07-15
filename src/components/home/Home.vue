@@ -11,7 +11,7 @@
           size="xl"
         /> -->
         <q-img
-          src="~/assets/flame-logo.png" width="300px"
+          src="~/assets/logo-rectangle.png" width="300px"
         />
       </center>
   </div>
