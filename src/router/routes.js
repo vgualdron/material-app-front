@@ -70,10 +70,10 @@ const routes = [
     ],
   },
   /* {
-    path: '/localeTicket',
+    path: '/localTicket',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'Tiquetes (Offline)', component: () => import('src/pages/LocaleTicket.vue') },
+      { path: '', name: 'Tiquetes (Offline)', component: () => import('src/pages/LocalTicket.vue') },
     ],
   }, */
   // Always leave this as last one,

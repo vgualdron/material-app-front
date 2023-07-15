@@ -730,9 +730,9 @@ export default {
     },
     calculateTotalPrice() {
       if (this.rate.movement === 'C') {
-        const localeMaterialPrice = this.rate.materialPrice === null || this.rate.materialPrice === '' ? 0 : parseFloat(this.rate.materialPrice.toString().replace(/,/g, ''));
-        const localeFreightPrice = this.rate.freightPrice === null || this.rate.freightPrice === '' ? 0 : parseFloat(this.rate.freightPrice.toString().replace(/,/g, ''));
-        this.rate.totalPrice = formatDecimal((localeMaterialPrice + localeFreightPrice).toFixed(2), false);
+        const localMaterialPrice = this.rate.materialPrice === null || this.rate.materialPrice === '' ? 0 : parseFloat(this.rate.materialPrice.toString().replace(/,/g, ''));
+        const localFreightPrice = this.rate.freightPrice === null || this.rate.freightPrice === '' ? 0 : parseFloat(this.rate.freightPrice.toString().replace(/,/g, ''));
+        this.rate.totalPrice = formatDecimal((localMaterialPrice + localFreightPrice).toFixed(2), false);
       }
     },
     resetForm() {
