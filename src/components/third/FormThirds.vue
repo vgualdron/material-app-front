@@ -30,14 +30,52 @@
                 v-if="modal.type === 'C' && canCreateInBatch === true"
                 class="q-mr-auto q-ml-auto text-center"
                 size="md"
-                label="Registrar mediante archivo plano"
+                label="Registrar mediante archivo plano CSV"
                 v-model="file.active"
               />
             </div>
             <template v-if="file.active">
+              <q-banner inline-actions rounded class="bg-grey text-black">
+                * No se debe poner titulo a las celdas<br>
+                * Cada registro de tercero deben estar separados por salto de linea.<br>
+                * Cada campo de tercero deben estar separados por coma ",".<br>
+                * Los campos de Nit y Nombre no pueden contener el caracter coma ",".<br>
+                * Si un NIT ya se encuentra registrado, los que se hace es actualizar los datos
+                  de los demás campos, con el nuevo valor que viene en el archivo.<br>
+                * Ejemplo de registros: <br>
+                    1090404800-1,EMPRESA 1,SI,NO,NO<br>
+                    90404811-4,EMPRESA 2,NO,SI,NO<br>
+              </q-banner>
+              <q-markup-table separator="vertical" flat bordered>
+                <thead>
+                  <tr>
+                    <th class="text-center">NIT</th>
+                    <th class="text-center">NOMBRE</th>
+                    <th class="text-center">ESCLIENTE</th>
+                    <th class="text-center">ESPROVEEDOR</th>
+                    <th class="text-center">ESCONTRATISTA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-center">1090404800-1</td>
+                    <td class="text-center">EMPRESA 1</td>
+                    <td class="text-center">SI</td>
+                    <td class="text-center">NO</td>
+                    <td class="text-center">NO</td>
+                  </tr>
+                  <tr>
+                    <td class="text-center">90404811-4</td>
+                    <td class="text-center">EMPRESA 2</td>
+                    <td class="text-center">NO</td>
+                    <td class="text-center">SI</td>
+                    <td class="text-center">NO</td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
               <q-file
                 v-model.trim="file.file"
-                label="Archivo de terceros *"
+                label="Archivo CSV de terceros *"
                 outlined
                 lazy-rules
                 :rules="rules.file"
@@ -85,7 +123,7 @@
                       <q-checkbox
                         class="q-mr-auto q-ml-auto"
                         size="md"
-                        label="Asociado"
+                        label="Proveedor de carbón"
                         v-model="third.associated"
                         :disable="disableInputs"
                       />
@@ -94,7 +132,7 @@
                       <q-checkbox
                         class="q-mr-auto q-ml-auto"
                         size="md"
-                        label="Contratista"
+                        label="Transportador"
                         v-model="third.contractor"
                         :disable="disableInputs"
                       />

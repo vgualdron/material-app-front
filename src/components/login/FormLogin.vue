@@ -2,7 +2,7 @@
   <div class="q-pa-md" style="max-width: 400px; margin: auto;">
     <q-card class="my-card" flat bordered>
       <q-card-section horizontal>
-        <img src="~/assets/logo.png" width="150" class="q-mr-auto q-ml-auto">
+        <img src="~/assets/logo-circle.png" width="200" class="q-mx-auto q-my-md">
       </q-card-section>
       <q-separator />
       <q-card-section horizontal>

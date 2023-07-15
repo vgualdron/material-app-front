@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md" justify-center items-center>
       <center>
-        <q-btn
+        <!-- <q-btn
           class="q-mb-sm"
           color="grey-4"
           text-color="green"
@@ -9,11 +9,11 @@
           icon-right="sync"
           label="Sincronizar"
           size="xl"
+        /> -->
+        <q-img
+          src="~/assets/logo-rectangle.png" width="300px"
         />
       </center>
-      <q-img
-        src="~/assets/flame-logo.png"
-      />
   </div>
 </template>
 <script>

@@ -3,6 +3,7 @@
     <q-dialog
       v-model="modal.show"
       persistent
+      @hide="hideModal"
     >
       <q-card style="width: 500px; max-width: 80vw;">
         <q-card-section class="row items-center q-pb-none">
@@ -97,7 +98,7 @@
                   hide-bottom-space
                   :disable="disableInputs || !user.editable"
                   :rules="rules.password"
-                  autocomplete="off"
+                  autocomplete="new-password"
                 />
               </div>
               <div class="col-12 col-md q-pt-sm-md q-pt-xs-md q-pt-md-none q-pl -md-xs">
@@ -110,7 +111,6 @@
                   hide-bottom-space
                   :disable="disableInputs || !user.editable"
                   :rules="rules.confirmPassword"
-                  autocomplete="off"
                 />
               </div>
             </div>
@@ -344,6 +344,9 @@ export default {
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
+    },
+    hideModal() {
+      this.isEditablePassword = false;
     },
   },
 };
