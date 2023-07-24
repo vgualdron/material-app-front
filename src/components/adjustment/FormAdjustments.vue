@@ -158,7 +158,7 @@
             <q-separator />
             {{adjustment.amout}}
             <div class="row text-center">
-              <q-btn label="cancelar"
+              <q-btn label="Cancelar"
                 type="reset"
                 color="primary"
                 outline class="col"

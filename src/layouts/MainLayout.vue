@@ -13,6 +13,14 @@
           <q-toolbar-title>
             {{$router.currentRoute.name}}
           </q-toolbar-title>
+          <q-btn
+            class="q-mr-xs"
+            round
+            size="sm"
+            color="green"
+            icon="sync"
+            @click="showSynchronizeConfirm=true"
+          />
           <q-btn-dropdown
             color="primary"
             class="no-shadow"
@@ -80,12 +88,170 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view/>
     </q-page-container>
     <form-change-password
       ref="formChangePasswordReference"
-      :showNotificationsRef="showNotification"
+      :titleRef="title"
     />
+    <q-dialog
+      v-model="showSynchronizeConfirm"
+      persistent
+    >
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            size="sm"
+            icon="sync"
+            color="primary"
+            text-color="white"
+          />
+          <span class="q-ml-sm">
+            Realizar sincronización?
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <div class="row text-center">
+            <q-btn label="Cancelar"
+              type="reset"
+              color="primary"
+              outline class="col"
+              @click="showSynchronizeConfirm = false"
+            />
+            <q-btn
+              label="Aceptar"
+              type="submit"
+              color="primary"
+              class="col q-ml-sm"
+              @click="synchronization"
+            />
+          </div>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!--warnings card-->
+    <div class="q-pa-md">
+      <q-dialog
+        v-model="showModalWarnigs"
+        persistent
+      >
+        <q-card style="width: 900px; max-width: 90vw;">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">Advertencias</div>
+            <q-space />
+            <q-btn
+              icon="close"
+              flat
+              round
+              dense
+              v-close-popup
+            />
+          </q-card-section>
+          <q-separator />
+          <q-card-section
+            style="max-height: 70vh"
+            class="scroll"
+          >
+            <div class="q-pa-md">
+              <q-list
+                v-if="showWarningCreatedSection"
+                bordered
+              >
+                <q-item-label
+                  header
+                  class="q-pb-xs"
+                >
+                  <strong>Registro de nuevos tiquetes:</strong> un intento de registro de nuevos tiquetes no ha cumplido alguna de las siguientes normas
+                </q-item-label>
+                <q-item>
+                  <q-item-section>
+                    <span
+                      v-for="(message, index) in synchronizationWarningResponseMessages.tc"
+                      :key="index"
+                    >
+                      {{message}}
+                    </span>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+              <q-list
+                v-if="showWarningUpdatedSection"
+                bordered
+              >
+                <q-item-label
+                  header
+                  class="q-pb-xs"
+                >
+                  <strong>Actualización de tiquetes:</strong> un intento de actualización de tiquetes que han sido cargados cargados previamente, no ha cumplido alguna de las siguientes normas
+                </q-item-label>
+                <q-item>
+                  <q-item-section>
+                    <span
+                      v-for="(message, index) in synchronizationWarningResponseMessages.tu"
+                      :key="index"
+                    >
+                      {{message}}
+                    </span>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+              <q-list
+                v-if="showWarningDeletedSettledSection"
+                bordered
+              >
+                <q-item-label
+                  header
+                  class="q-pb-xs"
+                >
+                  <strong>Eliminación de tiquetes ya liquidados:</strong> se intentó eliminar un tiquete que ya ha sido liquidado. No se requiere ninguna acción ya que el sistema ignorará esta acción.
+                </q-item-label>
+                <q-item>
+                  <q-item-section>
+                    <span
+                      v-for="(message, index) in synchronizationWarningResponseMessages.tds"
+                      :key="index"
+                    >
+                      {{message}}
+                    </span>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+              <q-list
+                v-if="showWarningUpdatedSettledSection"
+                bordered
+              >
+                <q-item-label
+                  header
+                  class="q-pb-xs"
+                >
+                  <strong>Actualización de tiquetes ya liquidados:</strong> se intentó actualizar un tiquete que ya ha sido liquidado. Se recomienda corregir el/los tiquete/s o bien eliminarlos de forma local para que esta actualización sea ignorada
+                </q-item-label>
+                <q-item>
+                  <q-item-section>
+                    <span
+                      v-for="(message, index) in synchronizationWarningResponseMessages.tus"
+                      :key="index"
+                    >
+                      {{message}}
+                    </span>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+          </q-card-section>
+          <q-card-actions vertical align="center">
+            <q-btn label="Cerrar"
+              type="reset"
+              color="primary"
+              outline class="col"
+              v-close-popup
+              @click="showModalWarnigs = false"
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </div>
   </q-layout>
 </template>
 
@@ -93,6 +259,8 @@
 import { mapState, mapActions } from 'vuex';
 import EssentialLink from 'components/common/EssentialLink.vue';
 import FormChangePassword from 'components/user/FormChangePassword.vue';
+import localDataManagementTypes from '../store/modules/localDataManagement/types';
+import synchronizationTypes from '../store/modules/synchronization/types';
 import commonTypes from '../store/modules/common/types';
 import { showNotifications } from '../helpers/showNotifications';
 import { showLoading } from '../helpers/showLoading';
@@ -109,10 +277,13 @@ export default {
       title: 'Inicio',
       showModalChangePassword: false,
       linksData: [],
+      showSynchronizeConfirm: false,
+      statusSendingData: false,
+      showModalWarnigs: false,
     };
   },
   async mounted() {
-    this.fillLinkData();
+    await this.fillLinkData();
   },
   computed: {
     ...mapState(commonTypes.PATH, [
@@ -123,6 +294,57 @@ export default {
       'name',
       'roles',
     ]),
+    ...mapState(localDataManagementTypes.PATH, {
+      localDataManagementData: 'data',
+      localDataManagementStatus: 'status',
+      localDataManagementResponseMessages: 'responseMessages',
+    }),
+    ...mapState(synchronizationTypes.PATH, {
+      synchronizationData: 'data',
+      synchronizationStatus: 'status',
+      synchronizationResponseMessages: 'responseMessages',
+      synchronizationWarningResponseMessages: 'warningResponseMessages',
+    }),
+    showWarningCreatedSection() {
+      if (
+        this.synchronizationWarningResponseMessages
+        && this.synchronizationWarningResponseMessages.tc
+        && this.synchronizationWarningResponseMessages.tc.length > 0
+      ) {
+        return true;
+      }
+      return false;
+    },
+    showWarningUpdatedSection() {
+      if (
+        this.synchronizationWarningResponseMessages
+        && this.synchronizationWarningResponseMessages.tu
+        && this.synchronizationWarningResponseMessages.tu.length > 0
+      ) {
+        return true;
+      }
+      return false;
+    },
+    showWarningUpdatedSettledSection() {
+      if (
+        this.synchronizationWarningResponseMessages
+        && this.synchronizationWarningResponseMessages.tus
+        && this.synchronizationWarningResponseMessages.tus.length > 0
+      ) {
+        return true;
+      }
+      return false;
+    },
+    showWarningDeletedSettledSection() {
+      if (
+        this.synchronizationWarningResponseMessages
+        && this.synchronizationWarningResponseMessages.tds
+        && this.synchronizationWarningResponseMessages.tds.length > 0
+      ) {
+        return true;
+      }
+      return false;
+    },
   },
   methods: {
     ...mapActions(commonTypes.PATH, {
@@ -131,6 +353,13 @@ export default {
     clickChangePassword() {
       this.showModalChangePassword = true;
     },
+    ...mapActions(localDataManagementTypes.PATH, {
+      getData: localDataManagementTypes.actions.GET_DATA,
+      setData: localDataManagementTypes.actions.SET_DATA,
+    }),
+    ...mapActions(synchronizationTypes.PATH, {
+      synchronize: synchronizationTypes.actions.SYNCHRONIZATION_SYNCHRONIZE,
+    }),
     async logout() {
       showLoading('Cerrando sesión ...', 'Por favor, espere', true);
       await this.signout();
@@ -142,7 +371,7 @@ export default {
         this.showNotification(this.responseMessages, this.statusSign, 'top-right', 5000);
       }
     },
-    fillLinkData() {
+    async fillLinkData() {
       if (this.menu) {
         this.linksData.push(
           {
@@ -166,12 +395,41 @@ export default {
         });
       }
     },
+    async synchronization() {
+      this.showSynchronizeConfirm = false;
+      await this.getData();
+      if (this.localDataManagementStatus === true) {
+        await this.synchronize(this.localDataManagementData);
+        if (this.synchronizationStatus === true) {
+          this.showNotification(this.synchronizationResponseMessages, this.synchronizationStatus, 'top-right', 5000);
+          await this.setData(this.synchronizationData);
+          if (this.localDataManagementStatus === false) {
+            this.showNotification(this.localDataManagementResponseMessages, this.localDataManagementStatus, 'top-right', 5000);
+          }
+        } else {
+          this.showNotification(this.synchronizationResponseMessages, this.synchronizationStatus, 'top-right', 5000);
+        }
+        this.showWarnings();
+      } else {
+        this.showNotification(this.localDataManagementResponseMessages, this.localDataManagementStatus, 'top-right', 5000);
+      }
+    },
     showChangePasswordForm() {
       showLoading('Preparando formulario ...', 'Por favor, espere', true);
       this.$refs.formChangePasswordReference.showModal();
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
+    },
+    showWarnings() {
+      if (
+        this.showWarningCreatedSection === true
+        || this.showWarningUpdatedSection === true
+        || this.showWarningUpdatedSettledSection === true
+        || this.showWarningDeletedSettledSection === true
+      ) {
+        this.showModalWarnigs = true;
+      }
     },
   },
 };
