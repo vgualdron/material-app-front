@@ -26,7 +26,7 @@
             class="no-shadow"
             push
             no-caps
-            label="Perfil 1.7"
+            label="Perfil 2.2"
           >
             <div class="row no-wrap q-pa-md">
               <div class="column items-center">
