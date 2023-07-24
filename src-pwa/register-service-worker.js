@@ -15,13 +15,13 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('Service worker is active.');
   },
   registered(/* registration */) {
-    // console.log('Service worker has been registered.')
+    console.log('Service worker has been registered.');
   },
   cached(/* registration */) {
     console.log('Content has been cached for offline use.');
   },
   updatefound(/* registration */) {
-    // console.log('New content is downloading.')
+    console.log('New content is downloading.');
   },
   updated(/* registration */) {
     console.log('New content is available; Refresh...');
