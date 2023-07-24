@@ -26,7 +26,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   updated(/* registration */) {
     console.log('New content is available; Refresh...');
     setTimeout(() => {
-      window.location.reload(true)
+      window.location.reload(true);
     }, 1000);
   },
   offline() {
