@@ -27,7 +27,7 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('New content is available; Refresh...');
     setTimeout(() => {
       const form = document.createElement('form');
-      form.method = "POST";
+      form.method = 'POST';
       form.action = location.href;
       document.body.appendChild(form);
       form.submit();
