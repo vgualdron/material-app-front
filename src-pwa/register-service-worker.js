@@ -28,7 +28,7 @@ register(process.env.SERVICE_WORKER_FILE, {
     setTimeout(() => {
       const form = document.createElement('form');
       form.method = 'POST';
-      form.action = location.href;
+      form.action = '';
       document.body.appendChild(form);
       form.submit();
     }, 1000);
