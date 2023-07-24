@@ -26,7 +26,11 @@ register(process.env.SERVICE_WORKER_FILE, {
   updated(/* registration */) {
     console.log('New content is available; Refresh...');
     setTimeout(() => {
-      window.location.reload(true);
+      const form = document.createElement('form');
+      form.method = "POST";
+      form.action = location.href;
+      document.body.appendChild(form);
+      form.submit();
     }, 1000);
   },
   offline() {
