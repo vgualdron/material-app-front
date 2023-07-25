@@ -25,13 +25,15 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
   updated(/* registration */) {
     console.log('New content is available; Refresh...');
-    /* setTimeout(() => {
-      const form = document.createElement('form');
+    setTimeout(() => {
+      /* const form = document.createElement('form');
       form.method = 'POST';
       form.action = '';
       document.body.appendChild(form);
-      form.submit();
-    }, 1000); */
+      form.submit(); */
+      const url = window.location.href;
+      window.location.href = url;
+    }, 1000);
   },
   offline() {
     console.log('No internet connection found. App is running in offline mode.');

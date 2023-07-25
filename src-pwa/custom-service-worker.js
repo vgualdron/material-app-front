@@ -2,7 +2,7 @@
 
 workbox.core.setCacheNameDetails({ prefijo: 'd4' })
 //Cambiar este valor cada vez antes de compilar
-const LATEST_VERSION = '2.3';
+const LATEST_VERSION = process.env.LATEST_VERSION_APP;
 self.addEventListener('activar', (event) => {
     console.log(`%c ${LATEST_VERSION} `, 'background: #ddd; color: #0000ff');
     if (caches) {

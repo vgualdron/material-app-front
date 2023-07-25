@@ -26,7 +26,7 @@
             class="no-shadow"
             push
             no-caps
-            label="Perfil 2.3"
+            label="Perfil"
           >
             <div class="row no-wrap q-pa-md">
               <div class="column items-center">
@@ -85,6 +85,9 @@
           :clickable="link.link !== $router.currentRoute.path"
         />
       </q-list>
+      <q-item-label header class="text-grey-8 text-center q-mt-md">
+        {{ versionApp }}
+      </q-item-label>
     </q-drawer>
 
     <q-page-container>
@@ -344,6 +347,9 @@ export default {
         return true;
       }
       return false;
+    },
+    versionApp() {
+      return `Version ${process.env.LATEST_VERSION_APP}`;
     },
   },
   methods: {
