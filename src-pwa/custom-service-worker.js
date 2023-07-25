@@ -3,7 +3,7 @@ import {precacheAndRoute} from 'workbox-precaching';
 
 precacheAndRoute(self.__WB_MANIFEST);
 
-workbox.core.setCacheNameDetails({ prefijo: 'd4' })
+workbox.core.setCacheNameDetails({ prefix: 'd4' })
 //Cambiar este valor cada vez antes de compilar
 const LATEST_VERSION = process.env.LATEST_VERSION_APP;
 console.log(LATEST_VERSION);
