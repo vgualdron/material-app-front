@@ -3,7 +3,7 @@
 workbox.core.setCacheNameDetails({ prefijo: 'd4' })
 //Cambiar este valor cada vez antes de compilar
 const LATEST_VERSION = process.env.LATEST_VERSION_APP;
-self.addEventListener('activar', (event) => {
+self.addEventListener('activate', (event) => {
     console.log(`%c ${LATEST_VERSION} `, 'background: #ddd; color: #0000ff');
     if (caches) {
         caches.keys().then((arr) => {
