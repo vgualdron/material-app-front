@@ -1,4 +1,7 @@
 // service-worker.js
+import {precacheAndRoute} from 'workbox-precaching';
+
+precacheAndRoute(self.__WB_MANIFEST);
 
 workbox.core.setCacheNameDetails({ prefijo: 'd4' })
 //Cambiar este valor cada vez antes de compilar
