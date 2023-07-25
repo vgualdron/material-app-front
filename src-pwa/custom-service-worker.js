@@ -1,12 +1,13 @@
 // service-worker.js
 import {precacheAndRoute} from 'workbox-precaching';
-
 precacheAndRoute(self.__WB_MANIFEST);
 
-workbox.core.setCacheNameDetails({ prefix: 'd4' })
 //Cambiar este valor cada vez antes de compilar
 const LATEST_VERSION = process.env.LATEST_VERSION_APP;
 console.log(LATEST_VERSION);
+
+workbox.core.setCacheNameDetails({ prefix: 'd4' })
+
 self.addEventListener('activate', (event) => {
     console.log(`%c ${LATEST_VERSION} `, 'background: #ddd; color: #0000ff');
     if (caches) {
