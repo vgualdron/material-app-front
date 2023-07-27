@@ -24,16 +24,16 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('New content is downloading.');
   },
   updated(/* registration */) {
-    console.log('New content is available; Refresh...');
-    setTimeout(() => {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = '';
-      document.body.appendChild(form);
-      form.submit();
-      /* const url = window.location.href;
-      window.location.href = url; */
-    }, 1000);
+    console.log('New content is available; please refresh.')
+    Notify.create({
+      message: 'Nueva versión de la app está disponible',
+      icon: 'cloud_download',
+      closeBtn: 'Actualizar',
+      timeout: 10000,
+      onDismiss () {
+        location.reload(true)
+      }
+    })
   },
   offline() {
     console.log('No internet connection found. App is running in offline mode.');
