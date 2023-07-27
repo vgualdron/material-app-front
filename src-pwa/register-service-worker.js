@@ -27,7 +27,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   updated(/* registration */) {
     console.log('New content is available; please refresh.');
     Notify.create({
-      message: 'Nueva version está disponible, se actualizará automaticamente en un momento.',
+      message: `Hay una versión más reciente que la ${process.env.LATEST_VERSION_APP}, se actualizará automaticamente en un momento`,
       icon: 'cloud_download',
       color: 'green',
       timeout: 5000,
