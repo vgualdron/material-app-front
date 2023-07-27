@@ -94,6 +94,9 @@ export default {
     validateLogin() {
       if (localStorage.getItem('tokenMC')) {
         this.$router.push('/home');
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       }
     },
   },
