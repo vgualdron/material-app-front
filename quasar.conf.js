@@ -124,9 +124,9 @@ module.exports = function (ctx) {
 
     // https://v1.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxPluginMode: 'InjectManifest', // 'GenerateSW' or 'InjectManifest'
+      workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {
-        swSrc: './src-pwa/custom-service-worker.js',
+        skipWaiting: true,
       }, // only for GenerateSW
       manifest: {
         name: 'Control de Materiales',
