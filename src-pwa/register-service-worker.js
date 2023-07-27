@@ -29,8 +29,20 @@ register(process.env.SERVICE_WORKER_FILE, {
     Notify.create({
       message: 'Nueva versión de la app está disponible',
       icon: 'cloud_download',
+      color: 'green',
       closeBtn: 'Actualizar',
       timeout: 10000,
+      actions: [
+        {
+          size: 'xs',
+          bold: true,
+          round: true,
+          icon: 'close',
+          class: 'bg-white',
+          color: 'gray-1',
+          handler: () => undefined,
+        },
+      ],
       onDismiss() {
         window.location.reload(true);
       },
