@@ -31,9 +31,9 @@ register(process.env.SERVICE_WORKER_FILE, {
       closeBtn: 'Actualizar',
       timeout: 10000,
       onDismiss () {
-        location.reload(true)
-      }
-    })
+        location.reload(true);
+      },
+    });
   },
   offline() {
     console.log('No internet connection found. App is running in offline mode.');
