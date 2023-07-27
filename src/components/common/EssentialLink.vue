@@ -51,9 +51,9 @@ export default {
   methods: {
     clickOption(link, title) {
       this.$router.push(link);
+      this.$emit('changeMenu', title);
       /* setTimeout(() => {
         window.location.reload();
-        this.$emit('changeMenu', title);
       }, 500); */
     },
   },
