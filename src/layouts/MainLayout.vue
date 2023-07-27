@@ -26,7 +26,7 @@
             class="no-shadow"
             push
             no-caps
-            label="Perfil"
+            label="Perfil -_-"
           >
             <div class="row no-wrap q-pa-md">
               <div class="column items-center">
