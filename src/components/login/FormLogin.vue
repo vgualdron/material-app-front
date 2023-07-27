@@ -85,6 +85,9 @@ export default {
       } else {
         this.$q.loading.hide();
         this.$router.push('/home');
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       }
     },
     onReset() {
@@ -94,9 +97,6 @@ export default {
     validateLogin() {
       if (localStorage.getItem('tokenMC')) {
         this.$router.push('/home');
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
       }
     },
   },
