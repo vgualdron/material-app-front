@@ -32,7 +32,7 @@ register(process.env.SERVICE_WORKER_FILE, {
       closeBtn: 'Actualizar',
       timeout: 10000,
       onDismiss() {
-        location.reload(true);
+        window.location.reload(true);
       },
     });
   },
