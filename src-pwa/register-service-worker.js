@@ -33,6 +33,7 @@ register(process.env.SERVICE_WORKER_FILE, {
       timeout: 5000,
       textColor: 'white',
       classes: 'glossy',
+      progress: true,
       onDismiss() {
         window.location.reload(true);
       },
