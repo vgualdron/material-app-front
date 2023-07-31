@@ -313,7 +313,7 @@
                   option-label="name"
                   option-value="id"
                   @filter="filterConveyorCompany"
-                  lazy-rules
+                  reactive-rules
                   :rules="rules.conveyorCompany"
                   hide-bottom-space
                   map-options

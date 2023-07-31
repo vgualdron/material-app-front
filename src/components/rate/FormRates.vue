@@ -290,7 +290,7 @@
               :options="optionConveyorCompany"
               option-label="name"
               option-value="id"
-              lazy-rules
+              reactive-rules
               :rules="rules.conveyorCompany"
               @filter="filterConveyorCompany"
               hide-bottom-space
