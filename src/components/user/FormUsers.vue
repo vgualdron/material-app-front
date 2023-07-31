@@ -122,6 +122,15 @@
               :disable="disableInputs || !user.editable"
               label="El usuario se encuentra activo"
             />
+            <q-checkbox
+              class="q-mt-none"
+              left-label
+              v-model="user.changeYard"
+              text-h6
+              color="green"
+              :disable="disableInputs || !user.editable"
+              label="Puede cambiar su patio predeterminado en tiquetes"
+            />
             <q-separator />
             <div class="bg-gray-9 q-mt-xs">
               <div
@@ -197,6 +206,7 @@ export default {
         password: '',
         confirmPassword: '',
         roles: [],
+        changeYard: false,
       },
       optionYards: [],
       rules: {
@@ -299,6 +309,7 @@ export default {
         this.user.phone = '';
         this.user.yard = null;
         this.user.active = true;
+        this.user.changeYard = false;
         this.user.password = '';
         this.user.confirmPassword = '';
         this.user.roles = [];
@@ -319,6 +330,7 @@ export default {
         this.user.yard = id !== null ? user.yard : null;
         this.user.active = id !== null ? (user.active === 1) : true;
         this.user.editable = id !== null ? (user.editable === 1) : true;
+        this.user.changeYard = id !== null ? (user.changeYard === 1) : false;
         this.user.password = '';
         this.user.confirmPassword = '';
         this.user.roles = id !== null ? user.roles : [];

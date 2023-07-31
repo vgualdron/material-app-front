@@ -151,7 +151,7 @@
                   clearable
                   input-debounce="0"
                   label="Patio Despacho *"
-                  :disable="disableInputs"
+                  :disable="disableInputs || disableOriginYard"
                   :options="optionOriginYards"
                   option-label="name"
                   option-value="id"
@@ -183,7 +183,7 @@
                   clearable
                   input-debounce="0"
                   label="Patio Recepción *"
-                  :disable="disableInputs"
+                  :disable="disableInputs  || disableDestinyYard"
                   :options="optionDestinyYards"
                   option-label="name"
                   option-value="id"
@@ -307,7 +307,7 @@
                   use-input
                   clearable
                   input-debounce="0"
-                  label="Empresa Transportadora *"
+                  :label="`Empresa Transportadora ${localTicket.type === 'D' || localTicket.type === 'R' ? '*' : ''}`"
                   :disable="disableInputs"
                   :options="optionConveyorCompany"
                   option-label="name"
@@ -616,7 +616,7 @@ export default {
           (val) => (!!val) || 'El proveedor es requerido',
         ],
         conveyorCompany: [
-          (val) => (!!val) || 'La empresa transportadora es requerida',
+          (val) => (this.localTicket.type === 'C' || this.localTicket.type === 'V' || (!!val)) || 'La empresa transportadora es requerida',
         ],
         driverName: [
           (val) => (!!val) || 'El nombre del conductor es requerido',
@@ -736,6 +736,22 @@ export default {
     },
     displayRoundTrip() {
       return this.localTicket.type === 'D' || this.localTicket.type === 'R';
+    },
+    disableOriginYard() {
+      if (this.localTicket.type === 'D' || this.localTicket.type === 'V') {
+        const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : 0;
+        const changeYard = userYardData && typeof userYardData[0] !== 'undefined' && userYardData[0].trim() !== '' ? Number(userYardData[0]) : 0;
+        return changeYard === 0;
+      }
+      return false;
+    },
+    disableDestinyYard() {
+      if (this.localTicket.type === 'R' || this.localTicket.type === 'C') {
+        const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : 0;
+        const changeYard = userYardData && typeof userYardData[0] !== 'undefined' && userYardData[0].trim() !== '' ? Number(userYardData[0]) : 0;
+        return changeYard === 0;
+      }
+      return false;
     },
   },
   methods: {
@@ -870,14 +886,18 @@ export default {
       this.localTicket.ashPercentage = formatDecimal(this.localTicket.ashPercentage, blur);
     },
     resetOnTypeChange() {
-      this.localTicket.originYard = null;
-      this.localTicket.destinyYard = null;
+      const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : null;
+      const userYard = userYardData && typeof userYardData[1] !== 'undefined' && userYardData[1].trim() !== '' ? Number(userYardData[1]) : null;
+      this.localTicket.originYard = this.localTicket.type === 'D' || this.localTicket.type === 'V' ? userYard : null;
+      this.localTicket.destinyYard = this.localTicket.type === 'R' || this.localTicket.type === 'C' ? userYard : null;
     },
     resetForm() {
+      const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : null;
+      const userYard = userYardData && typeof userYardData[1] !== 'undefined' && userYardData[1].trim() !== '' ? Number(userYardData[1]) : null;
       this.localTicket.id = null;
       this.localTicket.type = 'D';
       this.localTicket.user = null;
-      this.localTicket.originYard = null;
+      this.localTicket.originYard = userYard;
       this.localTicket.destinyYard = null;
       this.localTicket.supplier = null;
       this.localTicket.customer = null;

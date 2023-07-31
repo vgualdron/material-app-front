@@ -384,6 +384,7 @@ const listLocalThirds = async (thirds) => new Promise((resolve, reject) => {
           t.active as active
         FROM thirds AS t
         WHERE t.active = ? ${sqlOrStructure}
+        ORDER BY name
       `, parameterData);
     }).then((results) => {
       let response = null;

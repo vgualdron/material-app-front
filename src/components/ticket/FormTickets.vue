@@ -307,7 +307,7 @@
                   use-input
                   clearable
                   input-debounce="0"
-                  label="Empresa Transportadora *"
+                  :label="`Empresa Transportadora ${ticket.type === 'D' || ticket.type === 'R' ? '*' : ''}`"
                   :disable="disableInputs"
                   :options="optionConveyorCompany"
                   option-label="name"
@@ -617,7 +617,7 @@ export default {
           (val) => (!!val) || 'El proveedor es requerido',
         ],
         conveyorCompany: [
-          (val) => (!!val) || 'La empresa transportadora es requerida',
+          (val) => (this.ticket.type === 'C' || this.ticket.type === 'V' || (!!val)) || 'La empresa transportadora es requerida',
         ],
         driverName: [
           (val) => (!!val) || 'El nombre del conductor es requerido',
@@ -877,14 +877,18 @@ export default {
       this.ticket.ashPercentage = formatDecimal(this.ticket.ashPercentage, blur);
     },
     resetOnTypeChange() {
-      this.ticket.originYard = null;
-      this.ticket.destinyYard = null;
+      const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : null;
+      const userYard = userYardData && typeof userYardData[1] !== 'undefined' && userYardData[1].trim() !== '' ? Number(userYardData[1]) : null;
+      this.ticket.originYard = this.ticket.type === 'D' || this.ticket.type === 'V' ? userYard : null;
+      this.ticket.destinyYard = this.ticket.type === 'R' || this.ticket.type === 'C' ? userYard : null;
     },
     resetForm() {
+      const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : null;
+      const userYard = userYardData && typeof userYardData[1] !== 'undefined' && userYardData[1].trim() !== '' ? Number(userYardData[1]) : null;
       this.ticket.id = null;
       this.ticket.type = 'D';
       this.ticket.user = null;
-      this.ticket.originYard = null;
+      this.ticket.originYard = userYard;
       this.ticket.destinyYard = null;
       this.ticket.supplier = null;
       this.ticket.customer = null;

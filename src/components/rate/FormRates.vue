@@ -180,7 +180,7 @@
                       class="cursor-pointer"
                     >
                       <q-popup-proxy
-                        ref="qDateProxy"
+                        ref="qStartDateProxy"
                         cover
                         transition-show="scale"
                         transition-hide="scale"
@@ -189,7 +189,7 @@
                           v-model="rate.startDate"
                           mask="DD/MM/YYYY"
                           :options="date =>  rate.finalDate ? date <= rate.finalDate.split('/').reverse().join('/') : true"
-                          @input="$refs.qDateProxy.hide()"
+                          @input="$refs.qStartDateProxy.hide()"
                         >
                           <div class="row items-center justify-end">
                             <q-btn
@@ -224,6 +224,7 @@
                       class="cursor-pointer"
                     >
                       <q-popup-proxy
+                        ref="qFinalDateProxy"
                         cover
                         transition-show="scale"
                         transition-hide="scale"
@@ -232,6 +233,7 @@
                           v-model="rate.finalDate"
                           mask="DD/MM/YYYY"
                           :options="date =>  rate.startDate ? date >= rate.startDate.split('/').reverse().join('/') : true"
+                          @input="$refs.qFinalDateProxy.hide()"
                         >
                           <div class="row items-center justify-end">
                             <q-btn

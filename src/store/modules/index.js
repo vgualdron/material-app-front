@@ -13,6 +13,7 @@ import localDataManagement, { name as localDataManagementName } from './localDat
 import synchronization, { name as synchronizationName } from './synchronization';
 import localTicket, { name as localTicketName } from './localTicket';
 import ticket, { name as ticketName } from './ticket';
+import materialSettlement, { name as materialSettlementName } from './materialSettlement';
 
 export default {
   [homeName]: home,
@@ -30,4 +31,5 @@ export default {
   [synchronizationName]: synchronization,
   [localTicketName]: localTicket,
   [ticketName]: ticket,
+  [materialSettlementName]: materialSettlement,
 };

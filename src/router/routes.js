@@ -83,6 +83,13 @@ const routes = [
       { path: '', name: 'Tiquetes', component: () => import('src/pages/Ticket.vue') },
     ],
   },
+  {
+    path: '/materialSettlement',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Liquidación (Material)', component: () => import('src/pages/MaterialSettlement.vue') },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
