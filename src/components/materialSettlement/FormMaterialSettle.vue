@@ -31,232 +31,248 @@
               unchecked-icon="visibility_off"
             />
           </div>
-          <q-form
-            @submit="onSubmit"
-            class="q-gutter-md"
-          >
-            <div class="row">
-              <div
-                class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
-              >
-                <q-select
-                  outlined
-                  label="Tipo"
-                  v-model="filter.type"
-                  :options="types"
-                  hide-bottom-space
-                  lazy-rules
-                  :rules="rules.type"
-                  map-options
-                  emit-value
-                />
-              </div>
-              <div
-                class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
-              >
-                <q-input
-                  outlined
-                  label="Fecha Inicio"
-                  :disable="disableInputs"
-                  v-model="filter.startDate"
-                  :rules="rules.startDate"
-                  hide-bottom-space
-                  clearable
-                  mask="##/##/####"
+          <q-slide-transition>
+            <q-form
+              v-show="showFilter"
+              @submit="onFilterSubmit"
+              class="q-gutter-md"
+            >
+              <div class="row">
+                <div
+                  class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
                 >
-                  <template v-slot:append>
-                    <q-icon
-                      name="event"
-                      class="cursor-pointer"
-                    >
-                      <q-popup-proxy
-                        ref="qStartDateProxy"
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
+                  <q-select
+                    outlined
+                    label="Tipo"
+                    v-model="filter.type"
+                    :options="types"
+                    hide-bottom-space
+                    lazy-rules
+                    :rules="filterRules.type"
+                    map-options
+                    emit-value
+                  />
+                </div>
+                <div
+                  class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
+                >
+                  <q-input
+                    outlined
+                    label="Fecha Inicio"
+                    :disable="disableInputs"
+                    v-model="filter.startDate"
+                    lazy-rules
+                    :rules="filterRules.startDate"
+                    hide-bottom-space
+                    clearable
+                    mask="##/##/####"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        name="event"
+                        class="cursor-pointer"
                       >
-                        <q-date
-                          v-model="filter.startDate"
-                          mask="DD/MM/YYYY"
-                          :options="date =>  filter.finalDate ? date <= filter.finalDate.split('/').reverse().join('/') : true"
-                          @input="$refs.qStartDateProxy.hide()"
+                        <q-popup-proxy
+                          ref="qStartDateProxy"
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
                         >
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-              <div
-                class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
-              >
-                <q-input
-                  outlined
-                  label="Fecha Fin"
-                  :disable="disableInputs"
-                  v-model="filter.finalDate"
-                  :rules="rules.finalDate"
-                  hide-bottom-space
-                  clearable
-                  mask="##/##/####"
+                          <q-date
+                            v-model="filter.startDate"
+                            mask="DD/MM/YYYY"
+                            :options="date =>  filter.finalDate ? date <= filter.finalDate.split('/').reverse().join('/') : true"
+                            @input="$refs.qStartDateProxy.hide()"
+                          >
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
+                <div
+                  class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
                 >
-                  <template v-slot:append>
-                    <q-icon
-                      name="event"
-                      class="cursor-pointer"
-                    >
-                      <q-popup-proxy
-                        ref="qFinalDateProxy"
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
+                  <q-input
+                    outlined
+                    label="Fecha Fin"
+                    :disable="disableInputs"
+                    v-model="filter.finalDate"
+                    lazy-rules
+                    :rules="filterRules.finalDate"
+                    hide-bottom-space
+                    clearable
+                    mask="##/##/####"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        name="event"
+                        class="cursor-pointer"
                       >
-                        <q-date
-                          v-model="filter.finalDate"
-                          mask="DD/MM/YYYY"
-                          :options="date =>  filter.startDate ? date >= filter.startDate.split('/').reverse().join('/') : true"
-                          @input="$refs.qFinalDateProxy.hide()"
+                        <q-popup-proxy
+                          ref="qFinalDateProxy"
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
                         >
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
+                          <q-date
+                            v-model="filter.finalDate"
+                            mask="DD/MM/YYYY"
+                            :options="date =>  filter.startDate ? date >= filter.startDate.split('/').reverse().join('/') : true"
+                            @input="$refs.qFinalDateProxy.hide()"
+                          >
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
               </div>
-            </div>
-            <div class="row q-mt-xs">
-              <div
-                class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
-              >
-                <q-select
-                  v-if="filter.type === 'C'"
-                  outlined
-                  v-model="filter.supplier"
-                  use-input
-                  clearable
-                  input-debounce="0"
-                  label="Proveedor"
-                  :disable="disableInputs"
-                  :options="optionSupplier"
-                  option-label="name"
-                  option-value="id"
-                  lazy-rules
-                  :rules="rules.supplier"
-                  @filter="filterSupplier"
-                  hide-bottom-space
-                  map-options
-                  emit-value
+              <div class="row q-mt-xs">
+                <div
+                  class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
                 >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">
-                        No hay coincidencias
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
-                <q-select
-                  v-if="filter.type === 'V'"
-                  outlined
-                  v-model="filter.customer"
-                  use-input
-                  clearable
-                  input-debounce="0"
-                  label="Cliente"
-                  :disable="disableInputs"
-                  :options="optionCustomer"
-                  option-label="name"
-                  option-value="id"
-                  lazy-rules
-                  :rules="rules.customer"
-                  @filter="filterCustomer"
-                  hide-bottom-space
-                  map-options
-                  emit-value
+                  <q-select
+                    v-if="filter.type === 'C'"
+                    outlined
+                    v-model="filter.supplier"
+                    use-input
+                    clearable
+                    input-debounce="0"
+                    label="Proveedor"
+                    :disable="disableInputs"
+                    :options="optionSupplier"
+                    option-label="name"
+                    option-value="id"
+                    reactive-rules
+                    :rules="filterRules.supplier"
+                    @filter="filterSupplier"
+                    hide-bottom-space
+                    map-options
+                    emit-value
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No hay coincidencias
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                  <q-select
+                    v-if="filter.type === 'V'"
+                    outlined
+                    v-model="filter.customer"
+                    use-input
+                    clearable
+                    input-debounce="0"
+                    label="Cliente"
+                    :disable="disableInputs"
+                    :options="optionCustomer"
+                    option-label="name"
+                    option-value="id"
+                    reactive-rules
+                    :rules="filterRules.customer"
+                    @filter="filterCustomer"
+                    hide-bottom-space
+                    map-options
+                    emit-value
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No hay coincidencias
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div
+                  class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
                 >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">
-                        No hay coincidencias
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
+                  <q-select
+                    outlined
+                    v-model="filter.material"
+                    use-input
+                    clearable
+                    input-debounce="0"
+                    label="Material"
+                    :disable="disableInputs"
+                    :options="optionMaterial"
+                    option-label="name"
+                    option-value="id"
+                    reactive-rules
+                    :rules="filterRules.material"
+                    @filter="filterMaterial"
+                    hide-bottom-space
+                    map-options
+                    emit-value
+                    @input="resetMaterialInputs('MA')"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No hay coincidencias
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div
+                  class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none vertical-middle"
+                >
+                  <div>
+                    <span class="label text-grey-7">medición: </span>
+                    <q-radio
+                      @input="resetMaterialInputs('MT')"
+                      class="q-mt-none"
+                      v-model="filter.materialType"
+                      val="T"
+                      label="Tonelada"
+                      reactive-rules
+                      :rules="filterRules.materialType"
+                      hide-bottom-space
+                    />
+                    <q-radio
+                      @input="resetMaterialInputs('MT')"
+                      class="q-mt-none"
+                      v-model="filter.materialType"
+                      val="U"
+                      label="Viaje"
+                      reactive-rules
+                      :rules="filterRules.materialType"
+                      hide-bottom-space
+                    />
+                  </div>
+                </div>
               </div>
-              <div
-                class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
-              >
-                <q-select
-                  outlined
-                  v-model="filter.material"
-                  use-input
-                  clearable
-                  input-debounce="0"
-                  label="Material *"
-                  :disable="disableInputs"
-                  :options="optionMaterial"
-                  option-label="name"
-                  option-value="id"
-                  lazy-rules
-                  :rules="rules.material"
-                  @filter="filterMaterial"
-                  hide-bottom-space
-                  map-options
-                  emit-value
-                >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">
-                        No hay coincidencias
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
-              </div>
-              <div
-                class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none vertical-middle"
-              >
-                <span class="label text-grey-7">Medida: </span>
-                <q-radio
-                  class="q-mt-none"
-                  v-model="filter.materialType"
-                  val="T"
-                  label="Tonelada"
+              <div class="row text-center">
+                <q-btn
+                  label="Buscar"
+                  type="submit"
+                  color="primary"
+                  class="col q-ml-sm"
                 />
-                <q-radio
-                  class="q-mt-none"
-                  v-model="filter.materialType"
-                  val="U"
-                  label="Viaje"
-                />
               </div>
-            </div>
-            <div class="row text-center">
-              <q-btn
-                label="Buscar"
-                type="submit"
-                color="primary"
-                class="col q-ml-sm"
-              />
-            </div>
-          </q-form>
-          <q-separator class = "q-mt-sm"/>
+            </q-form>
+            <q-separator class = "q-mt-sm"/>
+          </q-slide-transition>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -266,7 +282,7 @@
 import { mapState, mapActions } from 'vuex';
 import thirdTypes from '../../store/modules/third/types';
 import materialTypes from '../../store/modules/material/types';
-import zoneTypes from '../../store/modules/zone/types';
+import materialSettlementTypes from '../../store/modules/materialSettlement/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
 import { removeAccents } from '../../helpers/removeAccents';
@@ -294,7 +310,6 @@ export default {
       optionCustomer: [],
       optionSupplier: [],
       optionMaterial: [],
-      materialType: null,
       filter: {
         type: 'C',
         startDate: null,
@@ -309,16 +324,27 @@ export default {
         code: '',
         name: '',
       },
-      rules: {
-        code: [
-          (val) => (!!val) || 'El código es requerido',
-          (val) => (val.length >= 2) || 'El código debe tener un mínimo de 2 caracteres',
-          (val) => (val.length <= 10) || 'El código debe tener un máximo de 10 caracteres',
+      filterRules: {
+        type: [
+          (val) => (!!val) || 'El tipo es requerido',
         ],
-        name: [
-          (val) => (!!val) || 'El nombre es requerido',
-          (val) => (val.length >= 4) || 'El nombre debe tener un mínimo de 4 caracteres',
-          (val) => (val.length <= 30) || 'El nombre debe tener un máximo de 30 caracteres',
+        startDate: [
+          (val) => (!!val) || 'La fecha de inicio es requerida',
+        ],
+        finalDate: [
+          (val) => (!!val) || 'La fecha final es requerida',
+        ],
+        supplier: [
+          (val) => (!!val) || 'El proveedor es requerido',
+        ],
+        customer: [
+          (val) => (!!val) || 'El cliente es requerido',
+        ],
+        materialType: [
+          (val) => (this.filter.material !== null || (!!val)) || 'Debe seleccionar un tipo de medición o un material',
+        ],
+        material: [
+          (val) => (this.filter.materialType !== null || (!!val)) || 'Debe seleccionar un tipo de medición o un material',
         ],
       },
     };
@@ -337,7 +363,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(zoneTypes.PATH, [
+    ...mapState(materialSettlementTypes.PATH, [
       'status',
       'responseMessages',
     ]),
@@ -356,10 +382,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(zoneTypes.PATH, {
-      saveZone: zoneTypes.actions.SAVE_ZONE,
-      updateZone: zoneTypes.actions.UPDATE_ZONE,
-      deleteZone: zoneTypes.actions.DELETE_ZONE,
+    ...mapActions(materialSettlementTypes.PATH, {
+      getTicketsToSettle: materialSettlementTypes.actions.GET_TICKETS_TO_SETTLE,
+      /* updateZone: materialSettlementTypes.actions.UPDATE_ZONE,
+      deleteZone: materialSettlementTypes.actions.DELETE_ZONE, */
     }),
     ...mapActions(thirdTypes.PATH, {
       listThirds: thirdTypes.actions.LIST_THIRDS,
@@ -367,36 +393,34 @@ export default {
     ...mapActions(materialTypes.PATH, {
       listMaterials: materialTypes.actions.LIST_MATERIALS,
     }),
-    async onSubmit() {
-      if (this.modal.type === 'C') {
-        showLoading('Guardando Zona ...', 'Por favor, espere', true);
-        await this.saveZone(this.zone);
-      } else if (this.modal.type === 'E') {
-        showLoading('Actualizando Zona ...', 'Por favor, espere', true);
-        await this.updateZone(this.zone);
-      } else if (this.modal.type === 'D') {
-        showLoading('Eliminando Zona ...', 'Por favor, espere', true);
-        await this.deleteZone(this.zone.id);
-      }
-      if (this.status === true) {
-        this.showNotificationsRef(this.responseMessages, this.status, 'top-right', 5000);
-        this.$q.loading.hide();
-        this.zone.id = null;
-        this.zone.code = '';
-        this.zone.name = '';
-        this.listZonesMountedRef();
-        this.modal.show = false;
-      } else {
-        this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
-        this.$q.loading.hide();
-      }
+    async onFilterSubmit() {
+      showLoading('Consultando tiquetes ...', 'Por favor, espere', true);
+
+      this.$q.loading.hide();
     },
     async showModal() {
       await Promise.all([
         this.listThirds({ displayAll: 0, type: '%20', third: 0 }),
         this.listMaterials({ displayAll: 0, id: 0 }),
       ]);
-      this.modal.show = true;
+      if (this.thirdStatus === true && this.materialStatus === true) {
+        this.filter.type = 'C';
+        this.filter.startDate = null;
+        this.filter.finalDate = null;
+        this.filter.supplier = null;
+        this.filter.customer = null;
+        this.filter.material = null;
+        this.filter.materialType = null;
+        this.showFilter = true;
+        this.modal.show = true;
+      } else {
+        if (this.thirdStatus === false) {
+          this.showNotificationsRef(this.thirdResponseMessages, this.thirdStatus, 'top-right', 5000);
+        }
+        if (this.materialStatus === false) {
+          this.showNotificationsRef(this.materialResponseMessages, this.materialStatus, 'top-right', 5000);
+        }
+      }
       this.$q.loading.hide();
     },
     filterSupplier(val, update) {
@@ -416,6 +440,13 @@ export default {
         const needle = val ? removeAccents(val.trim().toLowerCase()) : '';
         this.optionMaterial = this.materials.filter((option) => (removeAccents(option.name).toLowerCase().indexOf(needle) > -1 && option.active === 1));
       });
+    },
+    resetMaterialInputs(type) {
+      if (type === 'MA') {
+        this.filter.materialType = null;
+      } else {
+        this.filter.material = null;
+      }
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);

@@ -80,7 +80,7 @@ const routes = [
     path: '/ticket',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'Tiquetes', component: () => import('src/pages/Ticket.vue') },
+      { path: '', name: 'Administración de Tiquetes (Solo Administradores)', component: () => import('src/pages/Ticket.vue') },
     ],
   },
   {

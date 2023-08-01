@@ -1,4 +1,13 @@
 const formatDecimal = (value, blur) => {
+  if (value === '' || value === null) {
+    value = '0';
+  } else {
+    value = value.toString().replaceAll(',', '');
+    value = value.replace(/\.+/g, '.');
+    const arrayValue = value.split('.');
+    const rightValue = arrayValue[1] ? `.${arrayValue[1]}` : '';
+    value = `${parseFloat(arrayValue[0])}${rightValue}`;
+  }
   let returnValue = '';
   if (value === '.' || value === '0.' || value === '0') {
     returnValue = '0.';
