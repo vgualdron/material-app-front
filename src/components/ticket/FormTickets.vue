@@ -73,7 +73,7 @@
                           @input="$refs.qDateProxy.hide()"
                         >
                           <div class="row items-center justify-end">
-                            <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                            <q-btn v-close-popup label="Cerrar" color="primary" flat></q-btn>
                           </div>
                         </q-date>
                       </q-popup-proxy>

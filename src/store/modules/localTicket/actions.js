@@ -8,7 +8,6 @@ export default {
       commit(types.mutations.SET_STATUS, true);
       commit(types.mutations.SET_LOCAL_TICKETS, response.data.data);
     } catch (error) {
-      console.log(error.response.data.message);
       commit(types.mutations.SET_STATUS, false);
       commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
     }

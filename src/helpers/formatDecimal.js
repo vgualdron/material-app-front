@@ -9,7 +9,7 @@ const formatDecimal = (value, blur) => {
     value = `${parseFloat(arrayValue[0])}${rightValue}`;
   }
   let returnValue = '';
-  if (value === '.' || value === '0.' || value === '0') {
+  if (value === '.' || value === '0.') {
     returnValue = '0.';
   } else {
     value = value === null || value.toString().trim() === '' || value.toString().trim() === '-' ? 0 : value;

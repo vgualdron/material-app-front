@@ -166,7 +166,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import materialSettlementTypes from '../../store/modules/materialSettlement/types';
+import freightSettlementTypes from '../../store/modules/freightSettlement/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
 import { formatDateToSave } from '../../helpers/formatDateToSave';
@@ -206,10 +206,10 @@ export default {
   },
   props: [
     'showNotificationsRef',
-    'listMaterialSettlementsMountedRef',
+    'listFreightSettlementsMountedRef',
   ],
   computed: {
-    ...mapState(materialSettlementTypes.PATH, [
+    ...mapState(freightSettlementTypes.PATH, [
       'status',
       'responseMessages',
     ]),
@@ -218,8 +218,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions(materialSettlementTypes.PATH, {
-      addInformation: materialSettlementTypes.actions.ADD_SETTLEMENT_INFORMATION,
+    ...mapActions(freightSettlementTypes.PATH, {
+      addInformation: freightSettlementTypes.actions.ADD_SETTLEMENT_INFORMATION,
     }),
     async onSubmit() {
       showLoading('Guardando Información ...', 'Por favor, espere', true);
@@ -230,7 +230,7 @@ export default {
         this.settlement.invoice = null;
         this.settlement.invoiceDate = '';
         this.settlement.internalDocument = '';
-        this.listMaterialSettlementsMountedRef();
+        this.listFreightSettlementsMountedRef();
         this.modal.show = false;
       } else {
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);

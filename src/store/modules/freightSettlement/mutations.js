@@ -1,10 +1,10 @@
 import types from './types';
 
 export default {
-  [types.mutations.SET_MATERIAL_SETTLEMENTS](state, payload) {
+  [types.mutations.SET_FREIGHT_SETTLEMENTS](state, payload) {
     state.settlements = payload;
   },
-  [types.mutations.SET_MATERIAL_SETTLEMENT](state, payload) {
+  [types.mutations.SET_FREIGHT_SETTLEMENT](state, payload) {
     state.settlement = payload;
   },
   [types.mutations.SET_SETTLEMENT_TO_PRINT](state, payload) {

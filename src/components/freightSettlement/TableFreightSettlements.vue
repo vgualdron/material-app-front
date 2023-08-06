@@ -119,23 +119,23 @@
         </div>
       </template>
     </q-table>
-    <form-material-settlements
+    <form-freight-settlements
       ref="formMaterialSettlementReference"
       :showNotificationsRef="showNotification"
-      :listMaterialSettlementsMountedRef="listMaterialSettlementsMounted"
+      :listFreightSettlementsMountedRef="listFreightSettlementsMounted"
     />
-    <form-material-settle
+    <form-freight-settle
       ref="formMaterialSettleReference"
       :showNotificationsRef="showNotification"
-      :listMaterialSettlementsMountedRef="listMaterialSettlementsMounted"
+      :listFreightSettlementsMountedRef="listFreightSettlementsMounted"
     />
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import FormMaterialSettlements from 'components/materialSettlement/FormMaterialSettlements.vue';
-import FormMaterialSettle from 'components/materialSettlement/FormMaterialSettle.vue';
-import materialSettlementTypes from '../../store/modules/materialSettlement/types';
+import FormFreightSettlements from 'components/freightSettlement/FormFreightSettlements.vue';
+import FormFreightSettle from 'components/freightSettlement/FormFreightSettle.vue';
+import freightSettlementTypes from '../../store/modules/freightSettlement/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
 import { havePermission } from '../../helpers/havePermission';
@@ -143,8 +143,8 @@ import { havePermission } from '../../helpers/havePermission';
 export default {
   data() {
     return {
-      route: '/materialSettlement',
-      name: 'Liquidación (Material)',
+      route: '/freightSettlement',
+      name: 'Liquidación (Flete)',
       columns: [
         {
           name: 'consecutive',
@@ -183,14 +183,6 @@ export default {
           align: 'left',
           label: 'Retención',
           field: 'retentions',
-          sortable: true,
-          visible: true,
-        },
-        {
-          name: 'royalties',
-          align: 'left',
-          label: 'Regalías',
-          field: 'royalties',
           sortable: true,
           visible: true,
         },
@@ -236,7 +228,7 @@ export default {
     this.validateLogin();
   },
   computed: {
-    ...mapState(materialSettlementTypes.PATH, [
+    ...mapState(freightSettlementTypes.PATH, [
       'settlements',
       'responseMessages',
       'status',
@@ -264,15 +256,15 @@ export default {
     },
   },
   methods: {
-    ...mapActions(materialSettlementTypes.PATH, {
-      listMaterialSettlements: materialSettlementTypes.actions.LIST_MATERIAL_SETTLEMENTS,
-      printSettlement: materialSettlementTypes.actions.PRINT_SETTLEMENT,
-      generatePrintDocument: materialSettlementTypes.actions.GENERATE_PRINT_DOCUMENT,
-      getSettlement: materialSettlementTypes.actions.GET_MATERIAL_SETTLEMENT,
+    ...mapActions(freightSettlementTypes.PATH, {
+      listFreightSettlements: freightSettlementTypes.actions.LIST_FREIGHT_SETTLEMENTS,
+      printSettlement: freightSettlementTypes.actions.PRINT_SETTLEMENT,
+      generatePrintDocument: freightSettlementTypes.actions.GENERATE_PRINT_DOCUMENT,
+      getSettlement: freightSettlementTypes.actions.GET_FREIGHT_SETTLEMENT,
     }),
-    async listMaterialSettlementsMounted() {
+    async listFreightSettlementsMounted() {
       showLoading('Cargando Liquidaciones ...', 'Por favor, espere', true);
-      await this.listMaterialSettlements();
+      await this.listFreightSettlements();
       if (this.status === true) {
         this.data = this.settlements.map((element) => ({
           ...element,
@@ -313,15 +305,15 @@ export default {
     },
     validateLogin() {
       if (localStorage.getItem('tokenMC')) {
-        this.listMaterialSettlementsMounted();
+        this.listFreightSettlementsMounted();
       } else {
         this.$router.push('/');
       }
     },
   },
   components: {
-    FormMaterialSettlements,
-    FormMaterialSettle,
+    FormFreightSettlements,
+    FormFreightSettle,
   },
 };
 </script>

@@ -37,7 +37,7 @@
             <q-separator />
             <div class="bg-gray-9 q-mt-xs">
               <div class="col q-mr-auto q-ml-auto text-center text-weight-bold">
-                <h7>Permisos</h7>
+                <h6 class="q-ma-none"> Permisos </h6>
               </div>
               <q-list
                 bordered

@@ -14,6 +14,7 @@ import synchronization, { name as synchronizationName } from './synchronization'
 import localTicket, { name as localTicketName } from './localTicket';
 import ticket, { name as ticketName } from './ticket';
 import materialSettlement, { name as materialSettlementName } from './materialSettlement';
+import freightSettlement, { name as freightSettlementName } from './freightSettlement';
 
 export default {
   [homeName]: home,
@@ -32,4 +33,5 @@ export default {
   [localTicketName]: localTicket,
   [ticketName]: ticket,
   [materialSettlementName]: materialSettlement,
+  [freightSettlementName]: freightSettlement,
 };

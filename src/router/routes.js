@@ -90,6 +90,13 @@ const routes = [
       { path: '', name: 'Liquidación (Material)', component: () => import('src/pages/MaterialSettlement.vue') },
     ],
   },
+  {
+    path: '/freightSettlement',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Liquidación (Flete)', component: () => import('src/pages/FreightSettlement.vue') },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

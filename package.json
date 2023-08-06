@@ -21,6 +21,8 @@
     "core-js": "^3.6.5",
     "cropperjs": "^1.5.6",
     "dotenv": "^16.0.3",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.31",
     "md5": "^2.3.0",
     "quasar": "^1.0.0",
     "v-money": "^0.8.1",

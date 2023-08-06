@@ -1,8 +1,8 @@
 export default {
-  PATH: '@module/materialSettlement',
+  PATH: '@module/freightSettlement',
   actions: {
-    LIST_MATERIAL_SETTLEMENTS: '@actions/listMaterialSettlements',
-    GET_MATERIAL_SETTLEMENT: '@actions/getMaterialSettlement',
+    LIST_FREIGHT_SETTLEMENTS: '@actions/listFreightSettlements',
+    GET_FREIGHT_SETTLEMENT: '@actions/getFreightSettlement',
     GET_TICKETS_TO_SETTLE: '@actions/getTicketsToSettle',
     SETTLE_TICKETS: '@actions/settleTickets',
     ADD_SETTLEMENT_INFORMATION: '@actions/addSettlementInformation',
@@ -12,8 +12,8 @@ export default {
   getters: {
   },
   mutations: {
-    SET_MATERIAL_SETTLEMENTS: '@mutations/setMaterialSettlements',
-    SET_MATERIAL_SETTLEMENT: '@mutations/setMaterialSettlement',
+    SET_FREIGHT_SETTLEMENTS: '@mutations/setFreightSettlements',
+    SET_FREIGHT_SETTLEMENT: '@mutations/setFreightSettlement',
     SET_TICKETS_TO_SETTLE: '@mutations/setTicketsToSettle',
     SET_SETTLEMENT_TO_PRINT: '@mutations/setSettlementToPrint',
     SET_STATUS: '@mutations/setStatus',

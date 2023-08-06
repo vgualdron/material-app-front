@@ -15,11 +15,9 @@ export default {
   async [types.actions.SET_DATA]({ commit }, payload) {
     try {
       const response = await localDataManagementApi.setData(payload);
-      console.log(response);
       commit(types.mutations.SET_STATUS, true);
       commit(types.mutations.SET_RESPONSE_MESSAGES, response.data.message);
     } catch (error) {
-      console.log(error);
       commit(types.mutations.SET_STATUS, false);
       commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
     }

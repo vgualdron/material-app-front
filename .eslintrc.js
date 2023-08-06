@@ -73,6 +73,7 @@ module.exports = {
     'vue/multi-word-component-names': 'off',
 
     // allow debugger during development only
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'global-require': 0
   }
 }
