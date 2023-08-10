@@ -68,7 +68,7 @@
                               v-model="filter.startDate"
                               mask="DD/MM/YYYY"
                               :options="date =>  filter.finalDate ? date <= filter.finalDate.split('/').reverse().join('/') : true"
-                              @input="$refs.qStartDateProxy.hide()"
+                              @input="$refs.qStartDateProxy.hide(), getConveyorCompanies()"
                             >
                               <div class="row items-center justify-end">
                                 <q-btn
@@ -114,7 +114,7 @@
                               v-model="filter.finalDate"
                               mask="DD/MM/YYYY"
                               :options="date =>  filter.startDate ? date >= filter.startDate.split('/').reverse().join('/') : true"
-                              @input="$refs.qFinalDateProxy.hide()"
+                              @input="$refs.qFinalDateProxy.hide(), getConveyorCompanies()"
                             >
                               <div class="row items-center justify-end">
                                 <q-btn
@@ -659,26 +659,18 @@ export default {
       this.$q.loading.hide();
     },
     async showModal() {
-      await Promise.all([
-        this.listThirds({ displayAll: 0, type: 'CO', third: '0' }),
-      ]);
-      if (this.thirdStatus === true) {
-        this.filter.type = 'C';
-        this.filter.startDate = null;
-        this.filter.finalDate = null;
-        this.filter.conveyorCompany = null;
-        this.filter.material = null;
-        this.filter.materialType = null;
-        this.showFilter = true;
-        this.data = [];
-        this.retention = '1';
-        this.observation = '';
-        this.arrayTickets = [];
-        this.modal.show = true;
-      } else if (this.thirdStatus === false) {
-        this.showNotificationsRef(this.thirdResponseMessages, this.thirdStatus, 'top-right', 5000);
-      }
-
+      this.filter.type = 'C';
+      this.filter.startDate = null;
+      this.filter.finalDate = null;
+      this.filter.conveyorCompany = null;
+      this.filter.material = null;
+      this.filter.materialType = null;
+      this.showFilter = true;
+      this.data = [];
+      this.retention = '1';
+      this.observation = '';
+      this.arrayTickets = [];
+      this.modal.show = true;
       this.$q.loading.hide();
     },
     async settle() {
@@ -717,6 +709,23 @@ export default {
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
       }
       this.$q.loading.hide();
+    },
+    async getConveyorCompanies() {
+      this.filter.conveyorCompany = null;
+      this.optionConveyorCompany = [];
+      if (this.filter.startDate !== null && this.filter.startDate !== '' && this.filter.finalDate !== null && this.filter.finalDate !== '') {
+        await this.listThirds({
+          displayAll: 0,
+          type: '%20',
+          third: '0',
+          origin: 'FS',
+          startDate: formatDateToSave(this.filter.startDate),
+          finalDate: formatDateToSave(this.filter.finalDate),
+        });
+        if (this.thirdStatus === false) {
+          this.showNotificationsRef(this.thirdResponseMessages, this.thirdStatus, 'top-right', 5000);
+        }
+      }
     },
     filterConveyorCompany(val, update) {
       update(() => {

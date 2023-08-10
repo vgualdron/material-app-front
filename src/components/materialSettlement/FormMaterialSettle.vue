@@ -796,7 +796,14 @@ export default {
     },
     async showModal() {
       await Promise.all([
-        this.listThirds({ displayAll: 0, type: '%20', third: 0 }),
+        this.listThirds({
+          displayAll: 0,
+          type: '%20',
+          third: 0,
+          origin: '%20',
+          startDate: '%20',
+          finalDate: '%20',
+        }),
         this.listMaterials({ displayAll: 0, id: 0 }),
       ]);
       if (this.thirdStatus === true && this.materialStatus === true) {

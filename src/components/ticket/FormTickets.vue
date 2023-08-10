@@ -784,7 +784,14 @@ export default {
     async showModal(id, ticket, type) {
       await Promise.all([
         this.listYards({ id: (id !== null ? ticket.originYard : 0), displayAll: 0 }),
-        this.listThirds({ displayAll: 0, type: '%20', third: `${id !== null ? ticket.supplier : '0'},${id !== null ? ticket.customer : '0'},${id !== null ? ticket.conveyorCompany : '0'}` }),
+        this.listThirds({
+          displayAll: 0,
+          type: '%20',
+          third: `${id !== null ? ticket.supplier : '0'},${id !== null ? ticket.customer : '0'},${id !== null ? ticket.conveyorCompany : '0'}`,
+          origin: '%20',
+          startDate: '%20',
+          finalDate: '%20',
+        }),
         this.listMaterials({ displayAll: 0, id: (id !== null ? ticket.material : 0) }),
       ]);
       if (this.thirdStatus === true && this.materialStatus === true && this.yardStatus === true) {

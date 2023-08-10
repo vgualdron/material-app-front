@@ -205,7 +205,14 @@ export default {
     }),
     async listThirdsMounted() {
       showLoading('Cargando Terceros ...', 'Por favor, espere', true);
-      await this.listThirds({ displayAll: 1, type: '%20', third: '0' });
+      await this.listThirds({
+        displayAll: 1,
+        type: '%20',
+        third: '0',
+        origin: '%20',
+        startDate: '%20',
+        finalDate: '%20',
+      });
       if (this.status === true) {
         this.data = this.thirds.map((element) => ({
           ...element,

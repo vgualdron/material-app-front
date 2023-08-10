@@ -8,6 +8,7 @@ export default {
       commit(types.mutations.SET_STATUS, true);
       commit(types.mutations.SET_THIRDS, response.data.data);
     } catch (error) {
+      commit(types.mutations.SET_THIRDS, []);
       commit(types.mutations.SET_STATUS, false);
       if (error.message !== 'Network Error') {
         commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);

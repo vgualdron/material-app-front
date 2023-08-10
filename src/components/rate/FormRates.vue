@@ -645,7 +645,14 @@ export default {
     async showModal(id, rate, type) {
       await Promise.all([
         this.listYards({ id: (id !== null ? rate.originYard : 0), displayAll: 0 }),
-        this.listThirds({ displayAll: 0, type: '%20', third: `${id !== null ? rate.supplier : '0'},${id !== null ? rate.customer : '0'},${id !== null ? rate.conveyorCompany : '0'}` }),
+        this.listThirds({
+          displayAll: 0,
+          type: '%20',
+          third: `${id !== null ? rate.supplier : '0'},${id !== null ? rate.customer : '0'},${id !== null ? rate.conveyorCompany : '0'}`,
+          origin: '%20',
+          startDate: '%20',
+          finalDate: '%20',
+        }),
         this.listMaterials({ displayAll: 0, id: (id !== null ? rate.material : 0) }),
       ]);
       if (this.yardStatus === true && this.thirdStatus === true && this.materialStatus === true) {
