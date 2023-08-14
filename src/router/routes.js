@@ -97,6 +97,13 @@ const routes = [
       { path: '', name: 'Liquidación (Flete)', component: () => import('src/pages/FreightSettlement.vue') },
     ],
   },
+  {
+    path: '/movement',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Movimiento', component: () => import('src/pages/movement.vue') },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

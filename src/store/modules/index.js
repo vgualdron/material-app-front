@@ -15,6 +15,7 @@ import localTicket, { name as localTicketName } from './localTicket';
 import ticket, { name as ticketName } from './ticket';
 import materialSettlement, { name as materialSettlementName } from './materialSettlement';
 import freightSettlement, { name as freightSettlementName } from './freightSettlement';
+import movement, { name as movementName } from './movement';
 
 export default {
   [homeName]: home,
@@ -34,4 +35,5 @@ export default {
   [ticketName]: ticket,
   [materialSettlementName]: materialSettlement,
   [freightSettlementName]: freightSettlement,
+  [movementName]: movement,
 };
