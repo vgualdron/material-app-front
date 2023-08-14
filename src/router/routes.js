@@ -101,7 +101,7 @@ const routes = [
     path: '/movement',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'Movimiento', component: () => import('src/pages/movement.vue') },
+      { path: '', name: 'Movimiento', component: () => import('src/pages/Movement.vue') },
     ],
   },
   // Always leave this as last one,
