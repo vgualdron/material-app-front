@@ -1,15 +1,21 @@
-import exportFromJSON from 'export-from-json';
+// import exportFromJSON from 'export-from-json';
 
-/* const printMovements = (data, fileName) => exportFromJSON({
-  data: [{ foo: 'foo1', bar: 'bar1' }, { foo: 'foo2', bar: 'bar2' }],
-  fileName,
-  extension: exportFromJSON.types.xls,
-}); */
 const printMovements = (data, fileName) => {
-  // const data = [{ foo: 'foo1', bar: 'bar1' }, { foo: 'foo2', bar: 'bar2' }];
-  // const fileName = 'download';
-  const exportType = exportFromJSON.types.xls;
-  exportFromJSON({ data, fileName, exportType });
+  let stringToPrint = '';
+  data.forEach((element) => {
+    const arrayValues = Object.values(element);
+    const stringValues = `${arrayValues.join(';')}\n`;
+    stringToPrint += stringValues;
+  });
+  // const exportType = exportFromJSON.types.txt;
+  const element = document.createElement('a');
+  element.setAttribute('href', `data:application/json;charset=utf-8, ${encodeURIComponent(stringToPrint)}`);
+  element.setAttribute('download', `${fileName}.txt`);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+  // exportFromJSON({ stringToPrint, fileName, exportType });
 };
 
 export {
