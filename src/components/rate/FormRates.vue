@@ -724,7 +724,7 @@ export default {
     },
     filterConveyorCompany(val, update) {
       update(() => {
-        const needle = val ? removeAccents(val.tri().toLowerCase()) : '';
+        const needle = val ? removeAccents(val.trim().toLowerCase()) : '';
         this.optionConveyorCompany = this.thirds.filter((option) => ((removeAccents(option.name).toLowerCase().indexOf(needle) > -1 && option.active === 1 && option.contractor === 1) || option.id === this.rate.conveyorCompany));
       });
     },

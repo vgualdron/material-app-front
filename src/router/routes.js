@@ -104,6 +104,13 @@ const routes = [
       { path: '', name: 'Movimiento', component: () => import('src/pages/Movement.vue') },
     ],
   },
+  {
+    path: '/report',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Reportes', component: () => import('src/pages/Report.vue') },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

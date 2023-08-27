@@ -19,20 +19,6 @@ export default {
     url: `${process.env.URL_API}/api/movement/create/${data.startDate}/${data.finalDate}/${data.tickets}`,
     method: 'GET',
   }),
-  /* get: (id) => http({
-    url: `${process.env.URL_API}/api/materialSettlement/get/${id}`,
-    method: 'GET',
-  }),
-  settleTickets: (data) => http({
-    url: `${process.env.URL_API}/api/materialSettlement/settle`,
-    method: 'POST',
-    data,
-  }),
-  addInformation: (data) => http({
-    url: `${process.env.URL_API}/api/materialSettlement/addInformation/${data.id}`,
-    method: 'PUT',
-    data,
-  }), */
   generatePrintDocument(data, fileName) {
     printMovements(data, fileName);
   },

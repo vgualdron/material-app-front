@@ -1,5 +1,3 @@
-// import exportFromJSON from 'export-from-json';
-
 const printMovements = (data, fileName) => {
   let stringToPrint = '';
   data.forEach((element) => {
@@ -7,7 +5,6 @@ const printMovements = (data, fileName) => {
     const stringValues = `${arrayValues.join(';')}\n`;
     stringToPrint += stringValues;
   });
-  // const exportType = exportFromJSON.types.txt;
   const element = document.createElement('a');
   element.setAttribute('href', `data:application/json;charset=utf-8, ${encodeURIComponent(stringToPrint)}`);
   element.setAttribute('download', `${fileName}.txt`);
@@ -15,7 +12,6 @@ const printMovements = (data, fileName) => {
   document.body.appendChild(element);
   element.click();
   document.body.removeChild(element);
-  // exportFromJSON({ stringToPrint, fileName, exportType });
 };
 
 export {

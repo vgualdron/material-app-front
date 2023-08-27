@@ -16,6 +16,7 @@ import ticket, { name as ticketName } from './ticket';
 import materialSettlement, { name as materialSettlementName } from './materialSettlement';
 import freightSettlement, { name as freightSettlementName } from './freightSettlement';
 import movement, { name as movementName } from './movement';
+import report, { name as reportName } from './report';
 
 export default {
   [homeName]: home,
@@ -36,4 +37,5 @@ export default {
   [materialSettlementName]: materialSettlement,
   [freightSettlementName]: freightSettlement,
   [movementName]: movement,
+  [reportName]: report,
 };
