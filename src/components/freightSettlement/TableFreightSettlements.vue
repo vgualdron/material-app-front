@@ -23,7 +23,7 @@
         <q-btn
           color="primary"
           label="Liquidar"
-          @click="showSettlementForm()"
+          @click="showSettlementForm(null, 'S', null)"
           :disabled="!validatedPermissions.settle.status"
           :title="validatedPermissions.settle.title"
         />
@@ -57,6 +57,24 @@
               :disabled="!validatedPermissions.addInfo.status"
               :title="validatedPermissions.addInfo.title"
               @click="showForm(props.row.id)"
+            />
+            <q-btn
+              class="q-ml-xs"
+              color="primary"
+              field="edit"
+              icon="edit"
+              :disabled="!validatedPermissions.edit.status"
+              :title="validatedPermissions.edit.title"
+              @click="showSettlementForm(props.row.id, 'U', props.row.consecutive)"
+            />
+            <q-btn
+              class="q-ml-xs"
+              color="red"
+              field="delete"
+              icon="delete"
+              :disabled="!validatedPermissions.delete.status"
+              :title="validatedPermissions.delete.title"
+              @click="showModal(props.row.id, 'D', props.row.consecutive)"
             />
           </div>
         </q-td>
@@ -99,7 +117,7 @@
                       :disabled="!validatedPermissions.print.status"
                       :title="validatedPermissions.print.title"
                       @click="print(props.row.id)"
-                    ></q-btn>
+                    />
                   </div>
                   <div class="q-mt-xs">
                     <q-btn
@@ -110,7 +128,31 @@
                       :disabled="!validatedPermissions.addInfo.status"
                       :title="validatedPermissions.addInfo.title"
                       @click="showForm(props.row.id)"
-                    ></q-btn>
+                    />
+                  </div>
+                  <div>
+                    <q-btn
+                      round
+                      icon="edit"
+                      size="xs"
+                      color="primary"
+                      text-color="white"
+                      :disabled="!validatedPermissions.edit.status"
+                      :title="validatedPermissions.edit.title"
+                      @click="showSettlementForm(props.row.id, 'U', props.row.consecutive)"
+                    />
+                  </div>
+                  <div>
+                    <q-btn
+                      round
+                      icon="delete"
+                      size="xs"
+                      color="red"
+                      text-color="white"
+                      :disabled="!validatedPermissions.delete.status"
+                      :title="validatedPermissions.delete.title"
+                      @click="showModal(props.row.id, 'D', props.row.consecutive)"
+                    />
                   </div>
                 </q-item-section>
               </q-item>
@@ -119,15 +161,44 @@
         </div>
       </template>
     </q-table>
+    <!-- CONFIRM DIALOG -->
+    <q-dialog v-model="confirm.show" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar :icon="confirm.icon" :color="confirm.iconColor" text-color="white"></q-avatar>
+          <span class="q-ml-sm">¿Esta seguro de {{confirm.action}} este registro?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            label="Cancelar"
+            color="primary"
+            outline class="col"
+            v-close-popup
+            @click="confirm.show = false"
+          />
+          <q-btn
+            label="Aceptar"
+            @click="submit"
+            color="primary"
+            class="col q-ml-sm"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <form-freight-settlements
       ref="formMaterialSettlementReference"
       :showNotificationsRef="showNotification"
       :listFreightSettlementsMountedRef="listFreightSettlementsMounted"
     />
     <form-freight-settle
-      ref="formMaterialSettleReference"
+      ref="formFreightSettleReference"
       :showNotificationsRef="showNotification"
       :listFreightSettlementsMountedRef="listFreightSettlementsMounted"
+    />
+    <manage-movements
+      ref="manageMovementsReference"
+      :showNotificationsRef="showNotification"
     />
   </div>
 </template>
@@ -135,6 +206,7 @@
 import { mapState, mapActions } from 'vuex';
 import FormFreightSettlements from 'components/freightSettlement/FormFreightSettlements.vue';
 import FormFreightSettle from 'components/freightSettlement/FormFreightSettle.vue';
+import ManageMovements from 'components/materialSettlement/ManageMovements.vue';
 import freightSettlementTypes from '../../store/modules/freightSettlement/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
@@ -217,6 +289,13 @@ export default {
           visible: false,
         },
       ],
+      confirm: {
+        show: false,
+        action: '',
+        icon: '',
+        iconColor: '',
+        type: '',
+      },
       pagination: {
         rowsPerPage: 50,
       },
@@ -234,11 +313,14 @@ export default {
       'status',
       'settlement',
       'settlementToPrint',
+      'movements',
     ]),
     validatedPermissions() {
       const statusSettle = havePermission('materialSettlement.settle');
       const statusPrint = havePermission('materialSettlement.print');
       const statusAddInfo = havePermission('materialSettlement.addInformation');
+      const statusEdit = havePermission('materialSettlement.update');
+      const statusDelete = havePermission('materialSettlement.delete');
       return {
         settle: {
           title: statusSettle ? 'Liquidar material' : 'No tiene permisos para liquidar materiales',
@@ -252,6 +334,14 @@ export default {
           title: statusAddInfo ? 'Agregar información' : 'No tiene permisos para agregar información de liquidación de material',
           status: statusAddInfo,
         },
+        edit: {
+          title: statusEdit ? 'Editar liquidación' : 'No tiene permisos para editar liquidaciones de material',
+          status: statusEdit,
+        },
+        delete: {
+          title: statusDelete ? 'Eliminar liquidación' : 'No tiene permisos para eliminar liquidaciones de material',
+          status: statusDelete,
+        },
       };
     },
   },
@@ -261,6 +351,9 @@ export default {
       printSettlement: freightSettlementTypes.actions.PRINT_SETTLEMENT,
       generatePrintDocument: freightSettlementTypes.actions.GENERATE_PRINT_DOCUMENT,
       getSettlement: freightSettlementTypes.actions.GET_FREIGHT_SETTLEMENT,
+      validateMovements: freightSettlementTypes.actions.VALIDATE_MOVEMENTS,
+      getSettledTickets: freightSettlementTypes.actions.GET_SETTLED_TICKETS,
+      deleteSettlement: freightSettlementTypes.actions.DELETE_FREIGHT_SETTLEMENT,
     }),
     async listFreightSettlementsMounted() {
       showLoading('Cargando Liquidaciones ...', 'Por favor, espere', true);
@@ -296,9 +389,61 @@ export default {
       }
       this.$q.loading.hide();
     },
-    async showSettlementForm() {
+    async showSettlementForm(id, type, consecutive) {
+      if (type === 'S') {
+        showLoading('Preparando formulario ...', 'Por favor, espere', true);
+        this.$refs.formFreightSettleReference.showModal(type);
+      } else {
+        showLoading('Preparando formulario ...', 'Por favor, espere', true);
+        await this.validateMovements(id);
+        if (this.status === true) {
+          if (this.movements.length === 0) {
+            await this.getSettledTickets(id);
+            if (this.status === true) {
+              this.$refs.formFreightSettleReference.showModal(type);
+            } else {
+              this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+            }
+          } else {
+            this.$refs.manageMovementsReference.showModal(this.movements, consecutive);
+          }
+        } else {
+          this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+        }
+      }
+    },
+    async showModal(id, action, consecutive) {
+      this.settlementId = null;
       showLoading('Preparando formulario ...', 'Por favor, espere', true);
-      this.$refs.formMaterialSettleReference.showModal();
+      await this.validateMovements(id);
+      if (this.status === true) {
+        if (this.movements.length === 0) {
+          this.settlementId = id;
+          this.confirm.icon = action === 'D' ? 'delete' : '';
+          this.confirm.iconColor = action === 'D' ? 'red' : '';
+          this.confirm.action = action === 'D' ? 'eliminar' : '';
+          this.confirm.type = action;
+          this.confirm.show = true;
+        } else {
+          this.$refs.manageMovementsReference.showModal(this.movements, consecutive);
+        }
+      } else {
+        this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+      }
+      this.$q.loading.hide();
+    },
+    async submit() {
+      if (this.confirm.type !== null && this.confirm.type !== '') {
+        if (this.confirm.type === 'D') {
+          showLoading('Eliminando liquidación ...', 'Por favor, espere', true);
+          await this.deleteSettlement(this.settlementId);
+          this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+          if (this.status === true) {
+            this.confirm.show = false;
+          }
+        }
+        this.listFreightSettlementsMounted();
+      }
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
@@ -314,6 +459,7 @@ export default {
   components: {
     FormFreightSettlements,
     FormFreightSettle,
+    ManageMovements,
   },
 };
 </script>

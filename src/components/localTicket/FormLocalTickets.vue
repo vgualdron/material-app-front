@@ -209,6 +209,7 @@
                 class="col col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12 q-pr-md-xs q-pr-lg-xs q-pr-xl-xs"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="localTicket.licensePlate"
                   label="Placa vehículo"
                   outlined
@@ -223,6 +224,7 @@
                 class="col col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12 q-pt-md-none q-pt-lg-none q-pt-xl-none q-pt-sm-xs q-pt-xs-xs q-pl-md-xs q-pl-lg-xs q-pl-xl-xs"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="localTicket.trailerNumber"
                   label="Número Trailer"
                   outlined
@@ -335,6 +337,7 @@
                 class="col col-sm-12 col-xs-12 col-md-6 col-lg-6 col-xl-6 q-pr-md-xs q-pr-lg-xs q-pr-xl-xs"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="localTicket.driverName"
                   label="Nombre Conductor *"
                   outlined
@@ -348,6 +351,7 @@
                 class="col col-sm-12 col-xs-12 col-md-6 col-lg-6 col-xl-6 q-pl-md-xs q-pl-lg-xs q-pl-xl-xs q-mt-sm-xs q-mt-xs-xs q-mt-md-none q-mt-lg-none q-mt-xl-none"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="localTicket.driverDocument"
                   label="Documento Conductor *"
                   outlined
@@ -454,7 +458,7 @@
             </div>
 
             <q-select
-              class="q-pt-none q-mt-xs"
+              class="q-pt-none q-mt-xs upperInput"
               outlined
               v-model.trim="localTicket.seals"
               label="Precintos"
@@ -470,7 +474,7 @@
             />
 
             <q-input
-              class="q-mt-xs"
+              class="q-mt-xs upperInput"
               :input-style="{resize: 'none'}"
               type="textarea"
               v-model.trim="localTicket.observation"
@@ -478,6 +482,7 @@
               outlined
               :disable="disableInputs"
               hide-bottom-space
+              :rules="rules.observation"
               rows="5"
               counter
               maxlength="600"
@@ -653,7 +658,7 @@ export default {
           (val) => (JSON.stringify(val || []).length <= 500) || 'Los precintos no deben exceder los 500 caracteres',
         ],
         observation: [
-          (val) => (val.length <= 600) || 'La observación no debe tener máximo 600 caracteres',
+          (val) => (val.length <= 600) || 'La observación debe tener máximo 600 caracteres',
         ],
       },
     };
@@ -929,20 +934,20 @@ export default {
         customer: this.localTicket.type === 'V' ? this.localTicket.customer : null,
         material: this.localTicket.material,
         ashPercentage: (this.localTicket.ashPercentage || '0').replaceAll(',', ''),
-        receiptNumber: this.localTicket.type === 'R' || this.localTicket.type === 'C' ? this.localTicket.receiptNumber : null,
-        referralNumber: this.localTicket.referralNumber,
+        receiptNumber: this.localTicket.type === 'R' || this.localTicket.type === 'C' ? this.localTicket.receiptNumber.toUpperCase() : null,
+        referralNumber: this.localTicket.referralNumber.toUpperCase(),
         date: formatDateToSave(this.localTicket.dateTime.split(' ')[0]),
         time: this.localTicket.dateTime.split(' ')[1],
-        licensePlate: this.localTicket.licensePlate,
-        trailerNumber: this.localTicket.trailerNumber,
-        driverDocument: this.localTicket.driverDocument,
-        driverName: this.localTicket.driverName,
+        licensePlate: this.localTicket.licensePlate.toUpperCase(),
+        trailerNumber: this.localTicket.trailerNumber.toUpperCase(),
+        driverDocument: this.localTicket.driverDocument.toUpperCase(),
+        driverName: this.localTicket.driverName.toUpperCase(),
         grossWeight: (this.localTicket.grossWeight || '0').replaceAll(',', ''),
         tareWeight: (this.localTicket.tareWeight || '0').replaceAll(',', ''),
         netWeight: (this.localTicket.netWeight || '0').replaceAll(',', ''),
         conveyorCompany: this.localTicket.conveyorCompany,
         observation: this.localTicket.observation,
-        seals: JSON.stringify(this.localTicket.seals || []),
+        seals: JSON.stringify((this.localTicket.seals || []).map((element) => element.toUpperCase())),
         roundTrip: this.localTicket.roundTrip === true ? 1 : 0,
         localCreatedAt: formatDateToSave(getDateTime().date),
       };
@@ -959,3 +964,11 @@ export default {
   },
 };
 </script>
+<style>
+  .upperInput .q-field__native {
+    text-transform: uppercase;
+  }
+  .upperInput .elipsis {
+    text-transform: uppercase;
+  }
+</style>

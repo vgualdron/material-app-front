@@ -355,7 +355,7 @@ export default {
     }),
     async showModal() {
       this.filter.startDate = '';
-      this.filter.startDate = '';
+      this.filter.finalDate = '';
       this.data = [];
       this.modal.show = true;
     },

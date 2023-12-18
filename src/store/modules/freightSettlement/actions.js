@@ -98,6 +98,25 @@ export default {
       }
     }
   },
+  async [types.actions.VALIDATE_MOVEMENTS]({ commit }, id) {
+    try {
+      const response = await freightSettlementApi.validateMovements(id);
+      commit(types.mutations.SET_STATUS, true);
+      commit(types.mutations.SET_MOVEMENTS, response.data.data);
+    } catch (error) {
+      commit(types.mutations.SET_STATUS, false);
+      if (error.message !== 'Network Error') {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
+      } else {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, [
+          {
+            text: 'Error de red',
+            detail: 'Intente conectarse a otra red de internet',
+          },
+        ]);
+      }
+    }
+  },
   async [types.actions.ADD_SETTLEMENT_INFORMATION]({ commit }, payload) {
     try {
       const response = await freightSettlementApi.addInformation(payload);
@@ -121,6 +140,65 @@ export default {
     try {
       const response = await freightSettlementApi.print(payload);
       commit(types.mutations.SET_STATUS, true);
+      commit(types.mutations.SET_SETTLEMENT_TO_PRINT, response.data.data);
+    } catch (error) {
+      commit(types.mutations.SET_STATUS, false);
+      if (error.message !== 'Network Error') {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
+      } else {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, [
+          {
+            text: 'Error de red',
+            detail: 'Intente conectarse a otra red de internet',
+          },
+        ]);
+      }
+    }
+  },
+  async [types.actions.GET_SETTLED_TICKETS]({ commit }, id) {
+    try {
+      const response = await freightSettlementApi.getSettledTickets(id);
+      commit(types.mutations.SET_STATUS, true);
+      commit(types.mutations.SET_TICKETS_TO_SETTLE, response.data.data.tickets);
+      commit(types.mutations.SET_FREIGHT_SETTLEMENT, response.data.data.settlement);
+    } catch (error) {
+      commit(types.mutations.SET_STATUS, false);
+      if (error.message !== 'Network Error') {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
+      } else {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, [
+          {
+            text: 'Error de red',
+            detail: 'Intente conectarse a otra red de internet',
+          },
+        ]);
+      }
+    }
+  },
+  async [types.actions.DELETE_FREIGHT_SETTLEMENT]({ commit }, payload) {
+    try {
+      const response = await freightSettlementApi.delete(payload);
+      commit(types.mutations.SET_STATUS, true);
+      commit(types.mutations.SET_RESPONSE_MESSAGES, response.data.message);
+    } catch (error) {
+      commit(types.mutations.SET_STATUS, false);
+      if (error.message !== 'Network Error') {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
+      } else {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, [
+          {
+            text: 'Error de red',
+            detail: 'Intente conectarse a otra red de internet',
+          },
+        ]);
+      }
+    }
+  },
+  async [types.actions.UPDATE_FREIGHT_SETTLEMENT]({ commit }, payload) {
+    try {
+      const response = await freightSettlementApi.update(payload);
+      commit(types.mutations.SET_STATUS, true);
+      commit(types.mutations.SET_RESPONSE_MESSAGES, response.data.message);
       commit(types.mutations.SET_SETTLEMENT_TO_PRINT, response.data.data);
     } catch (error) {
       commit(types.mutations.SET_STATUS, false);

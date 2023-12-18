@@ -13,6 +13,9 @@ export default {
   [types.mutations.SET_TICKETS_TO_SETTLE](state, payload) {
     state.ticketsToSettle = payload;
   },
+  [types.mutations.SET_MOVEMENTS](state, payload) {
+    state.movements = payload;
+  },
   [types.mutations.SET_STATUS](state, payload) {
     state.status = payload;
   },

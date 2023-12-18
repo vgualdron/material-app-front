@@ -209,6 +209,7 @@
                 class="col col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12 q-pr-md-xs q-pr-lg-xs q-pr-xl-xs"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="ticket.licensePlate"
                   label="Placa vehículo"
                   outlined
@@ -223,6 +224,7 @@
                 class="col col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12 q-pt-md-none q-pt-lg-none q-pt-xl-none q-pt-sm-xs q-pt-xs-xs q-pl-md-xs q-pl-lg-xs q-pl-xl-xs"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="ticket.trailerNumber"
                   label="Número Trailer"
                   outlined
@@ -335,6 +337,7 @@
                 class="col col-sm-12 col-xs-12 col-md-6 col-lg-6 col-xl-6 q-pr-md-xs q-pr-lg-xs q-pr-xl-xs"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="ticket.driverName"
                   label="Nombre Conductor *"
                   outlined
@@ -348,6 +351,7 @@
                 class="col col-sm-12 col-xs-12 col-md-6 col-lg-6 col-xl-6 q-pl-md-xs q-pl-lg-xs q-pl-xl-xs q-mt-sm-xs q-mt-xs-xs q-mt-md-none q-mt-lg-none q-mt-xl-none"
               >
                 <q-input
+                  class="upperInput"
                   v-model.trim="ticket.driverDocument"
                   label="Documento Conductor *"
                   outlined
@@ -454,7 +458,7 @@
             </div>
 
             <q-select
-              class="q-pt-none q-mt-xs"
+              class="q-pt-none q-mt-xs upperInput"
               outlined
               v-model.trim="ticket.seals"
               label="Precintos"
@@ -470,7 +474,7 @@
             />
 
             <q-input
-              class="q-mt-xs"
+              class="q-mt-xs upperInput"
               :input-style="{resize: 'none'}"
               type="textarea"
               v-model.trim="ticket.observation"
@@ -478,6 +482,7 @@
               outlined
               :disable="disableInputs"
               hide-bottom-space
+              :rules="rules.observation"
               rows="5"
               counter
               maxlength="600"
@@ -654,7 +659,7 @@ export default {
           (val) => (JSON.stringify(val || []).length <= 500) || 'Los precintos no deben exceder los 500 caracteres',
         ],
         observation: [
-          (val) => (val.length <= 600) || 'La observación no debe tener máximo 600 caracteres',
+          (val) => (val.length <= 6) || 'La observación debe tener máximo 600 caracteres',
         ],
       },
     };
@@ -927,20 +932,20 @@ export default {
         customer: this.ticket.type === 'V' ? this.ticket.customer : null,
         material: this.ticket.material,
         ashPercentage: (this.ticket.ashPercentage || '0').replaceAll(',', ''),
-        receiptNumber: this.ticket.type === 'R' || this.ticket.type === 'C' ? this.ticket.receiptNumber : null,
-        referralNumber: this.ticket.referralNumber,
+        receiptNumber: this.ticket.type === 'R' || this.ticket.type === 'C' ? this.ticket.receiptNumber.toUpperCase() : null,
+        referralNumber: this.ticket.referralNumber.toUpperCase(),
         date: formatDateToSave(this.ticket.dateTime.split(' ')[0]),
         time: this.ticket.dateTime.split(' ')[1],
-        licensePlate: this.ticket.licensePlate,
-        trailerNumber: this.ticket.trailerNumber,
-        driverDocument: this.ticket.driverDocument,
-        driverName: this.ticket.driverName,
+        licensePlate: this.ticket.licensePlate.toUpperCase(),
+        trailerNumber: this.ticket.trailerNumber.toUpperCase(),
+        driverDocument: this.ticket.driverDocument.toUpperCase(),
+        driverName: this.ticket.driverName.toUpperCase(),
         grossWeight: (this.ticket.grossWeight || '0').replaceAll(',', ''),
         tareWeight: (this.ticket.tareWeight || '0').replaceAll(',', ''),
         netWeight: (this.ticket.netWeight || '0').replaceAll(',', ''),
         conveyorCompany: this.ticket.conveyorCompany,
-        observation: this.ticket.observation,
-        seals: JSON.stringify(this.ticket.seals || []),
+        observation: this.ticket.observation.toUpperCase(),
+        seals: JSON.stringify((this.ticket.seals || []).map((element) => element.toUpperCase())),
         roundTrip: this.ticket.roundTrip === true ? 1 : 0,
       };
       return value;
@@ -956,3 +961,11 @@ export default {
   },
 };
 </script>
+<style>
+  .upperInput .q-field__native {
+    text-transform: uppercase;
+  }
+  .upperInput .elipsis {
+    text-transform: uppercase;
+  }
+</style>

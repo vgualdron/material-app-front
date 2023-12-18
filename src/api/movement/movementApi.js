@@ -1,5 +1,5 @@
 import { http } from '../../helpers/http';
-import { printMovements } from '../../helpers/printMovements';
+import { printMovements, printSQLDelete } from '../../helpers/printMovements';
 
 export default {
   list: (data) => http({
@@ -19,7 +19,14 @@ export default {
     url: `${process.env.URL_API}/api/movement/create/${data.startDate}/${data.finalDate}/${data.tickets}`,
     method: 'GET',
   }),
+  delete: (id) => http({
+    url: `${process.env.URL_API}/api/movement/delete/${id}`,
+    method: 'DELETE',
+  }),
   generatePrintDocument(data, fileName) {
     printMovements(data, fileName);
+  },
+  generatePrintSQLDelete(data, fileName) {
+    printSQLDelete(data, fileName);
   },
 };

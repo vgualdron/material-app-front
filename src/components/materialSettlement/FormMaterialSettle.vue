@@ -6,7 +6,7 @@
     >
       <q-card style="width: 95vw; max-width: 95vw;">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Liquidar Materiales</div>
+          <div class="text-h6"> {{ title }} </div>
           <q-space />
           <q-btn
             icon="close"
@@ -21,7 +21,7 @@
           style="max-height: 85vh"
           class="scroll"
         >
-          <div class="row">
+          <div class="row" v-if="actionType === 'S'">
             <q-toggle
               size="md"
               v-model="showFilter"
@@ -31,7 +31,7 @@
               unchecked-icon="visibility_off"
             />
           </div>
-          <q-slide-transition>
+          <q-slide-transition v-if="actionType === 'S'">
             <div v-show="showFilter">
               <q-form
                 @submit="onFilterSubmit"
@@ -282,6 +282,8 @@
             :columns="columns"
             class="q-mt-md"
             wrap-cells
+            :rows-per-page-options="[0]"
+            :hide-pagination="true"
           >
             <template v-slot:body="props">
               <q-tr :props="props">
@@ -542,6 +544,9 @@ export default {
         title: '',
         type: '',
       },
+      actionType: '',
+      title: '',
+      id: null,
       isLoading: false,
       showFilter: true,
       columns: [
@@ -716,6 +721,7 @@ export default {
       'responseMessages',
       'ticketsToSettle',
       'settlementToPrint',
+      'settlement',
     ]),
     ...mapState(thirdTypes.PATH, {
       thirds: 'thirds',
@@ -764,6 +770,7 @@ export default {
       getTicketsToSettle: materialSettlementTypes.actions.GET_TICKETS_TO_SETTLE,
       settleTickets: materialSettlementTypes.actions.SETTLE_TICKETS,
       generatePrintDocument: materialSettlementTypes.actions.GENERATE_PRINT_DOCUMENT,
+      updateSettlement: materialSettlementTypes.actions.UPDATE_MATERIAL_SETTLEMENT,
       /* deleteZone: materialSettlementTypes.actions.DELETE_ZONE, */
     }),
     ...mapActions(thirdTypes.PATH, {
@@ -794,42 +801,59 @@ export default {
       }
       this.$q.loading.hide();
     },
-    async showModal() {
-      await Promise.all([
-        this.listThirds({
-          displayAll: 0,
-          type: '%20',
-          third: 0,
-          origin: '%20',
-          startDate: '%20',
-          finalDate: '%20',
-        }),
-        this.listMaterials({ displayAll: 0, id: 0 }),
-      ]);
-      if (this.thirdStatus === true && this.materialStatus === true) {
-        this.filter.type = 'C';
-        this.filter.startDate = null;
-        this.filter.finalDate = null;
-        this.filter.supplier = null;
-        this.filter.customer = null;
-        this.filter.material = null;
-        this.filter.materialType = null;
-        this.showFilter = true;
-        this.data = [];
-        this.retention = '2.5';
-        this.observation = '';
-        this.royalties = '0';
-        this.arrayTickets = [];
+    async showModal(type) {
+      this.actionType = type;
+      this.id = null;
+      if (type === 'S') {
+        this.title = 'Liquidar Materiales';
+        await Promise.all([
+          this.listThirds({
+            displayAll: 0,
+            type: '%20',
+            third: 0,
+            origin: '%20',
+            startDate: '%20',
+            finalDate: '%20',
+          }),
+          this.listMaterials({ displayAll: 0, id: 0 }),
+        ]);
+        if (this.thirdStatus === true && this.materialStatus === true) {
+          this.filter.type = 'C';
+          this.filter.startDate = null;
+          this.filter.finalDate = null;
+          this.filter.supplier = null;
+          this.filter.customer = null;
+          this.filter.material = null;
+          this.filter.materialType = null;
+          this.showFilter = true;
+          this.data = [];
+          this.retention = '2.5';
+          this.observation = '';
+          this.royalties = '0';
+          this.arrayTickets = [];
+          this.modal.show = true;
+        } else {
+          if (this.thirdStatus === false) {
+            this.showNotificationsRef(this.thirdResponseMessages, this.thirdStatus, 'top-right', 5000);
+          }
+          if (this.materialStatus === false) {
+            this.showNotificationsRef(this.materialResponseMessages, this.materialStatus, 'top-right', 5000);
+          }
+        }
+        this.$q.loading.hide();
+      } else if (type === 'U') {
+        this.id = this.settlement.id;
+        this.title = `Modificar Liquidación: ${this.settlement.consecutive}`;
+        this.data = this.ticketsToSettle.map((item) => ({ ...item, settleReceiptWeight: item.settleReceiptWeight === 1 }));
+        this.observation = this.settlement.observation;
+        this.retention = this.settlement.retention;
+        this.royalties = this.settlement.royalties;
+        this.startDateSettled = this.settlement.startDateSettled;
+        this.finalDateSettled = this.settlement.finalDateSettled;
+        this.thirdSettled = this.settlement.thirdSettled;
         this.modal.show = true;
-      } else {
-        if (this.thirdStatus === false) {
-          this.showNotificationsRef(this.thirdResponseMessages, this.thirdStatus, 'top-right', 5000);
-        }
-        if (this.materialStatus === false) {
-          this.showNotificationsRef(this.materialResponseMessages, this.materialStatus, 'top-right', 5000);
-        }
+        this.$q.loading.hide();
       }
-      this.$q.loading.hide();
     },
     async settle() {
       showLoading('Generando la liquidación ...', 'Por favor, espere', true);
@@ -845,6 +869,7 @@ export default {
         this.arrayTickets.push(objectTiquets);
       });
       const data = {
+        id: this.id,
         tickets: this.arrayTickets,
         type: 'M',
         retentionPercentage: parseFloat(this.retention.toString().replaceAll(',', '')),
@@ -859,7 +884,11 @@ export default {
         finalDate: this.finalDateSettled,
         observation: this.observation,
       };
-      await this.settleTickets(data);
+      if (this.actionType === 'S') {
+        await this.settleTickets(data);
+      } else {
+        await this.updateSettlement(data);
+      }
       if (this.status === true) {
         this.listMaterialSettlementsMountedRef();
         this.showNotificationsRef(this.responseMessages, this.status, 'top-right', 5000);

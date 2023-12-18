@@ -1,6 +1,11 @@
 import JsPDF from 'jspdf';
 import 'jspdf-autotable';
 
+const standardTest = `Al facturar, por favor citar la liquidación N°_________________; \
+si tiene alguna duda u objeción, por favor comunicarla antes de emitir la factura. \
+La factura debe ser enviada al correo facturas@flamecolombia.com, este debe contener el \
+xml de validación de la factura electrónica.${'\n'}`;
+
 const printMaterialSettlement = (data) => {
   const stringFullDate = (new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short', hour12: false }).format(new Date())).replace(',', '');
   const arrayFullDate = stringFullDate.split(' ');
@@ -23,7 +28,7 @@ const printMaterialSettlement = (data) => {
   doc.text(4.63, 1.29, 'LIQUIDACIÓN DE MATERIAL');
   doc.text(0.7, 1.55, 'TERCERO');
   doc.setFont('Helvetica', 'normal');
-  doc.text(1.42, 1.55, data.third);
+  doc.text(1.42, 1.55, data.third.substring(0, 35));
   doc.setFont('Helvetica', 'bold');
   doc.text(4.82, 1.55, 'LIQUIDACION N°');
   doc.setFont('Helvetica', 'normal');
@@ -34,14 +39,99 @@ const printMaterialSettlement = (data) => {
   doc.text(7.9, 1.55, data.date);
   doc.setFont('Helvetica', 'bold');
   doc.text(0.7, 1.8, `MATERIALES ENTREGADOS ENTRE EL ${data.startDate} Y ${data.finalDate}`);
-  const itemsToTable = data.tickets.map((item) => [item.date, item.referralNumber, item.receiptNumber, item.licensePlate, item.originYard, item.destinyYard, item.materialName, item.materialWeightSettled, item.unitValue, item.materialSettlementNetValue]);
+  const itemsToTable = data.tickets.map((item) => [item.date, item.referralNumber, item.receiptNumber, item.licensePlate, item.originYard.substring(0, 35), item.destinyYard.substring(0, 35), item.materialName, item.materialWeightSettled, item.unitValue, item.materialSettlementNetValue]);
   itemsToTable.push([{ content: '', colSpan: 10, styles: { cellPadding: 0 } }]);
-  itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'SUBTOTAL', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.subtotalAmount, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.subtotalSettlement, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'right' } }]);
-  itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'RETENCION EN LA FUENTE', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.retentionsPercentage, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.retentions, styles: { cellPadding: 0.02, halign: 'right' } }]);
+  itemsToTable.push([
+    {
+      content: '',
+      colSpan: 4,
+      styles: {
+        cellPadding: 0,
+      },
+    }, {
+      content: 'TOTAL VIAJES',
+      colSpan: 1,
+      styles: {
+        cellPadding: 0.02,
+        fontStyle: 'bold',
+        halign: 'rigth',
+      },
+    }, {
+      content: data.tickets.length,
+      colSpan: 1,
+      styles: {
+        cellPadding: 0.02,
+        halign: 'left',
+      },
+    }, {
+      content: 'SUBTOTAL',
+      colSpan: 1,
+      styles: {
+        cellPadding: 0.02,
+        fontStyle: 'bold',
+        halign: 'left',
+      },
+    }, {
+      content: data.subtotalAmount,
+      styles: {
+        cellPadding: 0.02,
+        halign: 'right',
+      },
+    }, {
+      content: '',
+      styles: {
+        cellPadding: 0.02,
+        halign: 'left',
+      },
+    }, {
+      content: data.subtotalSettlement,
+      styles: {
+        cellPadding: 0.02,
+        fontStyle: 'bold',
+        halign: 'right',
+        textColor: [0, 0, 0],
+      },
+    },
+  ]);
+  itemsToTable.push([
+    {
+      content: '',
+      colSpan: 6,
+      styles: {
+        cellPadding: 0,
+      },
+    }, {
+      content: 'RETENCION EN LA FUENTE',
+      colSpan: 1,
+      styles: {
+        cellPadding: 0.02,
+        fontStyle: 'bold',
+        halign: 'left',
+      },
+    }, {
+      content: data.retentionsPercentage,
+      styles: {
+        cellPadding: 0.02,
+        halign: 'right',
+      },
+    }, {
+      content: '',
+      styles: {
+        cellPadding: 0.02,
+        halign: 'left',
+      },
+    }, {
+      content: data.retentions,
+      styles: {
+        cellPadding: 0.02,
+        halign: 'right',
+      },
+    },
+  ]);
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'REGALIAS', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.unitRoyalties, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.royalties, styles: { cellPadding: 0.02, halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'TOTAL', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: '', colSpan: 2, styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.totalSettle, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 10, styles: { cellPadding: 0 } }]);
-  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: (data.observation || ''), colSpan: 9, styles: { cellPadding: 0.02 } }]);
+  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: (`${standardTest}\n${data.observation || ''}`), colSpan: 9, styles: { cellPadding: 0.02 } }]);
   doc.autoTable({
     startX: 1.5,
     startY: 2,
@@ -54,26 +144,35 @@ const printMaterialSettlement = (data) => {
       9: { halign: 'right' },
     },
     bodyStyles: { halign: 'left' },
-    columnStyles: { 7: { halign: 'right' }, 8: { halign: 'right' }, 9: { halign: 'right' } },
+    columnStyles: {
+      0: { cellWidth: 0.9 },
+      7: { halign: 'right' },
+      8: { halign: 'right' },
+      9: { halign: 'right' },
+    },
     styles: {
       font: 'helvetica',
-      fontSize: 6,
+      fontSize: 6.3,
       cellPadding: 0.02,
       overflow: 'linebreak',
     },
-    head: [[{ content: 'Fecha', styles: { halign: 'left', cellPadding: 0.02 } },
-      { content: 'N. Remisión', styles: { halign: 'left', cellPadding: 0.02 } },
-      { content: 'N. Recibo', styles: { halign: 'left', cellPadding: 0.02 } },
-      { content: 'Placa', styles: { halign: 'left' } },
-      { content: 'P. Origen / Proveedor', styles: { halign: 'left', cellPadding: 0.02 } },
-      { content: 'P. Destino / Cliente', styles: { halign: 'left', cellPadding: 0.02 } },
-      { content: 'Material', styles: { halign: 'left', cellPadding: 0.02 } },
-      { content: 'Cantidad', styles: { halign: 'right', cellPadding: 0.02 } },
-      { content: 'Valor Unitario', styles: { halign: 'right', cellPadding: 0.02 } },
-      { content: 'Valor Total', styles: { halign: 'right', cellPadding: 0.02 } }]],
+    head: [
+      [
+        { content: 'Fecha', styles: { halign: 'left', cellPadding: 0.02 } },
+        { content: 'N. Remisión', styles: { halign: 'left', cellPadding: 0.02 } },
+        { content: 'N. Recibo', styles: { halign: 'left', cellPadding: 0.02 } },
+        { content: 'Placa', styles: { halign: 'left' } },
+        { content: 'P. Origen / Proveedor', styles: { halign: 'left', cellPadding: 0.02 } },
+        { content: 'P. Destino / Cliente', styles: { halign: 'left', cellPadding: 0.02 } },
+        { content: 'Material', styles: { halign: 'left', cellPadding: 0.02 } },
+        { content: 'Cantidad', styles: { halign: 'right', cellPadding: 0.02 } },
+        { content: 'Valor Unitario', styles: { halign: 'right', cellPadding: 0.02 } },
+        { content: 'Valor Total', styles: { halign: 'right', cellPadding: 0.02 } },
+      ],
+    ],
     body: itemsToTable,
   });
-  doc.save(`${data.consecutive} - ${data.third.replace('/', '')}.pdf`);
+  doc.save(`${data.consecutive} - ${data.third.replace('/', '').substring(0, 35)}.pdf`);
 };
 
 const printFreightSettlement = (data) => {
@@ -98,7 +197,7 @@ const printFreightSettlement = (data) => {
   doc.text(4.63, 1.29, 'LIQUIDACIÓN DE FLETES');
   doc.text(0.7, 1.55, 'TERCERO');
   doc.setFont('Helvetica', 'normal');
-  doc.text(1.42, 1.55, data.third);
+  doc.text(1.42, 1.55, data.third.substring(0, 35));
   doc.setFont('Helvetica', 'bold');
   doc.text(4.82, 1.55, 'LIQUIDACION N°');
   doc.setFont('Helvetica', 'normal');
@@ -114,8 +213,8 @@ const printFreightSettlement = (data) => {
     item.referralNumber,
     item.receiptNumber,
     item.licensePlate,
-    item.originYard,
-    item.destinyYard,
+    item.originYard.substring(0, 35),
+    item.destinyYard.substring(0, 35),
     item.materialName,
     item.freightWeightSettled,
     item.unitValue,
@@ -123,11 +222,11 @@ const printFreightSettlement = (data) => {
     item.roundTrip && item.roundTrip === 1 ? 'SI' : 'NO',
   ]);
   itemsToTable.push([{ content: '', colSpan: 11, styles: { cellPadding: 0 } }]);
-  itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'SUBTOTAL', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.subtotalAmount, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.subtotalSettlement, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'right' } }]);
+  itemsToTable.push([{ content: '', colSpan: 4, styles: { cellPadding: 0 } }, { content: 'TOTAL VIAJES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'rigth' } }, { content: data.tickets.length, colSpan: 1, styles: { cellPadding: 0.02, halign: 'left' } }, { content: 'SUBTOTAL', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.subtotalAmount, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.subtotalSettlement, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'RETENCION EN LA FUENTE', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.retentionsPercentage, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.retentions, styles: { cellPadding: 0.02, halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'TOTAL', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: '', colSpan: 2, styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.totalSettle, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 11, styles: { cellPadding: 0 } }]);
-  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: data.observation, colSpan: 10, styles: { cellPadding: 0.02 } }]);
+  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: `${standardTest}\n${data.observation || ''}`, colSpan: 10, styles: { cellPadding: 0.02 } }]);
   doc.autoTable({
     startX: 1.5,
     startY: 2,
@@ -145,16 +244,21 @@ const printFreightSettlement = (data) => {
       { content: 'Viaje Redondo', styles: { halign: 'left', cellPadding: 0.02 } }]],
     headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
     bodyStyles: { halign: 'left', cellPadding: 0.02 },
-    columnStyles: { 7: { halign: 'right' }, 8: { halign: 'right' }, 9: { halign: 'right' } },
+    columnStyles: {
+      0: { cellWidth: 0.9 },
+      7: { halign: 'right' },
+      8: { halign: 'right' },
+      9: { halign: 'right' },
+    },
     styles: {
       font: 'helvetica',
-      fontSize: 6,
+      fontSize: 6.3,
       cellPadding: 0.02,
       overflow: 'linebreak',
     },
     body: itemsToTable,
   });
-  doc.save(`${data.consecutive} - ${data.third.replace('/', '')}.pdf`);
+  doc.save(`${data.consecutive} - ${data.third.replace('/', '').substring(0, 35)}.pdf`);
 };
 
 export {

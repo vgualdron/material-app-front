@@ -6,5 +6,6 @@ export default function () {
     ticketsToSettle: [],
     responseMessages: [],
     status: false,
+    movements: [],
   };
 }

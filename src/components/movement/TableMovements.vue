@@ -49,6 +49,16 @@
               :title="validatedPermissions.print.title"
               @click="print(props.row.id, props.row.consecutive)"
             />
+            <q-btn
+              class="q-ml-xs"
+              color="red"
+              text-color="white"
+              field="delete"
+              icon="delete"
+              :disabled="!validatedPermissions.delete.status"
+              :title="validatedPermissions.delete.title"
+              @click="showConfirm(props.row.id, 'D')"
+            />
           </div>
         </q-td>
       </template>
@@ -90,7 +100,19 @@
                       :disabled="!validatedPermissions.print.status"
                       :title="validatedPermissions.print.title"
                       @click="print(props.row.id, props.row.consecutive)"
-                    ></q-btn>
+                    />
+                  </div>
+                  <div>
+                    <q-btn
+                      round
+                      icon="delete"
+                      size="xs"
+                      color="red"
+                      text-color="white"
+                      :disabled="!validatedPermissions.delete.status"
+                      :title="validatedPermissions.delete.title"
+                      @click="showConfirm(props.row.id, 'D')"
+                    />
                   </div>
                 </q-item-section>
               </q-item>
@@ -105,6 +127,30 @@
       :listMovementsMountedRef="listMovementsMounted"
       :printRef="print"
     />
+    <q-dialog v-model="confirm.show" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar :icon="confirm.icon" :color="confirm.iconColor" text-color="white"></q-avatar>
+          <span class="q-ml-sm">¿Esta seguro de {{confirm.action}} este registro?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            label="Cancelar"
+            color="primary"
+            outline class="col"
+            v-close-popup
+            @click="confirm.show = false"
+          />
+          <q-btn
+            label="Aceptar"
+            @click="submit"
+            color="primary"
+            class="col q-ml-sm"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -161,6 +207,14 @@ export default {
           visible: false,
         },
       ],
+      confirm: {
+        show: false,
+        action: '',
+        icon: '',
+        iconColor: '',
+        type: '',
+      },
+      movement: null,
       pagination: {
         rowsPerPage: 50,
       },
@@ -181,14 +235,19 @@ export default {
     validatedPermissions() {
       const statusCreate = havePermission('movement.create');
       const statusPrint = havePermission('movement.print');
+      const statusDelete = havePermission('movement.delete');
       return {
         create: {
           title: statusCreate ? 'Generar Movimientos' : 'No tiene permisos para generar movimientos',
           status: statusCreate,
         },
         print: {
-          title: statusPrint ? 'Imprimir Liquidación' : 'No tiene permisos para imprimir liquidación de material',
+          title: statusPrint ? 'Imprimir Movimiento' : 'No tiene permisos para imprimir movimientos',
           status: statusPrint,
+        },
+        delete: {
+          title: statusDelete ? 'Eliminar Movimiento' : 'No tiene permisos para eliminar movimientos',
+          status: statusDelete,
         },
       };
     },
@@ -198,6 +257,7 @@ export default {
       listMovements: movementTypes.actions.LIST_MOVEMENTS,
       printMovement: movementTypes.actions.PRINT_MOVEMENT,
       generatePrintDocument: movementTypes.actions.GENERATE_PRINT_DOCUMENT,
+      deleteMovement: movementTypes.actions.DELETE_MOVEMENT,
     }),
     async listMovementsMounted() {
       showLoading('Cargando Movimientos ...', 'Por favor, espere', true);
@@ -231,6 +291,31 @@ export default {
       }
       this.listMovementsMounted();
       this.$q.loading.hide();
+    },
+    showConfirm(id, type) {
+      if (id !== null) {
+        if (type === 'D') {
+          this.confirm.action = 'eliminar';
+          this.confirm.icon = 'delete';
+          this.confirm.iconColor = 'red';
+          this.confirm.type = type;
+          this.movement = id;
+        }
+        this.confirm.show = true;
+      }
+    },
+    async submit() {
+      if (this.confirm.type !== null && this.confirm.type !== '') {
+        if (this.confirm.type === 'D') {
+          showLoading('Eliminando movimiento ...', 'Por favor, espere', true);
+          await this.deleteMovement(this.movement);
+          this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+          if (this.status === true) {
+            this.confirm.show = false;
+          }
+        }
+        this.listMovementsMounted();
+      }
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);

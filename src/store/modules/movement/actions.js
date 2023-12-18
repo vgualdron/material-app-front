@@ -79,11 +79,11 @@ export default {
       }
     }
   },
-  /* async [types.actions.GET_MATERIAL_SETTLEMENT]({ commit }, id) {
+  async [types.actions.DELETE_MOVEMENT]({ commit }, id) {
     try {
-      const response = await materialSettlementApi.get(id);
+      const response = await movementApi.delete(id);
       commit(types.mutations.SET_STATUS, true);
-      commit(types.mutations.SET_MATERIAL_SETTLEMENT, response.data.data);
+      commit(types.mutations.SET_RESPONSE_MESSAGES, response.data.message);
     } catch (error) {
       commit(types.mutations.SET_STATUS, false);
       if (error.message !== 'Network Error') {
@@ -98,7 +98,7 @@ export default {
       }
     }
   },
-  async [types.actions.ADD_SETTLEMENT_INFORMATION]({ commit }, payload) {
+  /* async [types.actions.ADD_SETTLEMENT_INFORMATION]({ commit }, payload) {
     try {
       const response = await materialSettlementApi.addInformation(payload);
       commit(types.mutations.SET_STATUS, true);
@@ -119,5 +119,8 @@ export default {
   }, */
   [types.actions.GENERATE_PRINT_DOCUMENT](contex, payload) {
     movementApi.generatePrintDocument(payload.data, payload.fileName);
+  },
+  [types.actions.GENERATE_PRINT_SQL_DELETE](contex, payload) {
+    movementApi.generatePrintSQLDelete(payload.data, payload.fileName);
   },
 };

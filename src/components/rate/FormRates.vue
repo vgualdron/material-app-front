@@ -490,10 +490,10 @@ export default {
           (val) => (val && parseFloat(val.replaceAll(',', '')) >= 0) || 'El valor de material es requerido y no debe ser negativo',
         ],
         freightPrice: [
-          (val) => (val && parseFloat(val.replaceAll(',', '')) >= 0) || 'El valor de flete es requerido y no debe ser negativo',
+          (val) => (val !== undefined && val !== null && parseFloat(val.toString().replaceAll(',', '')) >= 0) || 'El valor de flete es requerido y no debe ser negativo',
         ],
         totalPrice: [
-          (val) => (val && parseFloat(val.replaceAll(',', '')) >= 0) || 'El valor total es requerido y no debe ser negativo',
+          (val) => (val !== undefined && val !== null && parseFloat(val.replaceAll(',', '')) >= 0) || 'El valor total es requerido y no debe ser negativo',
         ],
       },
     };
@@ -770,6 +770,7 @@ export default {
       this.calculateTotalPrice();
     },
     setValuesToSave(id) {
+      console.log(this.rate.freightPrice);
       const value = {
         id,
         movement: this.rate.movement,
@@ -782,7 +783,7 @@ export default {
         customer: this.rate.movement === 'V' ? this.rate.customer : null,
         conveyorCompany: this.rate.movement === 'T' ? this.rate.conveyorCompany : null,
         materialPrice: this.rate.movement === 'C' && this.rate.materialPrice ? this.rate.materialPrice.replaceAll(',', '') : null,
-        freightPrice: this.rate.freightPrice ? this.rate.freightPrice.replaceAll(',', '') : null,
+        freightPrice: this.rate.freightPrice ? this.rate.freightPrice.replaceAll(',', '') : 0,
         totalPrice: this.rate.movement === 'T' ? null : this.rate.totalPrice.replaceAll(',', ''),
         observation: this.rate.observation,
         roundTrip: this.rate.roundTrip,

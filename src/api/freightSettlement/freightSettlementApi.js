@@ -25,9 +25,26 @@ export default {
     method: 'PUT',
     data,
   }),
+  validateMovements: (id) => http({
+    url: `${process.env.URL_API}/api/freightSettlement/validateMovements/${id}`,
+    method: 'GET',
+  }),
+  update: (data) => http({
+    url: `${process.env.URL_API}/api/freightSettlement/update/${data.id}`,
+    method: 'PUT',
+    data,
+  }),
   print: (id) => http({
     url: `${process.env.URL_API}/api/freightSettlement/print/${id}`,
     method: 'GET',
+  }),
+  getSettledTickets: (id) => http({
+    url: `${process.env.URL_API}/api/freightSettlement/getSettledTickets/${id}`,
+    method: 'GET',
+  }),
+  delete: (id) => http({
+    url: `${process.env.URL_API}/api/freightSettlement/delete/${id}`,
+    method: 'DELETE',
   }),
   generatePrintDocument(data) {
     printFreightSettlement(data);
