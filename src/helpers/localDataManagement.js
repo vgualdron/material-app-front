@@ -1,4 +1,8 @@
 import websql from 'websql-promisified';
+import { openDB } from 'idb';
+
+const nameDb = 'materialControlDb';
+const nameTable = 'tickets';
 
 const setData = async (data) => new Promise((resolve, reject) => {
   if (!data || Object.keys(data).length === 0) {
@@ -209,7 +213,88 @@ const setData = async (data) => new Promise((resolve, reject) => {
   }
 });
 
-const getData = async () => new Promise((resolve, reject) => {
+const getData = async () => new Promise((/* resolve, reject */) => {
+  console.log('GetDataIndexDB...');
+
+  // Define tu base de datos y objeto store
+  const dbPromise = openDB(nameDb, 1, {
+    upgrade(db) {
+      const store = db.createObjectStore(nameTable, { keyPath: 'id' });
+      store.createIndex('nameIndex', 'nombre');
+    },
+  });
+
+  // Realiza operaciones en la base de datos utilizando promesas
+  async function addToDatabase(item) {
+    const db = await dbPromise;
+    const tx = db.transaction(nameTable, 'readwrite');
+    const store = tx.objectStore(nameTable);
+    await store.add(item);
+    await tx.done;
+  }
+
+  // traer un registro por primary key
+  async function getFromDatabase(id) {
+    const db = await dbPromise;
+    const tx = db.transaction(nameTable, 'readonly');
+    const store = tx.objectStore(nameTable);
+    return store.get(id);
+  }
+
+  // trear todos los registros
+  async function getAll() {
+    const db = await dbPromise;
+    const tx = db.transaction(nameTable, 'readonly');
+    const store = tx.objectStore(nameTable);
+    return store.getAll();
+  }
+
+  // Ejemplo de cómo utilizar el índice en una operación de consulta
+  async function searchByName(name) {
+    const db = await dbPromise;
+    const tx = db.transaction(nameTable, 'readonly');
+    const store = tx.objectStore(nameTable);
+
+    // Utilizar el índice para buscar por nombre
+    const index = store.index('nameIndex');
+    const result = await index.get(name);
+
+    return result;
+  }
+
+  // Ejemplo de uso de funciones por separado
+  const nuevoItem = { id: 2, nombre: 'Pedro' };
+
+  addToDatabase(nuevoItem).then(() => {
+    getFromDatabase(1).then(() => {
+      // console.log(resultado); // Salida: { id: 1, nombre: 'Juan Pérez' }
+    });
+    getAll().then(() => {
+      // console.log(resultado); // Salida: [{ id: 1, nombre: 'Juan Pérez' }]
+    });
+    searchByName('Juan').then(() => {
+      // console.log(result);
+    });
+  });
+
+  // Ejemplo de uso en transaccion
+  async function exampleTransaction() {
+    const db = await dbPromise;
+    const tx = db.transaction(nameTable, 'readwrite'); // inicia la transacción
+    const store = tx.objectStore(nameTable);
+    await store.add({ id: 12, nombre: 'Jsasduan' });
+    const index = store.index('nameIndex');
+    const result = await index.get('Jsasduan');
+    console.log(result);
+    const resultAll = await store.getAll();
+    console.log(resultAll);
+    await tx.done; // Finaliza la transacción
+  }
+
+  exampleTransaction();
+});
+
+const getDataDEPRECATED = async () => new Promise((resolve, reject) => {
   const dataBase = openDatabase('material-control', '1.0', 'Base de datos local', 3 * 1024 * 1024);
   if (!dataBase) {
     const response = {
@@ -608,6 +693,7 @@ const listLocalYards = async (yards) => new Promise((resolve, reject) => {
 export {
   setData,
   getData,
+  getDataDEPRECATED,
   listLocalThirds,
   listLocalMaterials,
   listLocalYards,
