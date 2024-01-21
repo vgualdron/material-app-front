@@ -927,7 +927,7 @@ export default {
       const value = {
         id,
         type: this.localTicket.type,
-        user: localStorage.getItem('userMC'),
+        user: Number(localStorage.getItem('userMC')),
         originYard: this.localTicket.type === 'D' || this.localTicket.type === 'R' || this.localTicket.type === 'V' ? this.localTicket.originYard : null,
         destinyYard: this.localTicket.type === 'D' || this.localTicket.type === 'R' || this.localTicket.type === 'C' ? this.localTicket.destinyYard : null,
         supplier: this.localTicket.type === 'C' ? this.localTicket.supplier : null,

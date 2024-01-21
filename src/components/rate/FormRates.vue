@@ -770,7 +770,6 @@ export default {
       this.calculateTotalPrice();
     },
     setValuesToSave(id) {
-      console.log(this.rate.freightPrice);
       const value = {
         id,
         movement: this.rate.movement,

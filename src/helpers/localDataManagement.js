@@ -1,8 +1,9 @@
-import websql from 'websql-promisified';
-import { openDB } from 'idb';
+import {
+  createTables,
+} from './commonQueries';
 
-const nameDb = 'materialControlDb';
-const nameTable = 'tickets';
+const dbName = 'material_control';
+const dbVersion = 1;
 
 const setData = async (data) => new Promise((resolve, reject) => {
   if (!data || Object.keys(data).length === 0) {
@@ -12,7 +13,7 @@ const setData = async (data) => new Promise((resolve, reject) => {
           message: [
             {
               text: 'Error al guardar datos locales',
-              detail: 'No se ha proporsionado data',
+              detail: 'No se ha proporcionado data',
             },
           ],
         },
@@ -20,169 +21,36 @@ const setData = async (data) => new Promise((resolve, reject) => {
     };
     reject(response);
   } else {
-    const dataBase = openDatabase('material-control', '1.0', 'Base de datos local', 3 * 1024 * 1024);
-    if (!dataBase) {
-      const response = {
-        response: {
-          data: {
-            message: [
-              {
-                text: 'Error al guardar datos locales',
-                detail: 'No se ha logrado establecer conexión con la base de datos lcoal',
-              },
-            ],
-          },
-        },
-      };
-      reject(response);
-    } else {
-      const websqlPromise = websql(dataBase);
-      websqlPromise.transaction((tx) => {
-        tx.executeSql('DROP TABLE IF EXISTS materials;');
-        tx.executeSql('DROP TABLE IF EXISTS thirds;');
-        tx.executeSql('DROP TABLE IF EXISTS tickets;');
-        tx.executeSql('DROP TABLE IF EXISTS yards;');
-
-        tx.executeSql(`
-          CREATE TABLE materials (
-            id integer PRIMARY KEY,
-            code varchar(10) NOT NULL,
-            name varchar(70) NOT NULL,
-            active integer NOT NULL
-          );
-        `);
-
-        data.materials.forEach((element) => {
-          tx.executeSql(
-            'INSERT INTO materials VALUES (?, ?, ?, ?)',
-            [
-              element.id,
-              element.code,
-              element.name,
-              element.active,
-            ],
-          );
-        });
-
-        tx.executeSql(`
-          CREATE TABLE yards (
-            id integer PRIMARY KEY,
-            code varchar(10) NOT NULL,
-            name varchar(30) NOT NULL,
-            active integer NOT NULL
-          );
-        `);
-
-        data.yards.forEach((element) => {
-          tx.executeSql(
-            'INSERT INTO yards VALUES (?, ?, ?, ?)',
-            [
-              element.id,
-              element.code,
-              element.name,
-              element.active,
-            ],
-          );
-        });
-
-        tx.executeSql(`
-          CREATE TABLE thirds (
-            id integer PRIMARY KEY,
-            nit varchar(50) NOT NULL,
-            name varchar(200) NOT NULL,
-            customer integer NOT NULL,
-            associated integer NOT NULL,
-            contractor integer NOT NULL,
-            active integer NOT NULL
-          );
-        `);
-
-        data.thirds.forEach((element) => {
-          tx.executeSql(
-            'INSERT INTO thirds VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [
-              element.id,
-              element.nit,
-              element.name,
-              element.customer,
-              element.associated,
-              element.contractor,
-              element.active,
-            ],
-          );
-        });
-
-        tx.executeSql(`
-          CREATE TABLE tickets (
-            id integer PRIMARY KEY,
-            type varchar(1),
-            user varchar(20),
-            originYard integer,
-            destinyYard integer,
-            supplier integer,
-            customer integer,
-            material integer,
-            ashPercentage decimal(4,2),
-            referralNumber varchar(30),
-            receiptNumber varchar(30),
-            date date,
-            time time,
-            licensePlate varchar(30),
-            trailerNumber varchar(30),
-            driverDocument varchar(20),
-            driverName varchar(100),
-            grossWeight decimal(10,2),
-            tareWeight decimal(10,2),
-            netWeight decimal(10,2),
-            conveyorCompany integer,
-            observation text,
-            seals varchar(200),
-            roundTrip integer,
-            localCreatedAt date,
-            consecutive varchar(50),
-            modified integer DEFAULT 1,
-            deleted integer DEFAULT 0,
-            synchronized integer DEFAULT 0
-          );
-        `);
-
-        data.tickets.forEach((element) => {
-          tx.executeSql(
-            'INSERT INTO tickets VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-              element.id,
-              element.type,
-              element.user,
-              element.originYard,
-              element.destinyYard,
-              element.supplier,
-              element.customer,
-              element.material,
-              element.ashPercentage,
-              element.referralNumber,
-              element.receiptNumber,
-              element.date,
-              element.time,
-              element.licensePlate,
-              element.trailerNumber,
-              element.driverDocument,
-              element.driverName,
-              element.grossWeight,
-              element.tareWeight,
-              element.netWeight,
-              element.conveyorCompany,
-              element.observation,
-              element.seals,
-              element.roundTrip,
-              element.localCreatedAt,
-              element.consecutive,
-              0,
-              0,
-              1,
-            ],
-          );
-        });
-      }).then(() => {
+    createTables(dbName, dbVersion).then((connection) => {
+      const tx = connection.transaction([
+        'materials',
+        'yards',
+        'thirds',
+        'tickets',
+      ], 'readwrite');
+      try {
+        const materialStore = tx.objectStore('materials');
+        const yardStore = tx.objectStore('yards');
+        const thirdStore = tx.objectStore('thirds');
+        const ticketStore = tx.objectStore('tickets');
+        // data.materials.map((element) => saveItem(materialStore, element, 'el material'));
+        // data.yards.map((element) => saveItem(yardStore, element, 'el patio'));
+        materialStore.clear();
+        yardStore.clear();
+        thirdStore.clear();
+        ticketStore.clear();
+        data.materials.map((element) => materialStore.add(element));
+        data.yards.map((element) => yardStore.add(element));
+        data.thirds.map((element) => thirdStore.add(element));
+        data.tickets.map((element) => ticketStore.add({
+          ...element,
+          modified: 0,
+          deleted: 0,
+          synchronized: 1,
+        }));
+        /* eslint-disable no-unused-expressions */
+        tx.done;
+        /* eslint-enable no-unused-expressions */
         const response = {
           data: {
             message: [
@@ -194,303 +62,70 @@ const setData = async (data) => new Promise((resolve, reject) => {
           },
         };
         resolve(response);
-      }).catch(() => {
+      } catch (e) {
         const response = {
           response: {
             data: {
               message: [
                 {
-                  text: 'Error al guardar datos locales',
-                  detail: 'Se ha presentado un problema en la transacción con la base de datos local',
+                  text: 'No se ha logrado registrar el material localmente',
+                  detail: 'No se han proporcionado datos',
                 },
               ],
             },
           },
         };
+        tx.abort();
         reject(response);
+      }
+    }).catch((e) => {
+      reject(e);
+    });
+  }
+});
+
+const getData = async () => new Promise((resolve, reject) => {
+  createTables(dbName, dbVersion).then((connection) => {
+    const tx = connection.transaction(['tickets'], 'readonly');
+    const thirdStore = tx.objectStore('tickets');
+    thirdStore.getAll().then((results) => {
+      const data = results.filter((result) => (result.modified === 1 && !(result.synchronized === 0 && result.deleted === 1)));
+      data.forEach((element) => {
+        element.id = element.synchronized !== 0 ? element.id : null;
       });
-    }
-  }
-});
-
-const getData = async () => new Promise((/* resolve, reject */) => {
-  console.log('GetDataIndexDB...');
-
-  // Define tu base de datos y objeto store
-  const dbPromise = openDB(nameDb, 1, {
-    upgrade(db) {
-      const store = db.createObjectStore(nameTable, { keyPath: 'id' });
-      store.createIndex('nameIndex', 'nombre');
-    },
-  });
-
-  // Realiza operaciones en la base de datos utilizando promesas
-  async function addToDatabase(item) {
-    const db = await dbPromise;
-    const tx = db.transaction(nameTable, 'readwrite');
-    const store = tx.objectStore(nameTable);
-    await store.add(item);
-    await tx.done;
-  }
-
-  // traer un registro por primary key
-  async function getFromDatabase(id) {
-    const db = await dbPromise;
-    const tx = db.transaction(nameTable, 'readonly');
-    const store = tx.objectStore(nameTable);
-    return store.get(id);
-  }
-
-  // trear todos los registros
-  async function getAll() {
-    const db = await dbPromise;
-    const tx = db.transaction(nameTable, 'readonly');
-    const store = tx.objectStore(nameTable);
-    return store.getAll();
-  }
-
-  // Ejemplo de cómo utilizar el índice en una operación de consulta
-  async function searchByName(name) {
-    const db = await dbPromise;
-    const tx = db.transaction(nameTable, 'readonly');
-    const store = tx.objectStore(nameTable);
-
-    // Utilizar el índice para buscar por nombre
-    const index = store.index('nameIndex');
-    const result = await index.get(name);
-
-    return result;
-  }
-
-  // Ejemplo de uso de funciones por separado
-  const nuevoItem = { id: 2, nombre: 'Pedro' };
-
-  addToDatabase(nuevoItem).then(() => {
-    getFromDatabase(1).then(() => {
-      // console.log(resultado); // Salida: { id: 1, nombre: 'Juan Pérez' }
-    });
-    getAll().then(() => {
-      // console.log(resultado); // Salida: [{ id: 1, nombre: 'Juan Pérez' }]
-    });
-    searchByName('Juan').then(() => {
-      // console.log(result);
-    });
-  });
-
-  // Ejemplo de uso en transaccion
-  async function exampleTransaction() {
-    const db = await dbPromise;
-    const tx = db.transaction(nameTable, 'readwrite'); // inicia la transacción
-    const store = tx.objectStore(nameTable);
-    await store.add({ id: 12, nombre: 'Jsasduan' });
-    const index = store.index('nameIndex');
-    const result = await index.get('Jsasduan');
-    console.log(result);
-    const resultAll = await store.getAll();
-    console.log(resultAll);
-    await tx.done; // Finaliza la transacción
-  }
-
-  exampleTransaction();
-});
-
-const getDataDEPRECATED = async () => new Promise((resolve, reject) => {
-  const dataBase = openDatabase('material-control', '1.0', 'Base de datos local', 3 * 1024 * 1024);
-  if (!dataBase) {
-    const response = {
-      response: {
-        data: {
-          message: [
-            {
-              text: 'Error al obtener datos locales',
-              detail: 'No se ha logrado establecer conexión con la base de datos lcoal',
-            },
-          ],
-        },
-      },
-    };
-    reject(response);
-  } else {
-    const websqlPromise = websql(dataBase);
-    websqlPromise.transaction((tx) => {
-      tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS tickets (
-          id integer PRIMARY KEY,
-          type varchar(1),
-          user varchar(20),
-          originYard integer,
-          destinyYard integer,
-          supplier integer,
-          customer integer,
-          material integer,
-          ashPercentage decimal(4,2),
-          referralNumber varchar(30),
-          receiptNumber varchar(30),
-          date date,
-          time time,
-          licensePlate varchar(30),
-          trailerNumber varchar(30),
-          driverDocument varchar(20),
-          driverName varchar(100),
-          grossWeight decimal(10,2),
-          tareWeight decimal(10,2),
-          netWeight decimal(10,2),
-          conveyorCompany integer,
-          observation text,
-          seals varchar(200),
-          roundTrip integer,
-          localCreatedAt date,
-          consecutive varchar(50),
-          modified integer DEFAULT 1,
-          deleted integer DEFAULT 0,
-          synchronized integer DEFAULT 0
-        );
-      `);
-
-      tx.executeSql(`
-        SELECT
-          (CASE t.synchronized = 1
-            WHEN ? THEN t.id
-            ELSE null
-          END) AS id,
-          t.type AS type,
-          t.user AS user,
-          t.originYard AS originYard,
-          t.destinyYard AS destinyYard,
-          t.supplier AS supplier,
-          t.customer AS customer,
-          t.material AS material,
-          t.ashPercentage AS ashPercentage,
-          t.referralNumber AS referralNumber,
-          t.receiptNumber AS receiptNumber,
-          t.date AS date,
-          t.time AS time,
-          t.licensePlate AS licensePlate,
-          t.trailerNumber AS trailerNumber,
-          t.driverDocument AS driverDocument,
-          t.driverName AS driverName,
-          t.grossWeight AS grossWeight,
-          t.tareWeight AS tareWeight,
-          t.netWeight AS netWeight,
-          t.conveyorCompany AS conveyorCompany,
-          t.observation AS observation,
-          t.seals AS seals,
-          t.roundTrip AS roundTrip,
-          t.localCreatedAt AS localCreatedAt,
-          t.consecutive AS consecutive,
-          t.modified AS modified,
-          t.deleted AS deleted,
-          t.synchronized AS synchronized
-        FROM tickets AS t
-        WHERE t.modified = ? AND 
-          CASE t.deleted
-            WHEN ? THEN t.synchronized = ?
-            ELSE ?
-          END
-      `, [1, 1, 1, 1, 1]);
-    }).then((results) => {
-      let response = null;
-      const position = 1;
-      const arrayResult = Object.values(results[position].rows);
-      const data = arrayResult.map((element) => element);
-      response = {
+      const response = {
         data: {
           data,
         },
       };
       resolve(response);
-    }).catch(() => {
-      const response = {
-        response: {
-          data: {
-            message: [
-              {
-                text: 'Error al obtener datos locales',
-                detail: 'Se ha presentado un problema en la transacción con la base de datos local',
-              },
-            ],
-          },
-        },
-      };
-      reject(response);
     });
-  }
+  }).catch((e) => {
+    reject(e);
+  });
 });
 
 const listLocalThirds = async (thirds) => new Promise((resolve, reject) => {
-  const dataBase = openDatabase('material-control', '1.0', 'Base de datos local', 3 * 1024 * 1024);
-  if (!dataBase) {
-    const response = {
-      response: {
-        data: {
-          message: [
-            {
-              text: 'Error al obtener terceros locales',
-              detail: 'No se ha logrado establecer conexión con la base de datos lcoal',
-            },
-          ],
-        },
-      },
-    };
-    reject(response);
-  } else {
-    const websqlPromise = websql(dataBase);
-    websqlPromise.transaction((tx) => {
-      tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS thirds (
-          id integer PRIMARY KEY,
-          nit varchar(50) NOT NULL,
-          name varchar(200) NOT NULL,
-          customer integer NOT NULL,
-          associated integer NOT NULL,
-          contractor integer NOT NULL,
-          active integer NOT NULL
-        );
-      `);
-      const parameterData = [1];
-      const arr = (thirds && thirds.trim().length > 0) ? thirds.split(',') : [];
-      let sqlOrStructure = '';
-      if (arr.length > 0) {
-        sqlOrStructure += 'OR (';
-        arr.forEach((element) => {
-          sqlOrStructure += 't.id = ? OR ';
-          parameterData.push(element);
-        });
-        sqlOrStructure = `${sqlOrStructure.substring(0, sqlOrStructure.length - 4)})`;
-      }
-      tx.executeSql(`
-        SELECT
-          t.id AS id,
-          t.nit as nit,
-          t.name as name,
-          t.customer as customer,
-          t.associated as associated,
-          t.contractor as contractor,
-          t.active as active
-        FROM thirds AS t
-        WHERE t.active = ? ${sqlOrStructure}
-        ORDER BY name
-      `, parameterData);
-    }).then((results) => {
-      let response = null;
-      const position = 1;
-      if (results[position].rows.length > 0) {
-        const arrayResult = Object.values(results[position].rows);
-        const data = arrayResult.map((element) => element);
-        response = {
+  createTables(dbName, dbVersion).then((connection) => {
+    const tx = connection.transaction(['thirds'], 'readonly');
+    const thirdStore = tx.objectStore('thirds');
+    thirdStore.getAll().then((results) => {
+      const data = results.filter((result) => (result.active === 1 || thirds.includes(result.id)));
+      if (data.length > 0) {
+        const response = {
           data: {
             data,
           },
         };
         resolve(response);
       } else {
-        response = {
+        const response = {
           response: {
             data: {
               message: [
                 {
-                  text: 'No hay terceros para mostrar',
-                  detail: 'Aún no ha registrado ningún tercero',
+                  text: 'No hay terceros locales para mostrar',
+                  detail: 'Por favor sincronice la aplicación',
                 },
               ],
             },
@@ -498,81 +133,33 @@ const listLocalThirds = async (thirds) => new Promise((resolve, reject) => {
         };
         reject(response);
       }
-    }).catch(() => {
-      const response = {
-        response: {
-          data: {
-            message: [
-              {
-                text: 'Error al obtener terceros locales',
-                detail: 'Se ha presentado un problema en la transacción con la base de datos local',
-              },
-            ],
-          },
-        },
-      };
-      reject(response);
     });
-  }
+  }).catch((e) => {
+    reject(e);
+  });
 });
 
-const listLocalMaterials = async (material) => new Promise((resolve, reject) => {
-  const dataBase = openDatabase('material-control', '1.0', 'Base de datos local', 3 * 1024 * 1024);
-  if (!dataBase) {
-    const response = {
-      response: {
-        data: {
-          message: [
-            {
-              text: 'Error al obtener materiales locales',
-              detail: 'No se ha logrado establecer conexión con la base de datos local',
-            },
-          ],
-        },
-      },
-    };
-    reject(response);
-  } else {
-    const websqlPromise = websql(dataBase);
-    websqlPromise.transaction((tx) => {
-      tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS materials (
-          id integer PRIMARY KEY,
-          code varchar(10) NOT NULL,
-          name varchar(70) NOT NULL,
-          active integer NOT NULL
-        );
-      `);
-
-      tx.executeSql(`
-        SELECT
-          m.id AS id,
-          m.code AS code,
-          m.name AS name,
-          m.active AS active
-        FROM materials AS m
-        WHERE m.active = ? OR m.id = ?
-      `, [1, material]);
-    }).then((results) => {
-      let response = null;
-      const position = 1;
-      if (results[position].rows.length > 0) {
-        const arrayResult = Object.values(results[position].rows);
-        const data = arrayResult.map((element) => element);
-        response = {
+const listLocalMaterials = async (materials) => new Promise((resolve, reject) => {
+  createTables(dbName, dbVersion).then((connection) => {
+    const tx = connection.transaction(['materials'], 'readonly');
+    const materialStore = tx.objectStore('materials');
+    materialStore.getAll().then((results) => {
+      const data = results.filter((result) => result.active === 1 || materials.includes(result.id));
+      if (data.length > 0) {
+        const response = {
           data: {
             data,
           },
         };
         resolve(response);
       } else {
-        response = {
+        const response = {
           response: {
             data: {
               message: [
                 {
-                  text: 'No hay materiales para mostrar',
-                  detail: 'Aún no ha registrado ningún material',
+                  text: 'No hay materiales locales para mostrar',
+                  detail: 'Por favor sincronice la aplicación',
                 },
               ],
             },
@@ -580,91 +167,33 @@ const listLocalMaterials = async (material) => new Promise((resolve, reject) => 
         };
         reject(response);
       }
-    }).catch(() => {
-      const response = {
-        response: {
-          data: {
-            message: [
-              {
-                text: 'Error al obtener materiales locales',
-                detail: 'Se ha presentado un problema en la transacción con la base de datos local',
-              },
-            ],
-          },
-        },
-      };
-      reject(response);
     });
-  }
+  }).catch((e) => {
+    reject(e);
+  });
 });
 
 const listLocalYards = async (yards) => new Promise((resolve, reject) => {
-  const dataBase = openDatabase('material-control', '1.0', 'Base de datos local', 3 * 1024 * 1024);
-  if (!dataBase) {
-    const response = {
-      response: {
-        data: {
-          message: [
-            {
-              text: 'Error al obtener patios locales',
-              detail: 'No se ha logrado establecer conexión con la base de datos lcoal',
-            },
-          ],
-        },
-      },
-    };
-    reject(response);
-  } else {
-    const websqlPromise = websql(dataBase);
-    websqlPromise.transaction((tx) => {
-      tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS yards (
-          id integer PRIMARY KEY,
-          code varchar(10) NOT NULL,
-          name varchar(30) NOT NULL,
-          active integer NOT NULL
-        );
-      `);
-      const parameterData = [1];
-      const arr = (yards && yards.trim().length > 0) ? yards.split(',') : [];
-      let sqlOrStructure = '';
-      if (arr.length > 0) {
-        sqlOrStructure += 'OR (';
-        arr.forEach((element) => {
-          sqlOrStructure += 'y.id = ? OR ';
-          parameterData.push(element);
-        });
-        sqlOrStructure = `${sqlOrStructure.substring(0, sqlOrStructure.length - 4)})`;
-      }
-      tx.executeSql(`
-        SELECT
-          y.id AS id,
-          y.code as code,
-          y.name as name,
-          y.active as active
-        FROM yards AS y
-        WHERE y.active = ? ${sqlOrStructure}
-      `, parameterData);
-    }).then((results) => {
-      let response = null;
-      const position = 1;
-      if (results[position].rows.length > 0) {
-        const arrayResult = Object.values(results[position].rows);
-        const data = arrayResult.map((element) => element);
-        response = {
+  createTables(dbName, dbVersion).then((connection) => {
+    const tx = connection.transaction(['yards'], 'readonly');
+    const yardStore = tx.objectStore('yards');
+    yardStore.getAll().then((results) => {
+      const data = results.filter((result) => result.active === 1 || yards.includes(result.id));
+      if (data.length > 0) {
+        const response = {
           data: {
             data,
           },
         };
         resolve(response);
       } else {
-        response = {
+        const response = {
           response: {
             data: {
               message: [
                 {
-                  text: 'No hay patios para mostrar',
-                  detail: 'Aún no ha registrado ningún patio',
+                  text: 'No hay patios locales para mostrar',
+                  detail: 'Por favor sincronice la aplicación',
                 },
               ],
             },
@@ -672,28 +201,15 @@ const listLocalYards = async (yards) => new Promise((resolve, reject) => {
         };
         reject(response);
       }
-    }).catch(() => {
-      const response = {
-        response: {
-          data: {
-            message: [
-              {
-                text: 'Error al obtener patios locales',
-                detail: 'Se ha presentado un problema en la transacción con la base de datos local',
-              },
-            ],
-          },
-        },
-      };
-      reject(response);
     });
-  }
+  }).catch((e) => {
+    reject(e);
+  });
 });
 
 export {
   setData,
   getData,
-  getDataDEPRECATED,
   listLocalThirds,
   listLocalMaterials,
   listLocalYards,

@@ -411,6 +411,8 @@ export default {
           await this.setData(this.synchronizationData);
           if (this.localDataManagementStatus === false) {
             this.showNotification(this.localDataManagementResponseMessages, this.localDataManagementStatus, 'top-right', 5000);
+          } else {
+            this.showNotification(this.localDataManagementResponseMessages, this.localDataManagementStatus, 'top-right', 5000);
           }
         } else {
           this.showNotification(this.synchronizationResponseMessages, this.synchronizationStatus, 'top-right', 5000);
