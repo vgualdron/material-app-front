@@ -5,10 +5,9 @@ export default {
   async [types.actions.SIGN_IN]({ commit }, payload) {
     try {
       const response = await authApi.signin(payload);
-      console.log(response);
       commit(types.mutations.SET_STATUS_SIGN, true);
       commit(types.mutations.SET_PERMISSIONS, response.data.permissions);
-      commit(types.mutations.SET_MENU, response.data.menuV2);
+      commit(types.mutations.SET_MENU, response.data.menu);
       commit(types.mutations.SET_YARD, response.data.user.yard);
       commit(types.mutations.SET_USER, response.data.user.user);
       commit(types.mutations.SET_DOCUMENT, response.data.user.document);
