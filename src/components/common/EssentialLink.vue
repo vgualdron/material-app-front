@@ -51,7 +51,7 @@ export default {
     },
   },
   methods: {
-    clickOption(link, title) {
+    clickOption(link) {
       this.$router.push(link);
       /* setTimeout(() => {
         window.location.reload();
