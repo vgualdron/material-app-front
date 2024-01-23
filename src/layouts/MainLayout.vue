@@ -88,6 +88,7 @@
             icon="home"
             :class="'/home' === $router.currentRoute.name && 'bg-blue-grey-3'"
             :clickable="'/home' !== $router.currentRoute.path"
+            :active="'/home' === $router.currentRoute.path"
           />
         <q-expansion-item
           v-for="({ name, icon, label, options }) in linksData"
