@@ -432,7 +432,6 @@ export default {
     },
     async synchronization() {
       this.showSynchronizeConfirm = false;
-      // await this.getData();
       if (this.localDataManagementStatus === true) {
         await this.synchronize(this.localDataManagementData);
         if (this.synchronizationStatus === true) {
@@ -447,6 +446,9 @@ export default {
           this.showNotification(this.synchronizationResponseMessages, this.synchronizationStatus, 'top-right', 5000);
         }
         this.showWarnings();
+        this.listThirds();
+        this.listMaterials();
+        this.listYards();
       } else {
         this.showNotification(this.localDataManagementResponseMessages, this.localDataManagementStatus, 'top-right', 5000);
       }
