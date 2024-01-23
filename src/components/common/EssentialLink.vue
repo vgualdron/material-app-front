@@ -53,10 +53,10 @@ export default {
   methods: {
     clickOption(link, title) {
       this.$router.push(link);
-      setTimeout(() => {
+      /* setTimeout(() => {
         window.location.reload();
         this.$emit('changeMenu', title);
-      }, 500);
+      }, 500); */
     },
   },
 };
