@@ -3,7 +3,7 @@
     :clickable="clickable"
     tag="a"
     @click="clickOption(link, title)"
-    class="q-ml-lg"
+    :class="classes"
   >
     <q-item-section
       v-if="icon"
@@ -33,17 +33,18 @@ export default {
       type: String,
       default: 'dsadasdas fds',
     },
-
     link: {
       type: String,
       default: '#',
     },
-
     icon: {
       type: String,
       default: '',
     },
-
+    classes: {
+      type: String,
+      default: '',
+    },
     clickable: {
       type: Boolean,
       default: true,

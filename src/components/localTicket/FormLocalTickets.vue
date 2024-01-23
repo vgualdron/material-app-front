@@ -769,6 +769,7 @@ export default {
       listThirds: localDataManagementTypes.actions.LIST_LOCAL_THIRDS,
       listMaterials: localDataManagementTypes.actions.LIST_LOCAL_MATERIALS,
       listYards: localDataManagementTypes.actions.LIST_LOCAL_YARDS,
+      getData: localDataManagementTypes.actions.GET_DATA,
     }),
     async onSubmit() {
       if (this.modal.type === 'C') {
@@ -789,6 +790,7 @@ export default {
         this.$q.loading.hide();
         this.resetForm();
         this.listLocalTicketsMountedRef();
+        this.getData();
         this.modal.show = false;
       } else {
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);

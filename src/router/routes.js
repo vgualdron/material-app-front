@@ -10,7 +10,7 @@ const routes = [
     path: '/home',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'Inicio', component: () => import('pages/Home.vue') },
+      { path: '', name: 'Inicio (Datos para el funcionamiento OFFLINE)', component: () => import('pages/Home.vue') },
     ],
   },
   {

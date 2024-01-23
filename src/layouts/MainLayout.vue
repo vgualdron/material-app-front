@@ -15,12 +15,17 @@
           </q-toolbar-title>
           <q-btn
             class="q-mr-xs"
-            round
             size="sm"
-            color="green"
+            color="white"
+            text-color="primary"
             icon="sync"
-            @click="showSynchronizeConfirm=true"
-          />
+            icon-right="sync"
+            label="Sincronizar"
+            @click="showSynchronizeConfirm=true">
+            <q-badge v-if="pendingTickets && pendingTickets.length > 0 " color="red" floating>
+              {{ pendingTickets.length }}
+            </q-badge>
+          </q-btn>
           <q-btn-dropdown
             color="primary"
             class="no-shadow"
@@ -46,7 +51,7 @@
                 </div>
                 <q-btn
                   color="primary"
-                  label="Actualizar Perfil"
+                  label="Cambiar contraseña"
                   push
                   size="sm"
                   v-close-popup
@@ -77,6 +82,14 @@
         <q-item-label header class="text-grey-8">
           <img src="~/assets/logo-rectangle.png" width="250" class="q-mr-auto q-ml-auto">
         </q-item-label>
+        <EssentialLink
+            key="home-menu"
+            title="Inicio"
+            link="/home"
+            icon="home"
+            :class="'/home' === $router.currentRoute.name && 'bg-blue-grey-3'"
+            :clickable="'/home' !== $router.currentRoute.path"
+          />
         <q-expansion-item
           v-for="({ name, icon, label, options }) in linksData"
           expand-separator
@@ -84,12 +97,14 @@
           :icon="icon"
           :label="label"
         >
+
           <EssentialLink
             v-for="({ name, route }) in options"
             :key="name"
             :title="name"
             :link="route"
             :class="route === $router.currentRoute.name && 'bg-blue-grey-3'"
+            :classes="'q-ml-lg'"
             :clickable="route !== $router.currentRoute.path"
           />
         </q-expansion-item>
@@ -295,6 +310,10 @@ export default {
     };
   },
   async mounted() {
+    this.listThirds();
+    this.listMaterials();
+    this.listYards();
+    this.getData();
     await this.fillLinkData();
   },
   computed: {
@@ -310,6 +329,9 @@ export default {
       localDataManagementData: 'data',
       localDataManagementStatus: 'status',
       localDataManagementResponseMessages: 'responseMessages',
+      thirds: 'localThirds',
+      yards: 'localYards',
+      materials: 'localMaterials',
     }),
     ...mapState(synchronizationTypes.PATH, {
       synchronizationData: 'data',
@@ -360,6 +382,9 @@ export default {
     versionApp() {
       return `Version ${process.env.LATEST_VERSION_APP}`;
     },
+    pendingTickets() {
+      return this.localDataManagementData.filter((result) => (result.modified === 1 && !(result.synchronized === 0 && result.deleted === 1)));
+    },
   },
   methods: {
     ...mapActions(commonTypes.PATH, {
@@ -371,6 +396,9 @@ export default {
     ...mapActions(localDataManagementTypes.PATH, {
       getData: localDataManagementTypes.actions.GET_DATA,
       setData: localDataManagementTypes.actions.SET_DATA,
+      listThirds: localDataManagementTypes.actions.LIST_LOCAL_THIRDS,
+      listMaterials: localDataManagementTypes.actions.LIST_LOCAL_MATERIALS,
+      listYards: localDataManagementTypes.actions.LIST_LOCAL_YARDS,
     }),
     ...mapActions(synchronizationTypes.PATH, {
       synchronize: synchronizationTypes.actions.SYNCHRONIZATION_SYNCHRONIZE,
@@ -388,14 +416,6 @@ export default {
     },
     async fillLinkData() {
       if (this.menu) {
-        /* this.linksData.push(
-          {
-            label: 'Inicio',
-            open: false,
-            icon: 'house',
-            link: '/home',
-          },
-        ); */
         this.menu.forEach((item) => {
           this.linksData.push(
             {
@@ -411,7 +431,7 @@ export default {
     },
     async synchronization() {
       this.showSynchronizeConfirm = false;
-      await this.getData();
+      // await this.getData();
       if (this.localDataManagementStatus === true) {
         await this.synchronize(this.localDataManagementData);
         if (this.synchronizationStatus === true) {
