@@ -77,13 +77,22 @@
         <q-item-label header class="text-grey-8">
           <img src="~/assets/logo-rectangle.png" width="250" class="q-mr-auto q-ml-auto">
         </q-item-label>
-        <EssentialLink
-          v-for="(link) in linksData"
-          :key="link.title"
-          v-bind="link"
-          :class="link.title === $router.currentRoute.name && 'bg-blue-grey-3'"
-          :clickable="link.link !== $router.currentRoute.path"
-        />
+        <q-expansion-item
+          v-for="({ name, icon, label, options }) in linksData"
+          expand-separator
+          :key="name"
+          :icon="icon"
+          :label="label"
+        >
+          <EssentialLink
+            v-for="({ name, route }) in options"
+            :key="name"
+            :title="name"
+            :link="route"
+            :class="route === $router.currentRoute.name && 'bg-blue-grey-3'"
+            :clickable="route !== $router.currentRoute.path"
+          />
+        </q-expansion-item>
       </q-list>
       <q-item-label header class="text-grey-8 text-center q-mt-md">
         {{ versionApp }}
@@ -379,25 +388,24 @@ export default {
     },
     async fillLinkData() {
       if (this.menu) {
-        this.linksData.push(
+        /* this.linksData.push(
           {
-            title: 'Inicio',
-            caption: '',
+            label: 'Inicio',
+            open: false,
             icon: 'house',
             link: '/home',
           },
-        );
+        ); */
         this.menu.forEach((item) => {
-          if (item.menu === 1) {
-            this.linksData.push(
-              {
-                title: item.name,
-                caption: '',
-                icon: 'remove',
-                link: item.route,
-              },
-            );
-          }
+          this.linksData.push(
+            {
+              label: item.label,
+              options: item.options.filter((i) => i.menu === 1),
+              icon: item.icon,
+              link: item.route,
+              open: true,
+            },
+          );
         });
       }
     },

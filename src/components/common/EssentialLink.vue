@@ -3,6 +3,7 @@
     :clickable="clickable"
     tag="a"
     @click="clickOption(link, title)"
+    class="q-ml-lg"
   >
     <q-item-section
       v-if="icon"
@@ -30,7 +31,7 @@ export default {
     },
     caption: {
       type: String,
-      default: '',
+      default: 'dsadasdas fds',
     },
 
     link: {
