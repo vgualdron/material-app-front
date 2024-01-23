@@ -105,6 +105,7 @@
             :class="route === $router.currentRoute.name && 'bg-blue-grey-3'"
             :classes="'q-ml-lg'"
             :clickable="route !== $router.currentRoute.path"
+            :active="route === $router.currentRoute.path"
           />
         </q-expansion-item>
       </q-list>

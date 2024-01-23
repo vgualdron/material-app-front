@@ -4,6 +4,8 @@
     tag="a"
     @click="clickOption(link, title)"
     :class="classes"
+    :active="active"
+    active-class="text-blue"
   >
     <q-item-section
       v-if="icon"
@@ -48,6 +50,10 @@ export default {
     clickable: {
       type: Boolean,
       default: true,
+    },
+    active: {
+      type: Boolean,
+      default: false,
     },
   },
   methods: {
