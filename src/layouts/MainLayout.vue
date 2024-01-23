@@ -18,7 +18,6 @@
             size="sm"
             color="white"
             text-color="primary"
-            icon="sync"
             icon-right="sync"
             label="Sincronizar"
             @click="showSynchronizeConfirm=true">
