@@ -4,7 +4,7 @@
       <div class="row justify-center q-mt-sm">
         <div class="col">
           <home-card
-            title="Tiquetes xxx"
+            title="Tiquetes"
             subhead="Lista de tiquetes que estan en offline"
             :rows="ticketsRows"
           />
