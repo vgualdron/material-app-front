@@ -17,6 +17,8 @@ import materialSettlement, { name as materialSettlementName } from './materialSe
 import freightSettlement, { name as freightSettlementName } from './freightSettlement';
 import movement, { name as movementName } from './movement';
 import report, { name as reportName } from './report';
+import batterie, { name as batterieName } from './batterie';
+import oven, { name as ovenName } from './oven';
 
 export default {
   [homeName]: home,
@@ -38,4 +40,6 @@ export default {
   [freightSettlementName]: freightSettlement,
   [movementName]: movement,
   [reportName]: report,
+  [batterieName]: batterie,
+  [ovenName]: oven,
 };
