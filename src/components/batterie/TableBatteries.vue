@@ -168,7 +168,7 @@
           </q-td>
         </q-tr>
       </template>
-      <template v-slot:bottom-row v-if="data && data.length > 0">
+      <template v-slot:bottom-row>
         <q-tr>
           <q-td>
           </q-td>
