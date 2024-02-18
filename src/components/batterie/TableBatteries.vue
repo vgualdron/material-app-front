@@ -345,6 +345,12 @@ export default {
       'status',
       'responseMessages',
     ]),
+    ...mapState(ovenTypes.PATH, {
+      ovens: 'ovens',
+      oven: 'oven',
+      statusOven: 'status',
+      responseMessagesOven: 'responseMessages',
+    }),
     ...mapState(yardTypes.PATH, [
       'yards',
     ]),
@@ -383,7 +389,7 @@ export default {
       this.itemSelected[field] = value.value || value;
       await this.updateOven(this.itemSelected);
       await this.fetchBatteries();
-      this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+      this.showNotification(this.responseMessagesOven, this.statusOven, 'top-right', 5000);
       this.$q.loading.hide();
     },
     async openModalChangeStateOven(row) {
@@ -451,7 +457,7 @@ export default {
         await this.fetchBatteries();
         this.isLoadingTable = false;
         this.nameNewOven = '';
-        this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+        this.showNotification(this.responseMessagesOven, this.statusOven, 'top-right', 5000);
         this.$q.loading.hide();
       }).onCancel(() => {
         // console.log('>>>> Cancel')
@@ -505,7 +511,7 @@ export default {
         await this.deleteOven(row.id);
         await this.fetchBatteries();
         this.isLoadingTable = false;
-        this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+        this.showNotification(this.responseMessagesOven, this.statusOven, 'top-right', 5000);
         this.$q.loading.hide();
       }).onCancel(() => {
         // console.log('>>>> Cancel')
