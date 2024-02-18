@@ -20,7 +20,7 @@
     <q-table
       :data="data"
       :columns="columns"
-      row-key="name"
+      row-key="id"
       :selected.sync="selected"
       :loading="isLoadingTable"
       :filter="filter"
