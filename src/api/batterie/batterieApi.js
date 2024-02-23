@@ -1,10 +1,9 @@
 import { http } from '../../helpers/http';
 
 export default {
-  list: (data) => http({
-    url: `${process.env.URL_API}/api/batterie/list`,
+  list: (yard) => http({
+    url: `${process.env.URL_API}/api/batterie/list/${yard}`,
     method: 'GET',
-    data,
   }),
   get: (id) => http({
     url: `${process.env.URL_API}/api/batterie/get/${id}`,

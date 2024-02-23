@@ -240,6 +240,7 @@ import { mapState, mapActions } from 'vuex';
 import batterieTypes from '../../store/modules/batterie/types';
 import yardTypes from '../../store/modules/yard/types';
 import ovenTypes from '../../store/modules/oven/types';
+import commonTypes from '../../store/modules/common/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
 // import { havePermission } from '../../helpers/havePermission';
@@ -334,7 +335,7 @@ export default {
     this.isLoadingTable = true;
     showLoading('Cargando Baterias ...', 'Por favor, espere', true);
     await this.fetchYards({ id: 0, displayAll: 1 });
-    await this.fetchBatteries();
+    await this.fetchBatteries(this.currentYard);
     this.isLoadingTable = false;
     this.$q.loading.hide();
   },
@@ -354,11 +355,15 @@ export default {
     ...mapState(yardTypes.PATH, [
       'yards',
     ]),
+    ...mapState(commonTypes.PATH, [
+      'currentYard',
+    ]),
     data() {
       return [...this.batteries];
     },
     optionsYards() {
-      return this.yards.map(({ id, name }) => ({ label: name, value: id }));
+      const yards = this.yards.filter((yard) => yard.id === parseInt(this.currentYard, 10));
+      return yards.map(({ id, name }) => ({ label: name, value: id }));
     },
     disabledAdd() {
       const {
@@ -388,7 +393,7 @@ export default {
       showLoading('Guardando cambios ...', 'Por favor, espere', true);
       this.itemSelected[field] = value.value || value;
       await this.updateOven(this.itemSelected);
-      await this.fetchBatteries();
+      await this.fetchBatteries(this.currentYard);
       this.showNotification(this.responseMessagesOven, this.statusOven, 'top-right', 5000);
       this.$q.loading.hide();
     },
@@ -412,7 +417,7 @@ export default {
           active: !row.active,
         };
         await this.updateOven(this.itemSelected);
-        await this.fetchBatteries();
+        await this.fetchBatteries(this.currentYard);
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
         this.$q.loading.hide();
       }).onCancel(() => {
@@ -425,7 +430,7 @@ export default {
       showLoading('Guardando cambios ...', 'Por favor, espere', true);
       this.itemSelected[field] = value.value || value;
       await this.updateBatterie(this.itemSelected);
-      await this.fetchBatteries();
+      await this.fetchBatteries(this.currentYard);
       this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
       this.$q.loading.hide();
     },
@@ -454,7 +459,7 @@ export default {
       }).onOk(async () => {
         showLoading('Creando ...', 'Por favor, espere', true);
         await this.createOven(row);
-        await this.fetchBatteries();
+        await this.fetchBatteries(this.currentYard);
         this.isLoadingTable = false;
         this.nameNewOven = '';
         this.showNotification(this.responseMessagesOven, this.statusOven, 'top-right', 5000);
@@ -481,7 +486,7 @@ export default {
       }).onOk(async () => {
         showLoading('Guardando cambios ...', 'Por favor, espere', true);
         await this.createBatterie(this.newItem);
-        await this.fetchBatteries();
+        await this.fetchBatteries(this.currentYard);
         this.isLoadingTable = false;
         this.newItem = { ...this.copyNewItem };
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
@@ -509,7 +514,7 @@ export default {
         showLoading('Eliminando ...', 'Por favor, espere', true);
         this.isLoadingTable = true;
         await this.deleteOven(row.id);
-        await this.fetchBatteries();
+        await this.fetchBatteries(this.currentYard);
         this.isLoadingTable = false;
         this.showNotification(this.responseMessagesOven, this.statusOven, 'top-right', 5000);
         this.$q.loading.hide();
@@ -536,7 +541,7 @@ export default {
         showLoading('Eliminando ...', 'Por favor, espere', true);
         this.isLoadingTable = true;
         await this.deleteBatterie(row.id);
-        await this.fetchBatteries();
+        await this.fetchBatteries(this.currentYard);
         this.isLoadingTable = false;
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
         this.$q.loading.hide();

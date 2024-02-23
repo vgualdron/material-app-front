@@ -5,6 +5,7 @@ export default function () {
     responseMessages: [],
     menu: localStorage.getItem('menuMC') ? JSON.parse(localStorage.getItem('menuMC')) : [],
     yard: localStorage.getItem('yardMC') ? localStorage.getItem('yardMC') : 0,
+    currentYard: localStorage.getItem('currentYardMC') ? localStorage.getItem('currentYardMC') : 0,
     document: localStorage.getItem('documentMC') ? localStorage.getItem('documentMC') : '',
     name: localStorage.getItem('nameMC') ? localStorage.getItem('nameMC') : '',
     token: localStorage.getItem('tokenMC') ? localStorage.getItem('tokenMC') : '',
