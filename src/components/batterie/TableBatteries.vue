@@ -168,8 +168,11 @@
         </q-tr>
       </template>
       <template v-slot:bottom-row>
-        <q-tr>
+        <q-tr class="row-item">
           <q-td>
+            Completa los campos
+            <br> y oprime el boton + para
+            <br> crear una nueva bateria
           </q-td>
           <q-td key="name">
             <q-icon size="xs" name="edit" />
@@ -253,14 +256,14 @@ export default {
       copyNewItem: {
         name: '',
         description: '',
-        active: null,
-        yard: null,
+        active: 1,
+        yard: 0,
       },
       newItem: {
         name: '',
         description: '',
-        active: null,
-        yard: null,
+        active: 1,
+        yard: 0,
       },
       itemSelected: {},
       columns: [
@@ -332,6 +335,8 @@ export default {
     };
   },
   async mounted() {
+    this.newItem.yard = parseInt(this.currentYard, 10);
+    this.copyNewItem.yard = parseInt(this.currentYard, 10);
     this.isLoadingTable = true;
     showLoading('Cargando Baterias ...', 'Por favor, espere', true);
     await this.fetchYards({ id: 0, displayAll: 1 });
@@ -561,5 +566,8 @@ export default {
   .my-card {
     width: 100%;
     max-width: 250px;
+  }
+  .row-item {
+    background: mintcream;
   }
 </style>
