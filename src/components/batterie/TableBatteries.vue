@@ -367,8 +367,7 @@ export default {
       return [...this.batteries];
     },
     optionsYards() {
-      const yards = this.yards.filter((yard) => yard.id === parseInt(this.currentYard, 10));
-      return yards.map(({ id, name }) => ({ label: name, value: id }));
+      return this.yards.map(({ id, name }) => ({ label: name, value: id }));
     },
     disabledAdd() {
       const {

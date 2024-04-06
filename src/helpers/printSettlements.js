@@ -1,10 +1,10 @@
 import JsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const standardTest = `Al facturar, por favor citar la liquidación N°_________________; \
-si tiene alguna duda u objeción, por favor comunicarla antes de emitir la factura. \
-La factura debe ser enviada al correo facturas@flamecolombia.com, este debe contener el \
-xml de validación de la factura electrónica.${'\n'}`;
+const getStandardTest = (number) => `Al facturar, por favor citar la liquidación N° ${number}; \
+  si tiene alguna duda u objeción, por favor comunicarla antes de emitir la factura. \
+  La factura debe ser enviada al correo facturas@flamecolombia.com, este debe contener el \
+  xml de validación de la factura electrónica.${'\n'}`;
 
 const printMaterialSettlement = (data) => {
   const stringFullDate = (new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short', hour12: false }).format(new Date())).replace(',', '');
@@ -131,7 +131,7 @@ const printMaterialSettlement = (data) => {
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'REGALIAS', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.unitRoyalties, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.royalties, styles: { cellPadding: 0.02, halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'TOTAL', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: '', colSpan: 2, styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.totalSettle, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 10, styles: { cellPadding: 0 } }]);
-  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: (`${standardTest}\n${data.observation || ''}`), colSpan: 9, styles: { cellPadding: 0.02 } }]);
+  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: (`${getStandardTest(data.consecutive)}\n${data.observation || ''}`), colSpan: 9, styles: { cellPadding: 0.02 } }]);
   doc.autoTable({
     startX: 1.5,
     startY: 2,
@@ -226,7 +226,7 @@ const printFreightSettlement = (data) => {
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'RETENCION EN LA FUENTE', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: data.retentionsPercentage, styles: { cellPadding: 0.02, halign: 'right' } }, { content: '', styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.retentions, styles: { cellPadding: 0.02, halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 6, styles: { cellPadding: 0 } }, { content: 'TOTAL', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'left' } }, { content: '', colSpan: 2, styles: { cellPadding: 0.02, halign: 'left' } }, { content: data.totalSettle, styles: { cellPadding: 0.02, fontStyle: 'bold', halign: 'right' } }]);
   itemsToTable.push([{ content: '', colSpan: 11, styles: { cellPadding: 0 } }]);
-  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: `${standardTest}\n${data.observation || ''}`, colSpan: 10, styles: { cellPadding: 0.02 } }]);
+  itemsToTable.push([{ content: 'OBSERVACIONES', colSpan: 1, styles: { cellPadding: 0.02, fontStyle: 'bold' } }, { content: `${getStandardTest(data.consecutive)}\n${data.observation || ''}`, colSpan: 10, styles: { cellPadding: 0.02 } }]);
   doc.autoTable({
     startX: 1.5,
     startY: 2,
