@@ -40,6 +40,25 @@ export default {
       }
     }
   },
+  async [types.actions.GET_MATERIALS_BY_YARD]({ commit }, id) {
+    try {
+      const response = await materialApi.getByYard(id);
+      commit(types.mutations.SET_STATUS, true);
+      commit(types.mutations.SET_MATERIALS, response.data.data);
+    } catch (error) {
+      commit(types.mutations.SET_STATUS, false);
+      if (error.message !== 'Network Error') {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, error.response.data.message);
+      } else {
+        commit(types.mutations.SET_RESPONSE_MESSAGES, [
+          {
+            text: 'Error de red',
+            detail: 'Intente conectarse a otra red de internet',
+          },
+        ]);
+      }
+    }
+  },
   async [types.actions.SAVE_MATERIAL]({ commit }, payload) {
     try {
       const response = await materialApi.save(payload);

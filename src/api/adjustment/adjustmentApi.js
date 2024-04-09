@@ -24,4 +24,9 @@ export default {
     url: `${process.env.URL_API}/api/adjustment/delete/${id}`,
     method: 'DELETE',
   }),
+  saveMixOrRiddle: (data) => http({
+    url: `${process.env.URL_API}/api/adjustment/createFromProccess`,
+    method: 'POST',
+    data,
+  }),
 };

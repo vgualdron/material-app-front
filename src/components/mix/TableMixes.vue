@@ -99,6 +99,7 @@ import yardTypes from '../../store/modules/yard/types';
 import materialTypes from '../../store/modules/material/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
+import adjustmentTypes from '../../store/modules/adjustment/types';
 
 export default {
   data() {
@@ -164,7 +165,7 @@ export default {
   async mounted() {
     this.isLoadingTable = true;
     await this.fetchYards({ id: 0, displayAll: 1 });
-    await this.listMaterials({ displayAll: 1, id: '0' });
+    await this.getMaterialsByYard(this.currentYard);
 
     this.title = `MEZCLA PARA ${this.yards.find(({ id }) => id === parseInt(this.currentYard, 10)).name}`;
 
@@ -212,6 +213,10 @@ export default {
     ...mapState(materialTypes.PATH, [
       'materials',
     ]),
+    ...mapState(adjustmentTypes.PATH, [
+      'responseMessages',
+      'status',
+    ]),
     data() {
       return [...this.items];
     },
@@ -238,8 +243,10 @@ export default {
       fetchYards: yardTypes.actions.LIST_YARDS,
     }),
     ...mapActions(materialTypes.PATH, {
-      listMaterials: materialTypes.actions.LIST_MATERIALS,
-      getMaterial: materialTypes.actions.GET_MATERIAL,
+      getMaterialsByYard: materialTypes.actions.GET_MATERIALS_BY_YARD,
+    }),
+    ...mapActions(adjustmentTypes.PATH, {
+      saveAdjustmentMixOrRiddle: adjustmentTypes.actions.SAVE_ADJUSTMENT_MIX_OR_RIDDLE,
     }),
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
@@ -277,15 +284,33 @@ export default {
       }
       this.mixItem[field] = val.value || val;
     },
-    saveMix() {
+    async saveMix() {
       showLoading('Guardando mezcla ...', 'Por favor, espere', true);
-      setTimeout(() => {
-        this.$q.loading.hide();
-        this.showNotification([{ text: 'Mezcla guardada' }], true, 'top-right', 5000);
-      }, 1500);
+      const materials = this.items.map((item) => ({
+        material: item.material.material,
+        amount: item.amount,
+        type: 'D',
+      }));
+      materials.push({
+        material: this.mixItem.material.material,
+        amount: this.mixItem.amount,
+        type: 'A',
+      });
+      const data = {
+        yard: this.currentYard,
+        origin: 'M',
+        material: [
+          ...materials,
+        ],
+      };
+      console.log(data);
+      await this.saveAdjustmentMixOrRiddle(data);
+      this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
+      this.$q.loading.hide();
+
       setTimeout(() => {
         window.location.reload();
-      }, 2500);
+      }, 2000);
     },
   },
 };

@@ -23,4 +23,8 @@ export default {
     url: `${process.env.URL_API}/api/material/delete/${id}`,
     method: 'DELETE',
   }),
+  getByYard: (idYard) => http({
+    url: `${process.env.URL_API}/api/material/getMaterialsByYard/${idYard}`,
+    method: 'GET',
+  }),
 };

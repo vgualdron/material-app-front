@@ -3,6 +3,7 @@ export default {
   actions: {
     LIST_MATERIALS: '@actions/listMaterials',
     GET_MATERIAL: '@actions/getMaterial',
+    GET_MATERIALS_BY_YARD: '@actions/getMaterialsByYard',
     SAVE_MATERIAL: '@actions/saveMaterial',
     UPDATE_MATERIAL: '@actions/updateMaterial',
     DELETE_MATERIAL: '@actions/deleteMaterial',

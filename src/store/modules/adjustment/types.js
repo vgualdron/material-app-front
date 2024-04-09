@@ -6,6 +6,7 @@ export default {
     SAVE_ADJUSTMENT: '@actions/saveAdjustment',
     UPDATE_ADJUSTMENT: '@actions/updateAdjustment',
     DELETE_ADJUSTMENT: '@actions/deleteAdjustment',
+    SAVE_ADJUSTMENT_MIX_OR_RIDDLE: '@actions/saveAdjustmentMixOrRiddle',
   },
   getters: {
   },
