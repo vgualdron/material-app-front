@@ -1,8 +1,8 @@
 import { http } from '../../helpers/http';
 
 export default {
-  list: (yard) => http({
-    url: `${process.env.URL_API}/api/batterie/list/${yard}`,
+  list: () => http({
+    url: `${process.env.URL_API}/api/batterie/list`,
     method: 'GET',
   }),
   get: (id) => http({

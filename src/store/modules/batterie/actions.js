@@ -2,9 +2,9 @@ import types from './types';
 import batterieApi from '../../../api/batterie/batterieApi';
 
 export default {
-  async [types.actions.LIST_BATTERIES]({ commit }, payload) {
+  async [types.actions.LIST_BATTERIES]({ commit }) {
     try {
-      const response = await batterieApi.list(payload);
+      const response = await batterieApi.list();
       commit(types.mutations.SET_STATUS, true);
       commit(types.mutations.SET_BATTERIES, response.data.data);
     } catch (error) {
