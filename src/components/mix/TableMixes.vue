@@ -2,6 +2,52 @@
   <div class="q-pa-md">
     <div class="row q-mt-md">
       <div class="col-9 text-center">
+        <div class="row">
+          <div
+            class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
+          >
+            <q-input
+              outlined
+              label="Fecha de la mezcla"
+              v-model="date"
+              lazy-rules
+              :rules="filterRules.date"
+              hide-bottom-space
+              clearable
+              mask="##/##/####"
+              @click="$refs.qStartDateProxy.show()"
+            >
+              <template v-slot:append>
+                <q-icon
+                  name="event"
+                  class="cursor-pointer"
+                >
+                  <q-popup-proxy
+                    ref="qStartDateProxy"
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date
+                      v-model="date"
+                      mask="DD/MM/YYYY"
+                      @input="$refs.qStartDateProxy.hide()"
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Cerrar"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+        </div>
       </div>
     </div>
     <q-table
@@ -100,6 +146,7 @@ import materialTypes from '../../store/modules/material/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
 import adjustmentTypes from '../../store/modules/adjustment/types';
+import { formatDateToSave } from '../../helpers/formatDateToSave';
 
 export default {
   data() {
@@ -160,9 +207,27 @@ export default {
           value: 0,
         },
       ],
+      filterRules: {
+        date: [
+          (val) => (!!val) || 'La fecha es requerida',
+        ],
+      },
+      date: '',
     };
   },
   async mounted() {
+    const objectDate = new Date();
+    const day = objectDate.getDate();
+    let month = objectDate.getMonth() + 1;
+
+    if (month < 10) {
+      month = `0${month}`;
+    }
+
+    const year = objectDate.getFullYear();
+    const date = `${day}/${month}/${year}`;
+    this.date = date;
+
     this.isLoadingTable = true;
     await this.fetchYards({ id: 0, displayAll: 1 });
     await this.getMaterialsByYard(this.currentYard);
@@ -277,7 +342,6 @@ export default {
       this.items = [...rows];
     },
     async saveOut(field, value) {
-      console.log(value);
       let val = value;
       if (field === 'material') {
         val = this.materials.find(({ id }) => id === parseInt(val.value, 10));
@@ -297,6 +361,7 @@ export default {
         type: 'A',
       });
       const data = {
+        date: formatDateToSave(this.date),
         yard: this.currentYard,
         origin: 'M',
         material: [
@@ -308,9 +373,9 @@ export default {
       this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
       this.$q.loading.hide();
 
-      setTimeout(() => {
+      /* setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 2000); */
     },
   },
 };
