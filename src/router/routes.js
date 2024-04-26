@@ -125,6 +125,13 @@ const routes = [
       { path: '', name: 'Mezclas', component: () => import('src/pages/Mix.vue') },
     ],
   },
+  {
+    path: '/riddle',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Criba', component: () => import('src/pages/Riddle.vue') },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
