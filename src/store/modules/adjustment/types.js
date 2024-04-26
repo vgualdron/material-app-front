@@ -7,6 +7,8 @@ export default {
     UPDATE_ADJUSTMENT: '@actions/updateAdjustment',
     DELETE_ADJUSTMENT: '@actions/deleteAdjustment',
     SAVE_ADJUSTMENT_MIX_OR_RIDDLE: '@actions/saveAdjustmentMixOrRiddle',
+    LIST_ADJUSTMENTS_MIX_OR_RIDDLE: '@actions/listAdjustmentsMixOrRiddle',
+    DELETE_ADJUSTMENT_MIX_OR_RIDDLE: '@actions/deleteAdjustmentMixOrRiddle',
   },
   getters: {
   },

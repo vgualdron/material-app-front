@@ -3,50 +3,53 @@
     <div class="row q-mt-md">
       <div class="col-9 text-center">
         <div class="row">
-          <div
-            class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
+          <q-input
+            outlined
+            label="Fecha de la mezcla"
+            v-model="date"
+            lazy-rules
+            :rules="filterRules.date"
+            hide-bottom-space
+            clearable
+            mask="##/##/####"
+            @click="$refs.qStartDateProxy.show()"
           >
-            <q-input
-              outlined
-              label="Fecha de la mezcla"
-              v-model="date"
-              lazy-rules
-              :rules="filterRules.date"
-              hide-bottom-space
-              clearable
-              mask="##/##/####"
-              @click="$refs.qStartDateProxy.show()"
-            >
-              <template v-slot:append>
-                <q-icon
-                  name="event"
-                  class="cursor-pointer"
+            <template v-slot:append>
+              <q-icon
+                name="event"
+                class="cursor-pointer"
+              >
+                <q-popup-proxy
+                  ref="qStartDateProxy"
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
                 >
-                  <q-popup-proxy
-                    ref="qStartDateProxy"
-                    cover
-                    transition-show="scale"
-                    transition-hide="scale"
+                  <q-date
+                    v-model="date"
+                    mask="DD/MM/YYYY"
+                    @input="$refs.qStartDateProxy.hide()"
                   >
-                    <q-date
-                      v-model="date"
-                      mask="DD/MM/YYYY"
-                      @input="$refs.qStartDateProxy.hide()"
-                    >
-                      <div class="row items-center justify-end">
-                        <q-btn
-                          v-close-popup
-                          label="Cerrar"
-                          color="primary"
-                          flat
-                        />
-                      </div>
-                    </q-date>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
-          </div>
+                    <div class="row items-center justify-end">
+                      <q-btn
+                        v-close-popup
+                        label="Cerrar"
+                        color="primary"
+                        flat
+                      />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+          <q-btn
+            size="md"
+            color="blue"
+            @click="showModalListMixes = true;"
+            class="q-ml-md">
+            Consultar mezclas de la fecha
+          </q-btn>
         </div>
       </div>
     </div>
@@ -64,11 +67,11 @@
         <q-tr :props="props" @click="clickRow(props)" class="row-item">
           <q-td key="material" :props="props">
             <q-icon size="xs" name="edit" />
-            {{ props.row.material.name }}
+            {{ props.row.material.label }}
             <q-popup-edit
-              :value="props.row.material.name"
+              :value="props.row.material.label"
               v-slot="scope"
-              @input="val => save('material', val)"
+              @input="val => saveItem('material', val)"
               buttons>
               <q-select
                 outlined
@@ -83,7 +86,7 @@
             <q-icon size="xs" name="edit" />
             {{ props.row.amount }}
             <q-popup-edit :value="props.row.amount" v-slot="scope" buttons
-              @input="val => save('amount', val)">
+              @input="val => saveItem('amount', val)">
               <q-input type="number" v-model.number="scope.value" dense autofocus />
             </q-popup-edit>
           </q-td>
@@ -100,9 +103,9 @@
         <q-tr class="total-row text-weight-bolder">
           <q-td key="material" class="text-h6 text-left">
             <q-icon size="xs" name="edit" />
-            {{ mixItem.material.name }}
+            {{ mixItem.material.label }}
             <q-popup-edit
-              :value="mixItem.material.name"
+              :value="mixItem.material.label"
               v-slot="scope"
               @input="val => saveOut('material', val)"
               buttons>
@@ -136,6 +139,11 @@
       class="q-mt-md">
       Guardar mezcla
     </q-btn>
+    <modal-list-mixes
+      v-if="showModalListMixes"
+      v-model="showModalListMixes"
+      :yard="currentYard"
+      :date="date"/>
   </div>
 </template>
 <script>
@@ -147,6 +155,7 @@ import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
 import adjustmentTypes from '../../store/modules/adjustment/types';
 import { formatDateToSave } from '../../helpers/formatDateToSave';
+import ModalListMixes from './ModalListMixes.vue';
 
 export default {
   data() {
@@ -196,6 +205,13 @@ export default {
         percentage: 0,
         actions: null,
       },
+      mixItem: {
+        material: {},
+        unit: 'T',
+        amount: 0,
+        percentage: 0,
+        actions: null,
+      },
       newItem: {},
       optionsStatus: [
         {
@@ -213,20 +229,11 @@ export default {
         ],
       },
       date: '',
+      showModalListMixes: false,
     };
   },
   async mounted() {
-    const objectDate = new Date();
-    const day = objectDate.getDate();
-    let month = objectDate.getMonth() + 1;
-
-    if (month < 10) {
-      month = `0${month}`;
-    }
-
-    const year = objectDate.getFullYear();
-    const date = `${day}/${month}/${year}`;
-    this.date = date;
+    this.date = this.dateNow();
 
     this.isLoadingTable = true;
     await this.fetchYards({ id: 0, displayAll: 1 });
@@ -237,7 +244,8 @@ export default {
     const item1 = this.materials.find(({ code }) => code === 'C01');
     this.addItem({
       material: {
-        ...item1,
+        label: item1.name,
+        value: item1.material,
       },
       unit: item1.unit,
       percentage: 40,
@@ -248,7 +256,8 @@ export default {
     const item2 = this.materials.find(({ code }) => code === 'C03');
     this.addItem({
       material: {
-        ...item2,
+        label: item2.name,
+        value: item2.material,
       },
       unit: item2.unit,
       percentage: 40,
@@ -259,13 +268,25 @@ export default {
     const item3 = this.materials.find(({ code }) => code === 'G01');
     this.addItem({
       material: {
-        ...item3,
+        label: item3.name,
+        value: item3.material,
       },
       unit: item3.unit,
       percentage: 20,
       amount: 20,
       actions: null,
     });
+
+    const mixItem = this.materials.find(({ code }) => code === 'M01');
+    this.mixItem = {
+      material: {
+        label: mixItem.name,
+        value: mixItem.material,
+      },
+      unit: mixItem.unit,
+      percentage: 100,
+      amount: 100,
+    };
     this.isLoadingTable = false;
   },
   computed: {
@@ -286,21 +307,7 @@ export default {
       return [...this.items];
     },
     optionsMaterials() {
-      return this.materials.map(({ id, name }) => ({ label: name, value: id }));
-    },
-    mixItem() {
-      if (this.items.length === 0) {
-        return { ...this.copyItem };
-      }
-      const mixItem = this.materials.find(({ code }) => code === 'M01');
-      const amountTotal = this.items.reduce((total, item) => total + item.amount, 0);
-      const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
-      return {
-        material: { ...mixItem },
-        unit: mixItem.unit,
-        amount: Number.parseFloat(amountTotal).toFixed(2),
-        percentage: Number.parseFloat(percentageTotal).toFixed(2),
-      };
+      return this.materials.map(({ material, name }) => ({ label: name, value: material }));
     },
   },
   methods: {
@@ -313,6 +320,28 @@ export default {
     ...mapActions(adjustmentTypes.PATH, {
       saveAdjustmentMixOrRiddle: adjustmentTypes.actions.SAVE_ADJUSTMENT_MIX_OR_RIDDLE,
     }),
+    dateNow() {
+      const objectDate = new Date();
+      const day = objectDate.getDate();
+      let month = objectDate.getMonth() + 1;
+
+      if (month < 10) {
+        month = `0${month}`;
+      }
+
+      const year = objectDate.getFullYear();
+      const date = `${day}/${month}/${year}`;
+      return date;
+    },
+    updateMixItem() {
+      const amountTotal = this.items.reduce((total, item) => total + item.amount, 0);
+      const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
+      this.mixItem = {
+        ...this.mixItem,
+        amount: Number.parseFloat(amountTotal).toFixed(2),
+        percentage: Number.parseFloat(percentageTotal).toFixed(2),
+      };
+    },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
     },
@@ -330,33 +359,26 @@ export default {
     deleteRow(data) {
       this.items.splice(data.rowIndex, 1);
     },
-    async save(field, value) {
-      let val = value;
-      if (field === 'material') {
-        val = this.materials.find(({ id }) => id === parseInt(val.value, 10));
-      }
-      this.items[this.indexSelected][field] = val.value || val;
+    async saveItem(field, value) {
+      this.items[this.indexSelected][field] = value;
 
       const amountTotal = this.items.reduce((total, item) => total + item.amount, 0);
       const rows = this.items.map((item) => ({ ...item, percentage: Number.parseFloat(((item.amount / amountTotal) * 100)).toFixed(2) }));
       this.items = [...rows];
+      this.updateMixItem();
     },
     async saveOut(field, value) {
-      let val = value;
-      if (field === 'material') {
-        val = this.materials.find(({ id }) => id === parseInt(val.value, 10));
-      }
-      this.mixItem[field] = val.value || val;
+      this.mixItem[field] = value;
     },
     async saveMix() {
       showLoading('Guardando mezcla ...', 'Por favor, espere', true);
       const materials = this.items.map((item) => ({
-        material: item.material.material,
+        material: item.material.value,
         amount: item.amount,
         type: 'D',
       }));
       materials.push({
-        material: this.mixItem.material.material,
+        material: this.mixItem.material.value,
         amount: this.mixItem.amount,
         type: 'A',
       });
@@ -368,15 +390,13 @@ export default {
           ...materials,
         ],
       };
-      console.log(data);
       await this.saveAdjustmentMixOrRiddle(data);
       this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
       this.$q.loading.hide();
-
-      /* setTimeout(() => {
-        window.location.reload();
-      }, 2000); */
     },
+  },
+  components: {
+    ModalListMixes,
   },
 };
 </script>
