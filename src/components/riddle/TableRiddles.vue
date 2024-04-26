@@ -5,7 +5,7 @@
         <div class="row">
           <q-input
             outlined
-            label="Fecha de la mezcla"
+            label="Fecha de la criba"
             v-model="date"
             lazy-rules
             :rules="filterRules.date"
