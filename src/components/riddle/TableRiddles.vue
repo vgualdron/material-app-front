@@ -86,7 +86,12 @@
             {{ props.row.amount }}
           </q-td>
           <q-td key="percentage" :props="props">
+            <q-icon size="xs" name="edit" />
             {{ props.row.percentage }}%
+            <q-popup-edit :value="props.row.percentage" v-slot="scope" buttons
+              @input="val => saveItem('percentage', val)">
+              <q-input type="number" v-model.number="scope.value" dense autofocus />
+            </q-popup-edit>
           </q-td>
           <q-td key="actions" :props="props" auto-width>
             <q-btn icon="delete" type="reset" color="primary" flat size="sm"
@@ -132,10 +137,14 @@
         </q-tr>
       </template>
     </q-table>
+    <q-banner v-if="disabledSave" inline-actions class="q-mt-md text-white bg-red">
+      No puedes asignar más del 100%.
+    </q-banner>
     <q-btn
       size="md"
       color="green"
       @click="saveRiddle()"
+      :disabled="disabledSave"
       class="q-mt-md">
       Guardar criba
     </q-btn>
@@ -230,6 +239,7 @@ export default {
       },
       date: '',
       showModalListRiddles: false,
+      disabledSave: false,
     };
   },
   async mounted() {
@@ -335,17 +345,19 @@ export default {
     },
     updateRiddleItem() {
       const amountTotal = this.riddleItem.amount;
-      // const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
       const items = [...this.items];
       this.items = items.map((item) => ({
         ...item,
         amount: (amountTotal * item.percentage) / 100,
       }));
-      /* this.riddleItem = {
+
+      const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
+      console.log(percentageTotal);
+      this.disabledSave = percentageTotal > 100;
+      this.riddleItem = {
         ...this.riddleItem,
-        amount: Number.parseFloat(amountTotal).toFixed(2),
         percentage: Number.parseFloat(percentageTotal).toFixed(2),
-      }; */
+      };
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
@@ -366,14 +378,10 @@ export default {
     },
     async saveItem(field, value) {
       this.items[this.indexSelected][field] = value;
+      this.updateRiddleItem();
     },
     async saveOut(field, value) {
       this.riddleItem[field] = value;
-
-      /* const amountTotal = this.items.reduce((total, item) => total + item.amount, 0);
-      const rows = this.items.map((item) => ({ ...item, percentage: Number.parseFloat(((item.amount / amountTotal) * 100)).toFixed(2) }));
-      this.items = [...rows]; */
-
       this.updateRiddleItem();
     },
     async saveRiddle() {
