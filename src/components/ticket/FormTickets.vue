@@ -937,7 +937,7 @@ export default {
         date: formatDateToSave(this.ticket.dateTime.split(' ')[0]),
         time: this.ticket.dateTime.split(' ')[1],
         licensePlate: this.ticket.licensePlate.toUpperCase(),
-        trailerNumber: this.ticket.trailerNumber.toUpperCase(),
+        trailerNumber: this.ticket.trailerNumber ? this.ticket.trailerNumber.toUpperCase() : '',
         driverDocument: this.ticket.driverDocument.toUpperCase(),
         driverName: this.ticket.driverName.toUpperCase(),
         grossWeight: (this.ticket.grossWeight || '0').replaceAll(',', ''),
