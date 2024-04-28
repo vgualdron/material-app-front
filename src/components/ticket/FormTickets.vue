@@ -659,7 +659,7 @@ export default {
           (val) => (JSON.stringify(val || []).length <= 500) || 'Los precintos no deben exceder los 500 caracteres',
         ],
         observation: [
-          (val) => (val.length <= 6) || 'La observación debe tener máximo 600 caracteres',
+          (val) => (val.length <= 600) || 'La observación debe tener máximo 600 caracteres',
         ],
       },
     };
