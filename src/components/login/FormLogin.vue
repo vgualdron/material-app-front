@@ -31,7 +31,7 @@
             />
             <div class="row text-center">
               <q-btn
-                label="Entrar"
+                label="Iniciar sesión"
                 type="submit"
                 color="primary"
                 :loading="isLoading"
