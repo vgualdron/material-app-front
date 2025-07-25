@@ -106,7 +106,7 @@ const getData = async () => new Promise((resolve, reject) => {
 });
 
 const listLocalThirds = async (thirds) => new Promise((resolve, reject) => {
-  thirds = thirds !== undefined && thirds !== null ? thirds.split(',') : [];
+  thirds = thirds !== undefined && thirds !== null ? thirds.toString().split(',') : [];
   createTables(dbName, dbVersion).then((connection) => {
     const tx = connection.transaction(['thirds'], 'readonly');
     const thirdStore = tx.objectStore('thirds');
@@ -141,7 +141,7 @@ const listLocalThirds = async (thirds) => new Promise((resolve, reject) => {
 });
 
 const listLocalMaterials = async (materials) => new Promise((resolve, reject) => {
-  materials = materials !== undefined && materials !== null ? materials.split(',') : [];
+  materials = materials !== undefined && materials !== null ? materials.toString().split(',') : [];
   createTables(dbName, dbVersion).then((connection) => {
     const tx = connection.transaction(['materials'], 'readonly');
     const materialStore = tx.objectStore('materials');
@@ -176,7 +176,7 @@ const listLocalMaterials = async (materials) => new Promise((resolve, reject) =>
 });
 
 const listLocalYards = async (yards) => new Promise((resolve, reject) => {
-  yards = yards !== undefined && yards !== null ? yards.split(',') : [];
+  yards = yards !== undefined && yards !== null ? yards.toString().split(',') : [];
   createTables(dbName, dbVersion).then((connection) => {
     const tx = connection.transaction(['yards'], 'readonly');
     const yardStore = tx.objectStore('yards');
