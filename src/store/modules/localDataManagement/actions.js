@@ -28,8 +28,6 @@ export default {
       commit(types.mutations.SET_THIRD_STATUS, true);
       commit(types.mutations.SET_LOCAL_THIRDS, response.data.data);
     } catch (error) {
-      console.log('tercero');
-      console.log(error);
       commit(types.mutations.SET_THIRD_STATUS, false);
       commit(types.mutations.SET_THIRD_RESPONSE_MESSAGES, error.response.data.message);
     }
@@ -40,8 +38,6 @@ export default {
       commit(types.mutations.SET_MATERIAL_STATUS, true);
       commit(types.mutations.SET_LOCAL_MATERIALS, response.data.data);
     } catch (error) {
-      console.log('material');
-      console.log(error);
       commit(types.mutations.SET_MATERIAL_STATUS, false);
       commit(types.mutations.SET_MATERIAL_RESPONSE_MESSAGES, error.response.data.message);
     }
@@ -52,8 +48,6 @@ export default {
       commit(types.mutations.SET_YARD_STATUS, true);
       commit(types.mutations.SET_LOCAL_YARDS, response.data.data);
     } catch (error) {
-      console.log('patios');
-      console.log(error);
       commit(types.mutations.SET_YARD_STATUS, false);
       commit(types.mutations.SET_YARD_RESPONSE_MESSAGES, error.response.data.message);
     }
