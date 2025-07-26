@@ -6,6 +6,10 @@ export default {
     url: `${process.env.URL_API}/api/report/movements/${data.movement}/${data.startDate}/${data.finalDate}/${data.originYard}/${data.destinyYard}/${data.material}`,
     method: 'GET',
   }),
+  productions: (data) => http({
+    url: `${process.env.URL_API}/api/report/productions/${data.startDate}/${data.finalDate}/${data.material}`,
+    method: 'GET',
+  }),
   yardStock: (data) => http({
     url: `${process.env.URL_API}/api/report/yardStock/${data.date}`,
     method: 'GET',

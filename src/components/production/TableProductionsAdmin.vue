@@ -8,25 +8,13 @@
           color="primary"
           v-model="filter"
           class="q-ml-xs"
-          placeholder="Buscar material"
+          placeholder="Buscar Produccion"
           clearable
         >
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
-      </div>
-      <div
-        class="col-3
-        text-center"
-      >
-        <q-btn
-          color="primary"
-          label="Agregar"
-          @click="showForm(null, 'C')"
-          :disabled="!validatedPermissions.create.status"
-          :title="validatedPermissions.create.title"
-        />
       </div>
     </div>
     <q-table
@@ -39,15 +27,7 @@
     >
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
-          <div v-if="props.row.id !== 6 && props.row.id !== 11 && props.row.id !== 15">
-            <q-btn
-              color="primary"
-              field="edit"
-              icon="edit"
-              :disabled="!validatedPermissions.edit.status"
-              :title="validatedPermissions.edit.title"
-              @click="showForm(props.row.id, 'E')"
-            />
+          <div>
             <q-btn
               class="q-ml-xs"
               color="red"
@@ -87,7 +67,7 @@
                     </q-item-label>
                   </template>
                 </q-item-section>
-                <q-item-section side v-if="props.row.id !== 6 && props.row.id !== 11 && props.row.id !== 15">
+                <q-item-section side>
                   <div>
                     <q-btn
                       round
@@ -117,17 +97,17 @@
         </div>
       </template>
     </q-table>
-    <form-materials
-      ref="formMaterialReference"
+    <form-productions
+      ref="formProductionReference"
       :showNotificationsRef="showNotification"
-      :listMaterialsMountedRef="listMaterialsMounted"
+      :listProductionsMountedRef="listProductionsMounted"
     />
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import FormMaterials from 'components/material/FormMaterials.vue';
-import materialTypes from '../../store/modules/material/types';
+import FormProductions from 'components/production/FormProductions.vue';
+import productionTypes from '../../store/modules/production/types';
 import { showNotifications } from '../../helpers/showNotifications';
 import { showLoading } from '../../helpers/showLoading';
 import { havePermission } from '../../helpers/havePermission';
@@ -135,22 +115,54 @@ import { havePermission } from '../../helpers/havePermission';
 export default {
   data() {
     return {
-      route: '/material',
-      name: 'Materiales',
+      route: '/production',
+      name: 'Producciones',
       columns: [
         {
-          name: 'code',
-          label: 'Código',
+          name: 'date',
+          label: 'Cargue',
           align: 'left',
-          field: 'code',
+          field: 'date',
           sortable: true,
           visible: true,
         },
         {
-          name: 'name',
+          name: 'date_download',
           align: 'left',
-          label: 'Nombre',
-          field: 'name',
+          label: 'Descargue',
+          field: 'date_download',
+          sortable: true,
+          visible: true,
+        },
+        {
+          name: 'oven_name',
+          align: 'left',
+          label: 'Horno',
+          field: 'oven_name',
+          sortable: true,
+          visible: true,
+        },
+        {
+          name: 'performance',
+          align: 'left',
+          label: 'Eficiencia',
+          field: 'performance',
+          sortable: true,
+          visible: true,
+        },
+        {
+          name: 'starting_name',
+          align: 'left',
+          label: 'Producto Incial',
+          field: 'starting_name',
+          sortable: true,
+          visible: true,
+        },
+        {
+          name: 'finished_name',
+          align: 'left',
+          label: 'Producto Final',
+          field: 'finished_name',
           sortable: true,
           visible: true,
         },
@@ -172,42 +184,46 @@ export default {
     this.validateLogin();
   },
   computed: {
-    ...mapState(materialTypes.PATH, [
-      'materials',
+    ...mapState(productionTypes.PATH, [
+      'productions',
       'responseMessages',
       'status',
-      'material',
+      'production',
     ]),
     validatedPermissions() {
-      const statusCreate = havePermission('material.create');
-      const statusEdit = havePermission('material.update');
-      const statusDelete = havePermission('material.delete');
+      const statusCreate = havePermission('production.create');
+      const statusEdit = havePermission('production.update');
+      const statusDelete = havePermission('production.delete');
       return {
         create: {
-          title: statusCreate ? 'Registrar material' : 'No tiene permisos para registrar materiales',
+          title: statusCreate ? 'Registrar Produccion' : 'No tiene permisos para registrar producciones',
           status: statusCreate,
         },
         edit: {
-          title: statusEdit ? 'Editar material' : 'No tiene permisos para editar materiales',
+          title: statusEdit ? 'Editar Produccion' : 'No tiene permisos para editar producciones',
           status: statusEdit,
         },
         delete: {
-          title: statusDelete ? 'Eliminar material' : 'No tiene permisos para eliminar materiales',
+          title: statusDelete ? 'Eliminar produccion' : 'No tiene permisos para eliminar producciones',
           status: statusDelete,
         },
       };
     },
   },
   methods: {
-    ...mapActions(materialTypes.PATH, {
-      listMaterials: materialTypes.actions.LIST_MATERIALS,
-      getMaterial: materialTypes.actions.GET_MATERIAL,
+    ...mapActions(productionTypes.PATH, {
+      listProductions: productionTypes.actions.LIST_PRODUCTIONS,
+      getProduction: productionTypes.actions.GET_PRODUCTION,
     }),
-    async listMaterialsMounted() {
-      showLoading('Cargando Materiales ...', 'Por favor, espere', true);
-      await this.listMaterials({ displayAll: 1, id: '0' });
+    async listProductionsMounted() {
+      showLoading('Cargando Producciones ...', 'Por favor, espere', true);
+      await this.listProductions();
       if (this.status === true) {
-        this.data = [...this.materials];
+        this.data = this.productions.map((element) => ({
+          ...element,
+          showEdit: true,
+          showDelete: true,
+        }));
         this.$q.loading.hide();
       } else {
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
@@ -216,13 +232,15 @@ export default {
       }
     },
     async showForm(id, type) {
+      showLoading('Preparando formulario ...', 'Por favor, espere', true);
       if (id === null) {
-        this.$refs.formMaterialReference.showModal(id, null, type);
+        this.$refs.formProductionReference.showModal(id, null, type);
       } else {
-        await this.getMaterial(id);
+        await this.getProduction(id);
         if (this.status === true) {
-          this.$refs.formMaterialReference.showModal(id, { ...this.material }, type);
+          this.$refs.formProductionReference.showModal(id, { ...this.production }, type);
         } else {
+          this.$q.loading.hide();
           this.showNotification(this.responseMessages, 'red', 'top-right', 5000);
         }
       }
@@ -232,14 +250,14 @@ export default {
     },
     validateLogin() {
       if (localStorage.getItem('tokenMC')) {
-        this.listMaterialsMounted();
+        this.listProductionsMounted();
       } else {
         this.$router.push('/');
       }
     },
   },
   components: {
-    FormMaterials,
+    FormProductions,
   },
 };
 </script>

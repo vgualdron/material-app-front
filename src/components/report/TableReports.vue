@@ -10,6 +10,15 @@
         unchecked-icon="visibility_off"
       />
     </div>
+    <div
+      class="row"
+    >
+    <q-toggle
+      v-model = "showListYards"
+      color="green"
+      label="Check en Base de datos de listar todos los movimientos"
+    />
+    </div>
     <q-form
       ref="formFilterRef"
       @submit="onFilterSubmit"
@@ -355,6 +364,260 @@
               </q-icon>
             </template>
           </q-input>
+        </div>
+      </div>
+      <!-- PRODUCTIONS REPORT -->
+      <div
+        v-show="report === 'productions'"
+        class="row q-pt-none q-mt-xs"
+      >
+        <div
+          class="col-lg-6 col-sm-12 col-xs-12 q-pr-md-none q-pr-sm-none q-pr-lg-xs"
+        >
+          <q-input
+            v-if="report === 'productions'"
+            dense
+            outlined
+            label="Fecha Inicio *"
+            v-model="filter.startDate"
+            :rules="rules.startDate"
+            hide-bottom-space
+            clearable
+            mask="##/##/####"
+            @click="$refs.qStartDateProxyRM.show()"
+          >
+            <template v-slot:append>
+              <q-icon
+                name="event"
+                class="cursor-pointer"
+              >
+                <q-popup-proxy
+                  ref="qStartDateProxyRM"
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date
+                    v-model="filter.startDate"
+                    mask="DD/MM/YYYY"
+                    :options="date =>  filter.finalDate ? date <= filter.finalDate.split('/').reverse().join('/') : true"
+                    @input="$refs.qStartDateProxyRM.hide()"
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn
+                        v-close-popup
+                        label="Close"
+                        color="primary"
+                        flat
+                      />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div
+          class="col-lg-6 col-sm-12 col-xs-12 q-pl-md-none q-pl-sm-none q-pl-lg-xs q-pt-md-xs q-pt-lg-none q-pt-sm-xs q-pt-xs-xs"
+        >
+          <q-input
+            v-if="report === 'productions'"
+            dense
+            outlined
+            label="Fecha Fin *"
+            v-model="filter.finalDate"
+            :rules="rules.finalDate"
+            hide-bottom-space
+            clearable
+            mask="##/##/####"
+            @click="$refs.qFinalDateProxyRM.show()"
+          >
+            <template v-slot:append>
+              <q-icon
+                name="event"
+                class="cursor-pointer"
+              >
+                <q-popup-proxy
+                  ref="qFinalDateProxyRM"
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date
+                    v-model="filter.finalDate"
+                    mask="DD/MM/YYYY"
+                    :options="date =>  filter.startDate ? date >= filter.startDate.split('/').reverse().join('/') : true"
+                    @input="$refs.qFinalDateProxyRM.hide()"
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn
+                        v-close-popup
+                        label="Close"
+                        color="primary"
+                        flat
+                      />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+      </div>
+      <div
+        v-show="report === 'productions'"
+        class="row q-pt-none q-mt-xs"
+      >
+
+        <div
+          class="col-lg-6 col-sm-12 col-xs-12 q-pl-md-none q-pl-sm-none q-pl-lg-xs q-pt-md-xs q-pt-lg-none q-pt-sm-xs q-pt-xs-xs"
+        >
+          <q-select
+            v-if="report === 'productions'"
+            dense
+            outlined
+            v-model="filter.material"
+            class="q-mt-none"
+            use-input
+            clearable
+            input-debounce="0"
+            label="Material"
+            :options="optionMaterial"
+            option-label="name"
+            option-value="id"
+            lazy-rules
+            @filter="filterMaterial"
+            hide-bottom-space
+            map-options
+            emit-value
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No hay coincidencias
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+      </div>
+      <div
+        v-show="report === 'productions'"
+        v-if="filter.movement !== null"
+        class="row q-pt-none q-mt-xs"
+      >
+        <div
+          class="col-lg-6 col-sm-12 col-xs-12 q-pr-md-none q-pr-sm-none q-pr-lg-xs"
+        >
+          <q-select
+            v-if="report === 'productions' && (filter.movement === 'T' || filter.movement === 'V')"
+            outlined
+            dense
+            v-model="filter.originYard"
+            use-input
+            clearable
+            input-debounce="0"
+            label="Patio Despacho"
+            :options="optionOriginYards"
+            option-label="name"
+            option-value="id"
+            @filter="filterOriginYard"
+            lazy-rules
+            hide-bottom-space
+            map-options
+            emit-value
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No hay coincidencias
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+          <q-select
+            v-if="report === 'productions' && filter.movement === 'C'"
+            dense
+            outlined
+            v-model="filter.supplier"
+            use-input
+            clearable
+            input-debounce="0"
+            label="Proveedor"
+            :options="optionSupplier"
+            option-label="name"
+            option-value="id"
+            lazy-rules
+            @filter="filterSupplier"
+            hide-bottom-space
+            map-options
+            emit-value
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No hay coincidencias
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+        <div
+          class="col-lg-6 col-sm-12 col-xs-12 q-pl-md-none q-pl-sm-none q-pl-lg-xs q-pt-md-xs q-pt-lg-none q-pt-sm-xs q-pt-xs-xs"
+        >
+          <q-select
+            v-if="report === 'productions' && (filter.movement === 'T' || filter.movement === 'C')"
+            outlined
+            dense
+            v-model="filter.destinyYard"
+            use-input
+            clearable
+            input-debounce="0"
+            label="Patio Recepción"
+            :options="optionDestinyYards"
+            option-label="name"
+            option-value="id"
+            @filter="filterDestinyYard"
+            lazy-rules
+            hide-bottom-space
+            map-options
+            emit-value
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No hay coincidencias
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+          <q-select
+            v-if="filter.movement === 'V'"
+            dense
+            outlined
+            v-model="filter.customer"
+            class="q-mt-none"
+            use-input
+            clearable
+            input-debounce="0"
+            label="Cliente"
+            :options="optionCustomer"
+            option-label="name"
+            option-value="id"
+            lazy-rules
+            @filter="filterCustomer"
+            hide-bottom-space
+            map-options
+            emit-value
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No hay coincidencias
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
         </div>
       </div>
       <!-- COMPLETE TRANFER REPORT -->
@@ -1216,10 +1479,12 @@
 </template>
 
 <script>
+import moment from 'moment';
 import { mapState, mapActions } from 'vuex';
 import reportTypes from '../../store/modules/report/types';
 import commonTypes from '../../store/modules/common/types';
 import yardTypes from '../../store/modules/yard/types';
+import productionTypes from '../../store/modules/production/types';
 import thirdTypes from '../../store/modules/third/types';
 import materialTypes from '../../store/modules/material/types';
 import { showNotifications } from '../../helpers/showNotifications';
@@ -1228,6 +1493,7 @@ import { validateDate } from '../../helpers/validateDate';
 import { removeAccents } from '../../helpers/removeAccents';
 import { formatDateToSave } from '../../helpers/formatDateToSave';
 import { getDateTime } from '../../helpers/getDateTime';
+// import { user } from '../../src/store/modules/user';
 
 export default {
   data() {
@@ -1235,6 +1501,7 @@ export default {
       route: '/report',
       name: 'Reportes',
       showFilter: true,
+      showListYards: false,
       movements: [
         {
           value: null,
@@ -1254,14 +1521,15 @@ export default {
         },
       ],
       filter: {
-        startDate: '',
-        finalDate: '',
+        startDate: null,
+        finalDate: null,
         movement: null,
         customer: null,
         supplier: null,
         originYard: null,
         destinyYard: null,
         material: null,
+        yard: null,
         conveyorCompany: null,
       },
       optionOriginYards: [],
@@ -1287,9 +1555,14 @@ export default {
     };
   },
   async mounted() {
+    this.setDefaultDates();
+    console.log('start', this.filter.startDate);
+    console.log('end', this.filter.finalDate);
     this.validateLogin();
+    console.log('this.permissions', this.permissions);
+    console.log('allowedReports', this.data);
   },
-  created() {},
+  created() { },
   computed: {
     ...mapState(reportTypes.PATH, [
       'reports',
@@ -1303,6 +1576,11 @@ export default {
       yards: 'yards',
       yardStatus: 'status',
       yardResponseMessages: 'responseMessages',
+    }),
+    ...mapState(productionTypes.PATH, {
+      productions: 'productions',
+      productionStatus: 'status',
+      productionResponseMessages: 'responseMessages',
     }),
     ...mapState(thirdTypes.PATH, {
       thirds: 'thirds',
@@ -1625,6 +1903,124 @@ export default {
               sortable: true,
               visible: true,
             },
+          ];
+          break;
+
+        case 'productions':
+          data = [
+            {
+              name: 'yardName',
+              label: 'Patio',
+              align: 'left',
+              field: 'yardName',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'batterieName',
+              label: 'Bateria',
+              align: 'left',
+              field: 'batterieName',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'ovenName',
+              label: 'Horno',
+              align: 'left',
+              field: 'ovenName',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'date_load',
+              label: 'Fecha Cargue',
+              align: 'left',
+              field: 'date_load',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'time',
+              label: 'Hora Cargue',
+              align: 'left',
+              field: 'time',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'startingName',
+              label: 'Material Cargue',
+              align: 'left',
+              field: 'startingName',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'capacity',
+              label: 'Cargue Inicial',
+              align: 'left',
+              field: 'capacity',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'mediumName',
+              label: 'Material en Proceso',
+              align: 'left',
+              field: 'mediumName',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'date_download',
+              label: 'Fecha Descargue',
+              align: 'left',
+              field: 'dateDownload',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'timeDownload',
+              label: 'Hora DesCargue',
+              align: 'left',
+              field: 'timeDownload',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'finishedName',
+              label: 'Material Descargue',
+              align: 'left',
+              field: 'finishedName',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'performanceTons',
+              label: 'Cargue Final',
+              align: 'left',
+              field: 'performanceTons',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'hours',
+              label: 'Duracion Coccion Horas',
+              align: 'left',
+              field: 'hours',
+              sortable: true,
+              visible: true,
+            },
+            {
+              name: 'performance',
+              label: 'Rendimiento',
+              align: 'left',
+              field: 'performance',
+              sortable: true,
+              visible: true,
+            },
+
           ];
           break;
 
@@ -2432,6 +2828,7 @@ export default {
     ...mapActions(reportTypes.PATH, {
       getMovements: reportTypes.actions.GET_MOVEMENTS,
       getYardStock: reportTypes.actions.GET_YARD_STOCK,
+      getProduction: reportTypes.actions.GET_PRODUCTION,
       getCompleteTransfers: reportTypes.actions.GET_COMPLETE_TRANSFERS,
       getUncompleteTransfers: reportTypes.actions.GET_UNCOMPLETE_TRANSFERS,
       getUnbilledPurchases: reportTypes.actions.GET_UNBILLED_PURCHASES,
@@ -2442,6 +2839,9 @@ export default {
     ...mapActions(yardTypes.PATH, {
       listYards: yardTypes.actions.LIST_YARDS,
     }),
+    ...mapActions(productionTypes.PATH, {
+      listProductions: productionTypes.actions.LIST_PRODUCTIONS,
+    }),
     ...mapActions(thirdTypes.PATH, {
       listThirds: thirdTypes.actions.LIST_THIRDS,
     }),
@@ -2451,13 +2851,23 @@ export default {
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
     },
+    setDefaultDates() {
+      const today = moment().format('YYYY-MM-DD'); // Obtiene la fecha de hoy con moment.js
+      this.filter.startDate = this.formatDate(today);
+      this.filter.finalDate = this.formatDate(today);
+    },
+    formatDate(date) {
+      return moment(date).format('DD/MM/YYYY'); // Formatea cualquier fecha a 'DD/MM/YYYY' con moment.js
+    },
     async onFilterSubmit() {
       showLoading('Cargando Reporte ...', 'Por favor, espere', true);
       if (this.report === 'movements') {
         const data = await this.setDataToSave(this.report);
+        console.log('datamovenvio', data);
         await this.getMovements(data);
         if (this.status === true) {
           this.data = [...this.reports];
+          console.log('dataMOVresponse', this.data);
         } else {
           this.data = [];
           showNotifications(this.responseMessages, this.status, 'top-right', 5000);
@@ -2465,6 +2875,15 @@ export default {
       } else if (this.report === 'yardStock') {
         const data = await this.setDataToSave(this.report);
         await this.getYardStock(data);
+        if (this.status === true) {
+          this.data = [...this.reports];
+        } else {
+          this.data = [];
+          showNotifications(this.responseMessages, this.status, 'top-right', 5000);
+        }
+      } else if (this.report === 'productions') {
+        const data = await this.setDataToSave(this.report);
+        await this.getProduction(data);
         if (this.status === true) {
           this.data = [...this.reports];
         } else {
@@ -2556,6 +2975,15 @@ export default {
       });
     },
     async validateLogin() {
+      if (parseInt(localStorage.getItem('listYardsMC'), 10) === 1) {
+        // alert('Puede Listar todos los registros');
+        showNotifications('Puede Listar todos los registros', true, 'top-right', 5000);
+        this.showListYards = true;
+      } else {
+        // alert('Solo listara los registros asociados a su usuario');
+        showNotifications('Solo listara los registros asociados a su usuario', true, 'top-right', 5000);
+        console.log('user', localStorage.getItem('userMC'));
+      }
       if (localStorage.getItem('tokenMC')) {
         showLoading('Cargando Formulario ...', 'Por favor, espere', true);
         await Promise.all([
@@ -2594,6 +3022,13 @@ export default {
           material: this.filter.material || 0,
           originYard: this.filter.movement === 'T' || this.filter.movement === 'V' ? (this.filter.originYard || 0) : (this.filter.supplier || 0),
           destinyYard: this.filter.movement === 'T' || this.filter.movement === 'C' ? (this.filter.destinyYard || 0) : (this.filter.customer || 0),
+          user: parseInt(localStorage.getItem('userMC'), 10),
+        };
+      } else if (report === 'productions') {
+        values = {
+          startDate: formatDateToSave(this.filter.startDate),
+          finalDate: formatDateToSave(this.filter.finalDate),
+          material: this.filter.material || 0,
         };
       } else if (report === 'yardStock') {
         values = {
@@ -2664,10 +3099,12 @@ export default {
       this.filter.customer = null;
     },
     resetForm() {
+      const currentDate = new Date();
+      const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
       this.data = [];
       this.filter = {
-        startDate: '',
-        finalDate: '',
+        startDate: formattedDate,
+        finalDate: formattedDate,
         movement: null,
         customer: null,
         supplier: null,

@@ -1,31 +1,31 @@
 const md5 = require('md5');
 
-const generateUUID = () => {
-  const stringFullDate = (new Intl.DateTimeFormat('es-CO', {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    fractionalSecondDigits: 3,
-    hour12: false,
-  }).format(new Date())).toString();
-  const dateTime = stringFullDate.split(',');
-  const date = dateTime[0].split('/');
-  const time = dateTime[1].trim().split(':');
-  const year = date[2];
-  const month = date[1].padStart(2, '0');
-  const day = date[0].padStart(2, '0');
-  const hour = time[0].padStart(2, '0');
-  const minute = time[1].padStart(2, '0');
-  const second = time[2].padStart(2, '0');
-  const millisecond = (dateTime[2]).padStart(3, '0');
+const generateUUID = (oven, date) => {
+  // Obtener el ID del usuario desde el localStorage
   const user = localStorage.getItem('userMC');
-  let value = false;
-  if (user) {
-    value = md5(`${user}/${year}-${month}-${day} ${hour}:${minute}:${second}.${millisecond}`);
+
+  // Si no hay un usuario almacenado, retorna un valor falso o un UUID por defecto
+  if (!user) {
+    console.error('User not found in localStorage');
+    return null;
   }
+
+  // Aseguramos que 'date' esté en formato de fecha
+  const dateTime = new Date(date);
+
+  // Extraemos los componentes de la fecha
+  const year = dateTime.getFullYear();
+  const month = (dateTime.getMonth() + 1).toString().padStart(2, '0'); // Mes (1-12)
+  const day = dateTime.getDate().toString().padStart(2, '0'); // Día (1-31)
+
+  // Si 'oven' no está presente, usamos un valor vacío (puedes modificarlo si es necesario)
+  oven = oven || '';
+  // Concatenamos la cadena con el formato: user / fecha (m-d-Y) / oven
+  const baseString = `${user}/${month}-${day}-${year}/${oven}`;
+
+  // Generamos el hash MD5
+  const value = md5(baseString);
+
   return value;
 };
 

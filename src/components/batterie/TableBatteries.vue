@@ -45,6 +45,22 @@
               <q-input v-model="scope.value" dense autofocus />
             </q-popup-edit>
           </q-td>
+          <q-td key="capacity" :props="props">
+            <q-icon size="xs" name="edit" />
+            {{ props.row.capacity }}
+            <q-popup-edit :value="props.row.capacity" v-slot="scope" buttons
+              @input="val => save('capacity', val)">
+              <q-input v-model="scope.value" dense autofocus />
+            </q-popup-edit>
+          </q-td>
+          <q-td key="performance" :props="props">
+            <q-icon size="xs" name="edit" />
+            {{ props.row.performance }}
+            <q-popup-edit :value="props.row.performance" v-slot="scope" buttons
+              @input="val => save('performance', val)">
+              <q-input v-model="scope.value" dense autofocus />
+            </q-popup-edit>
+          </q-td>
           <q-td key="description" :props="props">
             <q-icon size="xs" name="edit" />
             {{ props.row.description }}
@@ -98,22 +114,54 @@
                 flat bordered class="my-card bg-grey-1">
                 <div class="row items-center no-wrap">
                   <div class="col q-pa-md">
-                    <div class="text-h6">{{ oven.name }}</div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <div class="text-h6">{{ oven.name }}</div>
+                      <div class="col-auto">
+                        <q-btn color="grey-7" round flat icon="close" @click="openModalDeleteOven(oven)"></q-btn>
+                      </div>
+                    </div>
                     <div class="text-subtitle2">
                       Estado:
-                      <q-badge :color="oven.active ? 'green' : 'red'">
-                        {{ oven.active ? 'Activo' : 'Inactivo' }}
+                      <q-badge :color="oven.active === 1 ? 'green' : oven.active === 2 ? 'yellow' : 'red'">
+                        {{ oven.active === 0 ? 'Inactivo' : oven.active === 2 ? 'Mtto' : 'Activo' }}
                       </q-badge>
                     </div>
-                  </div>
-
-                  <div class="col-auto">
-                    <q-btn color="grey-7" round flat icon="close"  @click="openModalDeleteOven(oven)"></q-btn>
+                    <div key="capacity" @click="itemSelected=oven">
+                      <div>
+                        <span class="text-subtitle2">Capacidad: </span>
+                        <span>{{ oven.capacity }} Ton</span>
+                        <q-icon size="xs" name="edit" v-if="oven.load === 0"/>
+                      </div>
+                      <q-tooltip>
+                          TONELADAS INGRESADAS
+                      </q-tooltip>
+                      <q-popup-edit :value="oven.capacity" v-slot="scopeH" buttons
+                        @input="val => saveOven('capacity', val)">
+                        <q-input v-model="scopeH.value" dense autofocus />
+                      </q-popup-edit>
+                    </div>
+                    <div key="performance" @click="itemSelected=oven" >
+                      <div>
+                        <span class="text-subtitle2">Rendimiento: </span>
+                        <span>{{ oven.performance }} %</span>
+                        <q-icon size="xs" name="edit" />
+                      </div>
+                      <q-tooltip>
+                          RENDIMIENTO ESPERADO {{  oven.performance_ton }} Ton
+                      </q-tooltip>
+                      <q-popup-edit
+                          :value="oven.performance"
+                          v-slot="scope"
+                          @input="val => saveOven('performance', val)"
+                          buttons>
+                        <q-input v-model="scope.value" dense autofocus />
+                      </q-popup-edit>
+                    </div>
                   </div>
                 </div>
                 <q-separator />
                 <q-card-actions align="right">
-                  <q-btn flat @click="itemSelected=oven">
+                  <q-btn flat @click="itemSelected=oven" style="font-size: 0.99em">
                     Editar
                     <q-popup-edit
                         :value="oven.name"
@@ -123,8 +171,8 @@
                       <q-input v-model="scope.value" dense autofocus />
                     </q-popup-edit>
                   </q-btn>
-                  <q-btn flat @click="openModalChangeStateOven(oven)">
-                    {{ oven.active ? 'Desactivar' : 'Activar' }}
+                  <q-btn flat @click="openModalChangeStateOven(oven)" style="font-size: 0.99em">
+                    {{ oven.active === 1 ? 'Inactivar' : oven.active === 0 ? 'Mtto' : 'Activar'}}
                   </q-btn>
                 </q-card-actions>
               </q-card>
@@ -136,12 +184,14 @@
                     @submit="openModalCreateOven({
                       name: nameNewOven,
                       active: true,
-                      batterie: props.row.id
+                      batterie: props.row.id,
+                      capacity: props.row.capacity,
+                      performance: props.row.performance
                     })"
                   >
                     <q-input
                       v-model.trim="nameNewOven"
-                      label="Nombre del nuevo horno"
+                      :label="'Nombre, T=' + props.row.capacity + ', %=' + props.row.performance"
                       outlined
                       lazy-rules
                       hide-bottom-space
@@ -149,7 +199,6 @@
                   </q-form>
                 </div>
                 <q-separator />
-
                 <q-card-actions align="right">
                   <q-btn
                     :disabled="!nameNewOven"
@@ -157,7 +206,9 @@
                     @click="openModalCreateOven({
                     name: nameNewOven,
                     active: true,
-                    batterie: props.row.id
+                    batterie: props.row.id,
+                    capacity: props.row.capacity,
+                    performance: props.row.performance
                   })">
                     Guardar
                   </q-btn>
@@ -185,6 +236,28 @@
               <q-input v-model="scope.value" dense autofocus />
             </q-popup-edit>
           </q-td>
+          <q-td key="capacity">
+            <q-icon size="xs" name="edit" />
+            {{ newItem.capacity }}
+            <q-popup-edit
+              :value="newItem.capacity"
+              v-slot="scope"
+              buttons
+              @input="val => changeNewItem('capacity', val)">
+              <q-input v-model="scope.value" dense autofocus />
+            </q-popup-edit>
+          </q-td>
+          <q-td key="performance">
+            <q-icon size="xs" name="edit" />
+            {{ newItem.performance }}
+            <q-popup-edit
+              :value="newItem.performance"
+              v-slot="scope"
+              buttons
+              @input="val => changeNewItem('performance', val)">
+              <q-input v-model="scope.value" dense autofocus />
+            </q-popup-edit>
+          </q-td>
           <q-td key="description">
             <q-icon size="xs" name="edit" />
             {{ newItem.description }}
@@ -198,9 +271,10 @@
           </q-td>
           <q-td key="active">
             <q-icon size="xs" name="edit" />
-            <q-badge v-if="newItem.active !== null" :color="newItem.active ? 'green' : 'red'">
-              {{ newItem.active ? 'Activo' : 'Inactivo' }}
-            </q-badge>
+            <q-btn flat @click="openModalChangeStateOven(oven)"
+              :class="newItem.active === 0 ? 'bg-red text-white' : 'bg-green text-white' " size="xs">
+              {{ newItem.active === 0 ? 'Inactivo' : 'Activo' }}
+            </q-btn>
             <q-popup-edit
               :value="optionsStatus.find((status) => newItem.active === status.value)"
               v-slot="scope"
@@ -242,6 +316,7 @@
 import { mapState, mapActions } from 'vuex';
 import batterieTypes from '../../store/modules/batterie/types';
 import yardTypes from '../../store/modules/yard/types';
+import materialTypes from '../../store/modules/material/types';
 import ovenTypes from '../../store/modules/oven/types';
 import commonTypes from '../../store/modules/common/types';
 import { showNotifications } from '../../helpers/showNotifications';
@@ -258,12 +333,16 @@ export default {
         description: '',
         active: 1,
         yard: 0,
+        capacity: 0,
+        performance: 0,
       },
       newItem: {
         name: '',
         description: '',
         active: 1,
         yard: 0,
+        capacity: 0,
+        performance: 0,
       },
       itemSelected: {},
       columns: [
@@ -279,6 +358,24 @@ export default {
           label: 'Nombre',
           align: 'left',
           field: (row) => row.name,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: 'capacity',
+          required: true,
+          label: 'T',
+          align: 'left',
+          field: (row) => row.capacity,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: 'performance',
+          required: true,
+          label: '%',
+          align: 'left',
+          field: (row) => row.performance,
           format: (val) => `${val}`,
           sortable: true,
         },
@@ -330,6 +427,8 @@ export default {
         active: 1,
         name: '',
         batterie: null,
+        capacity: null,
+        performance: null,
       },
       nameNewOven: '',
     };
@@ -340,6 +439,7 @@ export default {
     this.isLoadingTable = true;
     showLoading('Cargando Baterias ...', 'Por favor, espere', true);
     await this.fetchYards({ id: 0, displayAll: 1 });
+    await this.fetchMaterials({ id: 0, displayAll: 1 });
     await this.fetchBatteries(this.currentYard);
     this.isLoadingTable = false;
     this.$q.loading.hide();
@@ -360,6 +460,9 @@ export default {
     ...mapState(yardTypes.PATH, [
       'yards',
     ]),
+    ...mapState(materialTypes.PATH, [
+      'materials',
+    ]),
     ...mapState(commonTypes.PATH, [
       'currentYard',
     ]),
@@ -369,6 +472,10 @@ export default {
     optionsYards() {
       return this.yards.map(({ id, name }) => ({ label: name, value: id }));
     },
+    optionsMaterials() {
+      return this.materials.map(({ id, name }) => ({ label: name, value: id }));
+    },
+
     disabledAdd() {
       const {
         name,
@@ -387,6 +494,9 @@ export default {
     }),
     ...mapActions(yardTypes.PATH, {
       fetchYards: yardTypes.actions.LIST_YARDS,
+    }),
+    ...mapActions(materialTypes.PATH, {
+      fetchMaterials: materialTypes.actions.LIST_MATERIALS,
     }),
     ...mapActions(ovenTypes.PATH, {
       createOven: ovenTypes.actions.SAVE_OVEN,
@@ -418,7 +528,7 @@ export default {
         showLoading('Guardando cambios ...', 'Por favor, espere', true);
         this.itemSelected = {
           ...row,
-          active: !row.active,
+          active: row.active === 0 ? 2 : row.active === 1 ? 0 : 1,
         };
         await this.updateOven(this.itemSelected);
         await this.fetchBatteries(this.currentYard);
@@ -469,9 +579,9 @@ export default {
         this.showNotification(this.responseMessagesOven, this.statusOven, 'top-right', 5000);
         this.$q.loading.hide();
       }).onCancel(() => {
-        // console.log('>>>> Cancel')
+        console.log('>>>> Cancel');
       }).onDismiss(() => {
-        // console.log('I am triggered on both OK and Cancel')
+        console.log('I am triggered on both OK and Cancel');
       });
     },
     openModalCreate() {
@@ -496,9 +606,9 @@ export default {
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
         this.$q.loading.hide();
       }).onCancel(() => {
-        // console.log('>>>> Cancel')
+        console.log(`>>>> Cancel BATERIENEW ${this.currentYard}`);
       }).onDismiss(() => {
-        // console.log('I am triggered on both OK and Cancel')
+        console.log('I am triggered on both OK and Cancel');
       });
     },
     openModalDeleteOven(row) {

@@ -5,6 +5,10 @@ export default {
     url: `${process.env.URL_API}/api/batterie/list`,
     method: 'GET',
   }),
+  listId: (id) => http({
+    url: `${process.env.URL_API}/api/batterie/list/${id}`,
+    method: 'GET',
+  }),
   get: (id) => http({
     url: `${process.env.URL_API}/api/batterie/get/${id}`,
     method: 'GET',

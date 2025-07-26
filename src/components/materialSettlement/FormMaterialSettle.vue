@@ -1,97 +1,39 @@
 <template>
   <div class="q-pa-md">
-    <q-dialog
-      v-model="modal.show"
-      persistent
-    >
+    <q-dialog v-model="modal.show" persistent>
       <q-card style="width: 95vw; max-width: 95vw;">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6"> {{ title }} </div>
+          <div class="text-h6"> {{ title }} QWERTY</div>
           <q-space />
-          <q-btn
-            icon="close"
-            flat
-            round
-            dense
-            v-close-popup
-          />
+          <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
         <q-separator />
-        <q-card-section
-          style="max-height: 85vh"
-          class="scroll"
-        >
+        <q-card-section style="max-height: 85vh" class="scroll">
           <div class="row" v-if="actionType === 'S'">
-            <q-toggle
-              size="md"
-              v-model="showFilter"
-              checked-icon="visibility"
-              color="green"
-              label="Ver filtro"
-              unchecked-icon="visibility_off"
-            />
+            <q-toggle size="md" v-model="showFilter" checked-icon="visibility" color="green" label="Ver filtro"
+              unchecked-icon="visibility_off" />
           </div>
           <q-slide-transition v-if="actionType === 'S'">
             <div v-show="showFilter">
-              <q-form
-                @submit="onFilterSubmit"
-                class="q-gutter-md"
-              >
+              <q-form @submit="onFilterSubmit" class="q-gutter-md">
                 <div class="row">
-                  <div
-                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
-                  >
-                    <q-select
-                      outlined
-                      label="Tipo"
-                      v-model="filter.type"
-                      :options="types"
-                      hide-bottom-space
-                      lazy-rules
-                      :rules="filterRules.type"
-                      map-options
-                      emit-value
-                    />
+                  <div class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs">
+                    <q-select outlined label="Tipo" v-model="filter.type" :options="types" hide-bottom-space lazy-rules
+                      :rules="filterRules.type" map-options emit-value />
                   </div>
                   <div
-                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
-                  >
-                    <q-input
-                      outlined
-                      label="Fecha Inicio"
-                      :disable="disableInputs"
-                      v-model="filter.startDate"
-                      lazy-rules
-                      :rules="filterRules.startDate"
-                      hide-bottom-space
-                      clearable
-                      mask="##/##/####"
-                      @click="$refs.qStartDateProxy.show()"
-                    >
+                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none">
+                    <q-input outlined label="Fecha Inicio" :disable="disableInputs" v-model="filter.startDate"
+                      lazy-rules :rules="filterRules.startDate" hide-bottom-space clearable mask="##/##/####"
+                      @click="$refs.qStartDateProxy.show()">
                       <template v-slot:append>
-                        <q-icon
-                          name="event"
-                          class="cursor-pointer"
-                        >
-                          <q-popup-proxy
-                            ref="qStartDateProxy"
-                            cover
-                            transition-show="scale"
-                            transition-hide="scale"
-                          >
-                            <q-date
-                              v-model="filter.startDate"
-                              mask="DD/MM/YYYY"
-                              :options="date =>  filter.finalDate ? date <= filter.finalDate.split('/').reverse().join('/') : true"
-                              @input="$refs.qStartDateProxy.hide()"
-                            >
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy ref="qStartDateProxy" cover transition-show="scale" transition-hide="scale">
+                            <q-date v-model="filter.startDate" mask="DD/MM/YYYY"
+                              :options="date => filter.finalDate ? date <= filter.finalDate.split('/').reverse().join('/') : true"
+                              @input="$refs.qStartDateProxy.hide()">
                               <div class="row items-center justify-end">
-                                <q-btn
-                                  v-close-popup
-                                  label="Cerrar"
-                                  color="primary"
-                                  flat
-                                />
+                                <q-btn v-close-popup label="Cerrar" color="primary" flat />
                               </div>
                             </q-date>
                           </q-popup-proxy>
@@ -100,44 +42,18 @@
                     </q-input>
                   </div>
                   <div
-                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
-                  >
-                    <q-input
-                      outlined
-                      label="Fecha Fin"
-                      :disable="disableInputs"
-                      v-model="filter.finalDate"
-                      lazy-rules
-                      :rules="filterRules.finalDate"
-                      hide-bottom-space
-                      clearable
-                      mask="##/##/####"
-                      @click="$refs.qFinalDateProxy.show()"
-                    >
+                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none">
+                    <q-input outlined label="Fecha Fin" :disable="disableInputs" v-model="filter.finalDate" lazy-rules
+                      :rules="filterRules.finalDate" hide-bottom-space clearable mask="##/##/####"
+                      @click="$refs.qFinalDateProxy.show()">
                       <template v-slot:append>
-                        <q-icon
-                          name="event"
-                          class="cursor-pointer"
-                        >
-                          <q-popup-proxy
-                            ref="qFinalDateProxy"
-                            cover
-                            transition-show="scale"
-                            transition-hide="scale"
-                          >
-                            <q-date
-                              v-model="filter.finalDate"
-                              mask="DD/MM/YYYY"
-                              :options="date =>  filter.startDate ? date >= filter.startDate.split('/').reverse().join('/') : true"
-                              @input="$refs.qFinalDateProxy.hide()"
-                            >
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy ref="qFinalDateProxy" cover transition-show="scale" transition-hide="scale">
+                            <q-date v-model="filter.finalDate" mask="DD/MM/YYYY"
+                              :options="date => filter.startDate ? date >= filter.startDate.split('/').reverse().join('/') : true"
+                              @input="$refs.qStartDateProxy.hide()">
                               <div class="row items-center justify-end">
-                                <q-btn
-                                  v-close-popup
-                                  label="Cerrar"
-                                  color="primary"
-                                  flat
-                                />
+                                <q-btn v-close-popup label="Cerrar" color="primary" flat />
                               </div>
                             </q-date>
                           </q-popup-proxy>
@@ -147,28 +63,11 @@
                   </div>
                 </div>
                 <div class="row q-mt-xs">
-                  <div
-                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs"
-                  >
-                    <q-select
-                      v-if="filter.type === 'C'"
-                      outlined
-                      v-model="filter.supplier"
-                      use-input
-                      clearable
-                      input-debounce="0"
-                      label="Proveedor"
-                      :disable="disableInputs"
-                      :options="optionSupplier"
-                      option-label="name"
-                      option-value="id"
-                      reactive-rules
-                      :rules="filterRules.supplier"
-                      @filter="filterSupplier"
-                      hide-bottom-space
-                      map-options
-                      emit-value
-                    >
+                  <div class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs">
+                    <q-select v-if="filter.type === 'C'" outlined v-model="filter.supplier" use-input clearable
+                      input-debounce="0" label="Proveedor" :disable="disableInputs" :options="optionSupplier"
+                      option-label="name" option-value="id" reactive-rules :rules="filterRules.supplier"
+                      @filter="filterSupplier" hide-bottom-space map-options emit-value>
                       <template v-slot:no-option>
                         <q-item>
                           <q-item-section class="text-grey">
@@ -177,25 +76,10 @@
                         </q-item>
                       </template>
                     </q-select>
-                    <q-select
-                      v-if="filter.type === 'V'"
-                      outlined
-                      v-model="filter.customer"
-                      use-input
-                      clearable
-                      input-debounce="0"
-                      label="Cliente"
-                      :disable="disableInputs"
-                      :options="optionCustomer"
-                      option-label="name"
-                      option-value="id"
-                      reactive-rules
-                      :rules="filterRules.customer"
-                      @filter="filterCustomer"
-                      hide-bottom-space
-                      map-options
-                      emit-value
-                    >
+                    <q-select v-if="filter.type === 'V'" outlined v-model="filter.customer" use-input clearable
+                      input-debounce="0" label="Cliente" :disable="disableInputs" :options="optionCustomer"
+                      option-label="name" option-value="id" reactive-rules :rules="filterRules.customer"
+                      @filter="filterCustomer" hide-bottom-space map-options emit-value>
                       <template v-slot:no-option>
                         <q-item>
                           <q-item-section class="text-grey">
@@ -206,27 +90,11 @@
                     </q-select>
                   </div>
                   <div
-                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none"
-                  >
-                    <q-select
-                      outlined
-                      v-model="filter.material"
-                      use-input
-                      clearable
-                      input-debounce="0"
-                      label="Material"
-                      :disable="disableInputs"
-                      :options="optionMaterial"
-                      option-label="name"
-                      option-value="id"
-                      reactive-rules
-                      :rules="filterRules.material"
-                      @filter="filterMaterial"
-                      hide-bottom-space
-                      map-options
-                      emit-value
-                      @input="resetMaterialInputs('MA')"
-                    >
+                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pr-md-xs q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none">
+                    <q-select outlined v-model="filter.material" use-input clearable input-debounce="0" label="Material"
+                      :disable="disableInputs" :options="optionMaterial" option-label="name" option-value="id"
+                      reactive-rules :rules="filterRules.material" @filter="filterMaterial" hide-bottom-space
+                      map-options emit-value @input="resetMaterialInputs('MA')">
                       <template v-slot:no-option>
                         <q-item>
                           <q-item-section class="text-grey">
@@ -237,285 +105,130 @@
                     </q-select>
                   </div>
                   <div
-                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none vertical-middle"
-                  >
+                    class="col col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 q-pl-md-xs q-pt-sm-xs q-pt-xs-xs q-pt-md-none vertical-middle">
                     <div>
                       <span class="label text-grey-7">Medición: </span>
-                      <q-radio
-                        @input="resetMaterialInputs('MT')"
-                        class="q-mt-none"
-                        v-model="filter.materialType"
-                        val="T"
-                        label="Tonelada"
-                        reactive-rules
-                        :rules="filterRules.materialType"
-                        hide-bottom-space
-                      />
-                      <q-radio
-                        @input="resetMaterialInputs('MT')"
-                        class="q-mt-none"
-                        v-model="filter.materialType"
-                        val="U"
-                        label="Viaje"
-                        reactive-rules
-                        :rules="filterRules.materialType"
-                        hide-bottom-space
-                      />
+                      <q-radio @input="resetMaterialInputs('MT')" class="q-mt-none" v-model="filter.materialType"
+                        val="T" label="Tonelada" reactive-rules :rules="filterRules.materialType" hide-bottom-space />
+                      <q-radio @input="resetMaterialInputs('MT')" class="q-mt-none" v-model="filter.materialType"
+                        val="U" label="Viaje" reactive-rules :rules="filterRules.materialType" hide-bottom-space />
                     </div>
                   </div>
                 </div>
                 <div class="row text-center">
-                  <q-btn
-                    label="Buscar"
-                    type="submit"
-                    color="primary"
-                    class="col q-ml-sm"
-                  />
+                  <q-btn label="Buscar" type="submit" color="primary" class="col q-ml-sm" />
                 </div>
               </q-form>
-              <q-separator class = "q-mt-sm"/>
+              <q-separator class="q-mt-sm" />
             </div>
           </q-slide-transition>
-          <q-table
-            :grid="$q.screen.lt.md"
-            :data="data"
-            :columns="columns"
-            class="q-mt-md"
-            wrap-cells
-            :rows-per-page-options="[0]"
-            :hide-pagination="true"
-          >
+          <q-table :grid="$q.screen.lt.md" :data="data" :columns="columns" class="q-mt-md" wrap-cells
+            :rows-per-page-options="[0]" :hide-pagination="true">
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td
-                  key="typeName"
-                  :props="props"
-                >
+                <q-td key="typeName" :props="props">
                   {{ props.row.typeName }}
                 </q-td>
-                <q-td
-                  key="date"
-                  :props="props"
-                >
+                <q-td key="date" :props="props">
                   {{ props.row.date }}
                 </q-td>
-                <q-td
-                  key="referralNumber"
-                  :props="props"
-                >
+                <q-td key="referralNumber" :props="props">
                   {{ props.row.referralNumber }}
                 </q-td>
-                <q-td
-                  key="receiptNumber"
-                  :props="props"
-                >
+                <q-td key="receiptNumber" :props="props">
                   {{ props.row.receiptNumber }}
                 </q-td>
-                <q-td
-                  key="material"
-                  :props="props"
-                >
+                <q-td key="material" :props="props">
                   {{ props.row.material }}
                 </q-td>
-                <q-td
-                  key="originYard"
-                  :props="props"
-                >
+                <q-td key="originYard" :props="props">
                   {{ props.row.originYard }}
                 </q-td>
-                <q-td
-                  key="destinyYard"
-                  :props="props"
-                >
+                <q-td key="destinyYard" :props="props">
                   {{ props.row.destinyYard }}
                 </q-td>
-                <q-td
-                  key="netWeight"
-                  :props="props"
-                >
+                <q-td key="netWeight" :props="props">
                   {{ props.row.netWeight }}
                 </q-td>
-                <q-td
-                  key="auxNetWeight"
-                  :props="props"
-                >
-                  <q-input
-                    v-if="props.row.materialUnit === 'T' && props.row.type === 'V'"
-                    v-model.trim="props.row.auxNetWeight"
-                    :disable="!props.row.settleReceiptWeight"
-                    outlined
-                    dense
-                    @input="formatAuxNetWeight(props.pageIndex, false)"
-                    @blur="formatAuxNetWeight(props.pageIndex, true)"
-                  />
+                <q-td key="auxNetWeight" :props="props">
+                  <q-input v-if="props.row.materialUnit === 'T'" v-model.trim="props.row.auxNetWeight"
+                    :disable="!props.row.settleReceiptWeight" outlined dense
+                    @input="formatAuxNetWeight(props.pageIndex, false), recalculateValues(props.pageIndex, settleReceiptWeight)"
+                    @blur="formatAuxNetWeight(props.pageIndex, true)" />
                 </q-td>
-                <q-td
-                  key="materialPrice"
-                  :props="props"
-                >
-                  <q-input
-                    v-model.trim="props.row.materialPrice"
-                    outlined
-                    dense
-                    @input="formatMaterialPrice(props.pageIndex, false), recalculateValues(props.pageIndex, props.row.type)"
-                    @blur="formatMaterialPrice(props.pageIndex, true)"
-                  />
+                <q-td key="materialPrice" :props="props">
+                  <q-input v-model.trim="props.row.materialPrice" outlined dense
+                    @input="formatMaterialPrice(props.pageIndex, false), recalculateValues(props.pageIndex, settleReceiptWeight)"
+                    @blur="formatMaterialPrice(props.pageIndex, true)" />
                 </q-td>
-                <q-td
-                  key="netPrice"
-                  :props="props"
-                >
+                <q-td key="netPrice" :props="props">
                   {{ props.row.netPrice }}
                 </q-td>
-                <q-td
-                  key="settleReceiptWeight"
-                  :props="props"
-                >
-                  <q-checkbox
-                     v-if="props.row.type === 'V' && props.row.materialUnit !== 'U'"
-                    v-model.trim="props.row.settleReceiptWeight"
-                    outlined
-                    dense
-                    @input="props.row.auxNetWeight = 0"
-                  />
+                <q-td key="settleReceiptWeight" :props="props">
+                  <q-checkbox v-if="props.row.materialUnit !== 'U'" v-model.trim="props.row.settleReceiptWeight"
+                    outlined dense @input="props.row.auxNetWeight = 0" />
                 </q-td>
               </q-tr>
             </template>
             <template v-slot:bottom-row v-if="data && data.length > 0">
               <q-tr>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="7"
-                >
+                <q-td class="text-right text-bold" colspan="7">
                   SUBTOTAL
                 </q-td>
-                <q-td
-                  key="subtotalWeight"
-                  colspan="1"
-                >
+                <q-td key="subtotalWeight" colspan="1">
                   {{ subtotalWeight }}
                 </q-td>
-                <q-td
-                  colspan="2"
-                />
-                <q-td
-                  key="totalValue"
-                  colspan="1"
-                >
+                <q-td colspan="2" />
+                <q-td key="totalValue" colspan="1">
                   {{ totalValue }}
                 </q-td>
-                <q-td
-                  colspan="1"
-                />
+                <q-td colspan="1" />
               </q-tr>
               <q-tr>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="7"
-                >
+                <q-td class="text-right text-bold" colspan="7">
                   RETENCION EN LA FUENTE
                 </q-td>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="1"
-                >
-                  <q-input
-                    v-model.trim="retention"
-                    outlined
-                    dense
-                    @input="formatRetention()"
-                    @blur="formatRetention()"
-                  />
+                <q-td class="text-right text-bold" colspan="1">
+                  <q-input v-model.trim="retention" outlined dense @input="formatRetention()"
+                    @blur="formatRetention()" />
                 </q-td>
-                <q-td
-                  colspan="2"
-                />
-                <q-td
-                  key="retentionSubtotal"
-                  colspan="2"
-                >
+                <q-td colspan="2" />
+                <q-td key="retentionSubtotal" colspan="2">
                   {{ retentionSubtotal }}
                 </q-td>
               </q-tr>
               <q-tr>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="7"
-                >
+                <q-td class="text-right text-bold" colspan="7">
                   REGALIAS
                 </q-td>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="1"
-                >
-                  <q-input
-                    v-model.trim="royalties"
-                    outlined
-                    dense
-                    @input="formatRoyalties()"
-                    @blur="formatRoyalties()"
-                  />
+                <q-td class="text-right text-bold" colspan="1">
+                  <q-input v-model.trim="royalties" outlined dense @input="formatRoyalties()"
+                    @blur="formatRoyalties()" />
                 </q-td>
-                <q-td
-                  colspan="2"
-                />
-                <q-td
-                  key="royaltiesSubtotal"
-                  colspan="2"
-                >
+                <q-td colspan="2" />
+                <q-td key="royaltiesSubtotal" colspan="2">
                   {{ royaltiesSubtotal }}
                 </q-td>
               </q-tr>
               <q-tr>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="7"
-                >
+                <q-td class="text-right text-bold" colspan="7">
                   TOTAL
                 </q-td>
-                <q-td
-                  colspan="3"
-                />
-                <q-td
-                  key="totalSettle"
-                  colspan="2"
-                >
+                <q-td colspan="3" />
+                <q-td key="totalSettle" colspan="2">
                   {{ totalSettle }}
                 </q-td>
               </q-tr>
               <q-tr>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="7"
-                >
+                <q-td class="text-right text-bold" colspan="7">
                   OBSERVACION
                 </q-td>
-                <q-td
-                  class="text-right text-bold"
-                  colspan="3"
-                >
-                  <q-input
-                    class="q-mt-xs"
-                    :input-style="{resize: 'none'}"
-                    type="textarea"
-                    v-model.trim="observation"
-                    outlined
-                    :disable="disableInputs"
-                    hide-bottom-space
-                    rows="3"
-                    counter
-                    maxlength="600"
-                  />
+                <q-td class="text-right text-bold" colspan="3">
+                  <q-input class="q-mt-xs" :input-style="{ resize: 'none' }" type="textarea" v-model.trim="observation"
+                    outlined :disable="disableInputs" hide-bottom-space rows="3" counter maxlength="600" />
                 </q-td>
-                <q-td
-                  class="text-center text-bold"
-                  colspan="2"
-                >
-                  <q-btn
-                    label="Liquidar"
-                    color="primary"
-                    @click="settle"
-                  />
+                <q-td class="text-center text-bold" colspan="2">
+                  <q-btn label="Liquidar" color="primary" @click="settle" />
                 </q-td>
               </q-tr>
             </template>
@@ -872,6 +585,7 @@ export default {
         id: this.id,
         tickets: this.arrayTickets,
         type: 'M',
+        Victor: 'VICTOR',
         retentionPercentage: parseFloat(this.retention.toString().replaceAll(',', '')),
         retention: parseFloat(this.retentionSubtotal.toString().replaceAll(',', '')),
         royalties: parseFloat(this.royaltiesSubtotal.toString().replaceAll(',', '')),
@@ -884,6 +598,7 @@ export default {
         finalDate: this.finalDateSettled,
         observation: this.observation,
       };
+      console.log('OJO', data);
       if (this.actionType === 'S') {
         await this.settleTickets(data);
       } else {
@@ -898,6 +613,23 @@ export default {
         this.showNotification(this.responseMessages, this.status, 'top-right', 5000);
       }
       this.$q.loading.hide();
+    },
+    async getConveyorCompanies() {
+      this.filter.conveyorCompany = null;
+      this.optionConveyorCompany = [];
+      if (this.filter.startDate !== null && this.filter.startDate !== '' && this.filter.finalDate !== null && this.filter.finalDate !== '') {
+        await this.listThirds({
+          displayAll: 0,
+          type: '%20',
+          third: '0',
+          origin: 'FS',
+          startDate: formatDateToSave(this.filter.startDate),
+          finalDate: formatDateToSave(this.filter.finalDate),
+        });
+        if (this.thirdStatus === false) {
+          this.showNotificationsRef(this.thirdResponseMessages, this.thirdStatus, 'top-right', 5000);
+        }
+      }
     },
     filterSupplier(val, update) {
       update(() => {
@@ -919,9 +651,11 @@ export default {
     },
     formatAuxNetWeight(index, blur) {
       this.data[index].auxNetWeight = formatDecimal(this.data[index].auxNetWeight, blur);
+      console.log('OJOAUXWEIGTH', this.data[index].auxNetWeight);
     },
     formatMaterialPrice(index, blur) {
       this.data[index].materialPrice = formatDecimal(this.data[index].materialPrice, blur);
+      console.log('OJOMATERIALPRICE', this.data[index].materialPrice);
     },
     formatRetention() {
       this.retention = formatDecimal(this.retention);
@@ -937,14 +671,14 @@ export default {
       }
     },
     recalculateValues(index, type) {
-      if (type === 'V') {
-        this.data[index].netPrice = formatDecimal(this.data[index].materialPrice);
-      } else {
-        const valueToCalculate = parseFloat(this.data[index].netWeight.toString().replaceAll(',', ''));
-        const materialPrice = parseFloat(this.data[index].materialPrice.toString().replaceAll(',', ''));
-        const newValue = valueToCalculate * materialPrice;
-        this.data[index].netPrice = formatDecimal(newValue);
+      console.log('OJO', index, type);
+      let valueToCalculate = parseFloat(this.data[index].auxNetWeight.toString().replaceAll(',', ''));
+      if (valueToCalculate === 0) {
+        valueToCalculate = parseFloat(this.data[index].netWeight.toString().replaceAll(',', ''));
       }
+      const materialPrice = parseFloat(this.data[index].materialPrice.toString().replaceAll(',', ''));
+      const newValue = valueToCalculate * materialPrice;
+      this.data[index].netPrice = formatDecimal(newValue);
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);

@@ -77,6 +77,27 @@ const routes = [
     ],
   },
   {
+    path: '/mixAdmin',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Administración de Mezclas (Solo Administradores)', component: () => import('src/pages/MixAdmin.vue') },
+    ],
+  },
+  {
+    path: '/riddleAdmin',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Administración de Cribas (Solo Administradores)', component: () => import('src/pages/RiddleAdmin.vue') },
+    ],
+  },
+  {
+    path: '/productionAdmin',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Administración de Producciones (Solo Administradores)', component: () => import('src/pages/ProductionAdmin.vue') },
+    ],
+  },
+  {
     path: '/ticket',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -130,6 +151,13 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', name: 'Criba', component: () => import('src/pages/Riddle.vue') },
+    ],
+  },
+  {
+    path: '/production',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'Produccion', component: () => import('src/pages/Production.vue') },
     ],
   },
   // Always leave this as last one,

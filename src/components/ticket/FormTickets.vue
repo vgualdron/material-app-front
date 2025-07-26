@@ -417,7 +417,7 @@
               >
                 <q-input
                   v-model.trim="ticket.grossWeight"
-                  label="Peso Bruto *"
+                  label="Peso Bruto Toneladas *"
                   outlined
                   lazy-rules
                   :rules="rules.grossWeight"
@@ -432,7 +432,7 @@
               >
                 <q-input
                   v-model.trim="ticket.tareWeight"
-                  label="Peso Tara *"
+                  label="Peso Tara Toneladas *"
                   outlined
                   lazy-rules
                   :rules="rules.tareWeight"
@@ -447,7 +447,7 @@
               >
                 <q-input
                   v-model.trim="ticket.netWeight"
-                  label="Peso Neto *"
+                  label="Peso Neto Toneladas *"
                   outlined
                   lazy-rules
                   :rules="rules.netWeight"
@@ -572,6 +572,7 @@ export default {
         driverDocument: '',
         material: null,
         ashPercentage: 0,
+        value: 0,
         grossWeight: 0,
         tareWeight: 0,
         netWeight: 0,
@@ -637,6 +638,9 @@ export default {
         ],
         ashPercentage: [
           (val) => (parseFloat((val || '0').replaceAll(',', '')) <= 100) || 'El porcentaje de cenizas debe ser menor o igual a 100',
+        ],
+        ashValue: [
+          (val) => (parseFloat((val || '0').replaceAll(',', '')) > 0) || 'El Valor del Material debe ser mayor a 0',
         ],
         grossWeight: [
           (val) => (!!val) || 'El peso bruto es requerido',
@@ -736,6 +740,9 @@ export default {
     displayDestinyYard() {
       return this.ticket.type === 'D' || this.ticket.type === 'R' || this.ticket.type === 'C';
     },
+    displayValue() {
+      return this.ticket.type === 'C' || this.ticket.type === 'V';
+    },
     displaySupplier() {
       return this.ticket.type === 'C';
     },
@@ -809,6 +816,7 @@ export default {
           this.ticket.customer = ticket.customer;
           this.ticket.material = ticket.material;
           this.ticket.ashPercentage = formatDecimal(ticket.ashPercentage, true);
+          this.ticket.ashValue = formatDecimal(ticket.ashValue, true);
           this.ticket.referralNumber = ticket.referralNumber;
           this.ticket.receiptNumber = ticket.receiptNumber;
           this.ticket.dateTime = ticket.dateTime;
@@ -888,6 +896,9 @@ export default {
     formatAshPercentage(blur) {
       this.ticket.ashPercentage = formatDecimal(this.ticket.ashPercentage, blur);
     },
+    formatAshValue(blur) {
+      this.ticket.ashVAlue = formatDecimal(this.ticket.ashValue, blur);
+    },
     resetOnTypeChange() {
       const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : null;
       const userYard = userYardData && typeof userYardData[1] !== 'undefined' && userYardData[1].trim() !== '' ? Number(userYardData[1]) : null;
@@ -906,6 +917,7 @@ export default {
       this.ticket.customer = null;
       this.ticket.material = null;
       this.ticket.ashPercentage = 0;
+      this.ticket.ashValue = 0;
       this.ticket.receiptNumber = '';
       this.ticket.referralNumber = '';
       this.ticket.dateTime = `${getDateTime().date} ${getDateTime().time}`;
@@ -932,6 +944,7 @@ export default {
         customer: this.ticket.type === 'V' ? this.ticket.customer : null,
         material: this.ticket.material,
         ashPercentage: (this.ticket.ashPercentage || '0').replaceAll(',', ''),
+        ashValue: (this.ticket.ashValue || '0').replaceAll(',', ''),
         receiptNumber: this.ticket.type === 'R' || this.ticket.type === 'C' ? this.ticket.receiptNumber.toUpperCase() : null,
         referralNumber: this.ticket.referralNumber.toUpperCase(),
         date: formatDateToSave(this.ticket.dateTime.split(' ')[0]),

@@ -371,6 +371,22 @@ export default {
       this.mixItem[field] = value;
     },
     async saveMix() {
+      // Verifica si todos los elementos tienen un valor para 'material'
+      let isValid = true;
+      this.items.forEach((item) => {
+        if (!item.material.value) {
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        this.$q.dialog({
+          title: 'Advertencia',
+          message: 'La formula No tiene Material Asignado',
+          ok: 'OK',
+        });
+        return;
+      }
       showLoading('Guardando mezcla ...', 'Por favor, espere', true);
       const materials = this.items.map((item) => ({
         material: item.material.value,

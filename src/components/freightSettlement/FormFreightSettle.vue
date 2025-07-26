@@ -669,7 +669,7 @@ export default {
       this.actionType = type;
       this.id = null;
       if (type === 'S') {
-        this.title = 'Liquidar Materiales';
+        this.title = 'Liquidar Fletes';
         this.id = null;
         this.filter.type = 'C';
         this.filter.startDate = null;

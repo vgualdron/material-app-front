@@ -19,6 +19,7 @@ import movement, { name as movementName } from './movement';
 import report, { name as reportName } from './report';
 import batterie, { name as batterieName } from './batterie';
 import oven, { name as ovenName } from './oven';
+import production, { name as productionName } from './production';
 
 export default {
   [homeName]: home,
@@ -42,4 +43,5 @@ export default {
   [reportName]: report,
   [batterieName]: batterie,
   [ovenName]: oven,
+  [productionName]: production,
 };

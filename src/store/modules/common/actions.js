@@ -10,6 +10,7 @@ export default {
       commit(types.mutations.SET_MENU, response.data.menu);
       commit(types.mutations.SET_YARD, response.data.user.yard);
       commit(types.mutations.SET_CURRENT_YARD, response.data.user.currentYard);
+      commit(types.mutations.SET_LIST_YARDS, response.data.user.listYards);
       commit(types.mutations.SET_USER, response.data.user.user);
       commit(types.mutations.SET_DOCUMENT, response.data.user.document);
       commit(types.mutations.SET_NAME, response.data.user.name);

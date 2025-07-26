@@ -1,4 +1,7 @@
 const formatDecimal = (value, blur) => {
+  if (value === undefined || value === null) {
+    return '0';
+  }
   if (value === '' || value === null) {
     value = '0';
   } else {

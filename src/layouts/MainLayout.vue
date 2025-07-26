@@ -416,6 +416,7 @@ export default {
       }
     },
     async fillLinkData() {
+      console.log('menuuu', this.menu);
       if (this.menu) {
         this.menu.forEach((item) => {
           this.linksData.push(
@@ -449,6 +450,8 @@ export default {
         this.listThirds();
         this.listMaterials();
         this.listYards();
+        this.getData();
+        await this.fillLinkData();
       } else {
         this.showNotification(this.localDataManagementResponseMessages, this.localDataManagementStatus, 'top-right', 5000);
       }

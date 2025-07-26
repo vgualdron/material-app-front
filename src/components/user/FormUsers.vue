@@ -131,6 +131,15 @@
               :disable="disableInputs || !user.editable"
               label="Puede cambiar su patio predeterminado en tiquetes"
             />
+            <q-checkbox
+              class="q-mt-none"
+              left-label
+              v-model="user.listYards"
+              text-h6
+              color="green"
+              :disable="disableInputs || !user.editable"
+              label="Puede listar todos los patios en Produccion"
+            />
             <q-separator />
             <div class="bg-gray-9 q-mt-xs">
               <div
@@ -207,6 +216,7 @@ export default {
         confirmPassword: '',
         roles: [],
         changeYard: false,
+        listYards: false,
       },
       optionYards: [],
       rules: {
@@ -310,6 +320,7 @@ export default {
         this.user.yard = null;
         this.user.active = true;
         this.user.changeYard = false;
+        this.user.listYards = false;
         this.user.password = '';
         this.user.confirmPassword = '';
         this.user.roles = [];
@@ -331,6 +342,7 @@ export default {
         this.user.active = id !== null ? (user.active === 1) : true;
         this.user.editable = id !== null ? (user.editable === 1) : true;
         this.user.changeYard = id !== null ? (user.changeYard === 1) : false;
+        this.user.listYards = id !== null ? (user.listYards === 1) : false;
         this.user.password = '';
         this.user.confirmPassword = '';
         this.user.roles = id !== null ? user.roles : [];

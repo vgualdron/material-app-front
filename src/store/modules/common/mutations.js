@@ -23,6 +23,10 @@ export default {
     localStorage.setItem('currentYardMC', payload === null ? 0 : payload);
     state.currentYard = payload;
   },
+  [types.mutations.SET_LIST_YARDS](state, payload) {
+    localStorage.setItem('listYardsMC', payload === null ? 0 : payload);
+    state.listYards = payload;
+  },
   [types.mutations.SET_NAME](state, payload) {
     localStorage.setItem('nameMC', payload);
     state.name = payload;

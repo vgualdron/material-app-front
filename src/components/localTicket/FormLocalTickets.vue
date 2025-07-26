@@ -417,7 +417,7 @@
               >
                 <q-input
                   v-model.trim="localTicket.grossWeight"
-                  label="Peso Bruto *"
+                  label="Peso Bruto Toneladas *"
                   outlined
                   lazy-rules
                   :rules="rules.grossWeight"
@@ -432,7 +432,7 @@
               >
                 <q-input
                   v-model.trim="localTicket.tareWeight"
-                  label="Peso Tara *"
+                  label="Peso Tara Toneladas *"
                   outlined
                   lazy-rules
                   :rules="rules.tareWeight"
@@ -447,7 +447,7 @@
               >
                 <q-input
                   v-model.trim="localTicket.netWeight"
-                  label="Peso Neto *"
+                  label="Peso Neto Toneladas *"
                   outlined
                   lazy-rules
                   :rules="rules.netWeight"
@@ -520,6 +520,7 @@
       </q-card>
     </q-dialog>
   </div>
+
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
@@ -744,7 +745,7 @@ export default {
     },
     disableOriginYard() {
       if (this.localTicket.type === 'D' || this.localTicket.type === 'V') {
-        const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : 0;
+        const userYardData = localStorage.getItem('yardMC') ? localStorage.getItem('yardMC').split('-') : 0;// aca el split es para separar el id del nombre
         const changeYard = userYardData && typeof userYardData[0] !== 'undefined' && userYardData[0].trim() !== '' ? Number(userYardData[0]) : 0;
         return changeYard === 0;
       }

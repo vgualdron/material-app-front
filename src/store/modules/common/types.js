@@ -13,6 +13,7 @@ export default {
     SET_MENU: '@mutations/setMenu',
     SET_YARD: '@mutations/setYard',
     SET_CURRENT_YARD: '@mutations/setCurrentYard',
+    SET_LIST_YARDS: '@mutations/setListYards',
     SET_NAME: '@mutations/setName',
     SET_DOCUMENT: '@mutations/setDocument',
     SET_TOKEN: '@mutations/setToken',

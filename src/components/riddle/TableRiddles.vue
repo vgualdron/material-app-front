@@ -138,7 +138,7 @@
       </template>
     </q-table>
     <q-banner v-if="disabledSave" inline-actions class="q-mt-md text-white bg-red">
-      No puedes asignar más del 100%.
+      El Porcentaje Total debe estar en 100%.
     </q-banner>
     <q-btn
       size="md"
@@ -252,7 +252,7 @@ export default {
     this.title = `CRIBA PARA ${this.yards.find(({ id }) => id === parseInt(this.currentYard, 10)).name}`;
 
     const item1 = this.materials.find(({ code }) => code === 'Q02');
-    this.addItem({
+    this.addItems({
       material: {
         label: item1.name,
         value: item1.material,
@@ -264,7 +264,7 @@ export default {
     });
 
     const item2 = this.materials.find(({ code }) => code === 'Q03');
-    this.addItem({
+    this.addItems({
       material: {
         label: item2.name,
         value: item2.material,
@@ -276,7 +276,7 @@ export default {
     });
 
     const item3 = this.materials.find(({ code }) => code === 'Q04');
-    this.addItem({
+    this.addItems({
       material: {
         label: item3.name,
         value: item3.material,
@@ -346,18 +346,32 @@ export default {
     updateRiddleItem() {
       const amountTotal = this.riddleItem.amount;
       const items = [...this.items];
-      this.items = items.map((item) => ({
+      const newItems = items.map((item) => ({
         ...item,
         amount: (amountTotal * item.percentage) / 100,
       }));
 
-      const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
-      console.log(percentageTotal);
+      const percentageTotal = newItems.reduce((total, item) => total + parseFloat(item.percentage), 0);
+
+      if (percentageTotal < 100) {
+        this.disabledSave = true;
+        this.riddleItem.percentage = percentageTotal;
+        return;
+      }
+
+      if (percentageTotal > 100) {
+        return;
+      }
+
+      this.items = newItems;
       this.disabledSave = percentageTotal > 100;
       this.riddleItem = {
         ...this.riddleItem,
         percentage: Number.parseFloat(percentageTotal).toFixed(2),
       };
+
+      // Actualiza el valor de globalPercentage
+      this.globalPercentage = this.riddleItem.percentage;
     },
     showNotification(messages, status, align, timeout) {
       showNotifications(messages, status, align, timeout);
@@ -366,25 +380,90 @@ export default {
       this.itemSelected = { ...data.row };
       this.indexSelected = data.rowIndex;
     },
-    addItem(data) {
+    addItems(data) {
+      if (this.riddleItem.percentage === 100) {
+        this.$q.dialog({
+          title: 'Advertencia',
+          message: 'Debe modificar los porcentajes primero',
+          ok: 'OK',
+        });
+        return;
+      }
       if (data) {
         this.items.push({ ...data });
       } else {
         this.items.push({ ...this.copyItem });
       }
     },
+    addItem(data) {
+      const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
+      if (percentageTotal >= 100) {
+        this.$q.dialog({
+          title: 'Advertencia',
+          message: 'Debe modificar los porcentajes primero',
+          ok: 'OK',
+        });
+        return;
+      }
+      const newPercentage = 100 - percentageTotal;
+      if (data) {
+        this.items.push({ ...data, percentage: newPercentage });
+      } else {
+        this.items.push({ ...this.copyItem, percentage: newPercentage });
+      }
+      this.riddleItem.percentage = 100;
+      this.disabledSave = !this.disabledSave;
+    },
     deleteRow(data) {
       this.items.splice(data.rowIndex, 1);
+      const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
+      this.riddleItem.percentage = percentageTotal;
+      this.disabledSave = !this.disabledSave;
     },
     async saveItem(field, value) {
+      // Haz una copia del estado actual de los elementos
+      const originalItems = JSON.parse(JSON.stringify(this.items));
+
+      // Actualiza el campo con el nuevo valor
       this.items[this.indexSelected][field] = value;
+
+      // Llama a updateRiddleItem() para actualizar los demás campos
       this.updateRiddleItem();
+
+      // Calcula el total de los porcentajes
+      const percentageTotal = this.items.reduce((total, item) => total + parseFloat(item.percentage), 0);
+
+      // Si el total de los porcentajes es mayor a 100, muestra un cuadro de diálogo y revierte los elementos a su estado original
+      if (percentageTotal > 100) {
+        this.$q.dialog({
+          title: 'Advertencia',
+          message: 'El total de los porcentajes no puede ser mayor a 100',
+          ok: 'OK',
+        });
+        this.items = originalItems;
+      }
     },
     async saveOut(field, value) {
       this.riddleItem[field] = value;
       this.updateRiddleItem();
     },
     async saveRiddle() {
+      // Verifica si todos los elementos tienen un valor para 'material'
+      let isValid = true;
+      this.items.forEach((item) => {
+        if (!item.material.value) {
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        this.$q.dialog({
+          title: 'Advertencia',
+          message: 'La formula No tiene Material Asignado',
+          ok: 'OK',
+        });
+        return;
+      }
       showLoading('Guardando mezcla ...', 'Por favor, espere', true);
       const materials = this.items.map((item) => ({
         material: item.material.value,
